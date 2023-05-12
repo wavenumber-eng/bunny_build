@@ -1,4 +1,8 @@
 # Prerequisites
+
+build/
+build_vs/
+
 *.d
 
 # Object files
