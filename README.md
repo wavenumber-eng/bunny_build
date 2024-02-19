@@ -43,16 +43,19 @@ and....  It will be used on the Wavenumber MCX947 bunny brain board.
 6. Easy to wrap in a simple command line application. Be able to generate binary blobs in different formats (c arrays, etc) to include in MCU application code.
 6. Handle GOTO/JUMP properly
 7. Disassemble EZH binaries
+8. Once the "C" version is complete and supports all instructions, I would like an assembler that works like the old Analog device ADSP DSP assembler.   Something that almost looks like C.
 
 ## Current state
 
-- bunny_build can currently recreate the EZH/Smart "Camera Generator".  The camera generator code was for the MCX (and LPC55).  bunny_build can input the same code and generator the samy binary blob.
+- bunny_build can currently recreate the EZH/Smart "Camera Generator".  The camera generator code was for the MCX (and LPC55).  bunny_build can input the same code and generator the samy binary blob.  We need more test cases and to validate that all instructions are generated correctly.
 
-- Need more test cases to validate the assembler.   Next will be the lpc55 "hello_pdm"
+Test Cases Needed
 
-- Need some simple IO toggle type test programs to validate.
+- recreate "hello_pdm" (i.e. verify we are byte for byte correct)
+- A simple IO toggle
+- A program that use zero overhead loops.
 
-## building the validator.
+## Building the Validator.
 
 1. cd to `test/`
 2. generate a build system like : `cmake ./ -B"build"`
@@ -67,3 +70,10 @@ and....  It will be used on the Wavenumber MCX947 bunny brain board.
 `ninja`
 
 run the output binary and it should tell you that validation of the camera code worked.
+
+## Notes
+
+- bunny_build.c/.h was bootstrapped from the fsl_ezh_armclang.h file.  See the camera generator example, or any of the LPC55 samples. 
+- I added code to support the "C" way of building the instructions.  Added print/warnings/errors to instructions that have not yet been implemented.
+- Things like DCD, GOTO, etc need fixed.  Althought... DCD was a Keil thing to insert address of functons and variables.   IN the future, bunny_build should have better ways of handling this.
+
