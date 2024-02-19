@@ -9,21 +9,8 @@
 //  prohibited without the written consent of the copyright owner.
 //
 //  ---------------------------------------------------------------------------
-//                    Design Information
-//  ---------------------------------------------------------------------------
-//
-//  File         : $RCSfile: vhd.header.rca $
-//
-//  Author       : Adam Fuks
-//
-//  Description  : Macro definitions for EZH (Easy Handler) instructions
-//
-//  ---------------------------------------------------------------------------
-//  $Source$
-//  ---------------------------------------------------------------------------
 
-
-#include "ezbuild_config.h"
+#include "bunny_build__config.h"
 
 
 #ifndef _FSL_EZHB_ARMCLANG_H_
@@ -185,7 +172,7 @@ typedef enum
 
 extern uint32_t  *ez_out;
 extern uint32_t   ez_idx;
-extern ez_label_t ez_labels[EZBUILD_MAX_LABELS];
+extern ez_label_t ez_labels[BUNNY_BUILD_MAX_LABELS];
 extern uint32_t   ez_pass_num;
 
 
@@ -236,7 +223,7 @@ static inline void E_LABEL(char* label)
 	{
 		if (label == NULL)
 		{
-			EZBUILD_PRINTF(EZBUILD_ERROR_FLAG"Label on ezh program index %d was invalid\r\n", ez_idx);
+			BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"Label on ezh program index %d was invalid\r\n", ez_idx);
 		}
 		else
 		{
@@ -244,18 +231,18 @@ static inline void E_LABEL(char* label)
 
 			if (r == ezbuild_label__ok)
 			{
-				EZBUILD_PRINTF(EZBUILD_INFO_FLAG"Added label "VT100_CYAN"%s"VT100_DEFAULT" at index %d which will resolve to "VT100_CYAN"0x%08x"VT100_DEFAULT" \r\n", label, ez_idx, resolved_address);
+				BUNNY_BUILD_PRINTF(BUNNY_BUILD_INFO_FLAG"Added label "VT100_CYAN"%s"VT100_DEFAULT" at index %d which will resolve to "VT100_CYAN"0x%08x"VT100_DEFAULT" \r\n", label, ez_idx, resolved_address);
 			}
 			else if (r == ezbuild_label__out_of_mem)
 			{
-				EZBUILD_PRINTF(EZBUILD_ERROR_FLAG"Cannot add another label. EZBUILD_MAX_LABELS set to %d\r\n", EZBUILD_MAX_LABELS);
+				BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"Cannot add another label. BUNNY_BUILD_MAX_LABELS set to %d\r\n", BUNNY_BUILD_MAX_LABELS);
 			}
 		}
 	}
 
 }
 
-static inline void E_DCD(uint32_t loc) { ezbuild_add_instruction(0); if (ez_pass_num) { EZBUILD_PRINTF(EZBUILD_ERROR_FLAG"E_DCD NOT YET IMPLEMENTED\r\n"); }  }    // __asm(".word "#loc) 
+static inline void E_DCD(uint32_t loc) { ezbuild_add_instruction(0); if (ez_pass_num) { BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"E_DCD NOT YET IMPLEMENTED\r\n"); }  }    // __asm(".word "#loc) 
 
 static inline void E_DCD_VAL(uint32_t val) { ezbuild_add_instruction(val); }
 
@@ -273,11 +260,11 @@ static inline void  E_GOSUB(char *a30)
 		if (ezbuild__label_get_address(a30, &resolved_address))
 		{
 			ezbuild_add_instruction(0x3 + resolved_address);
-				EZBUILD_PRINTF(EZBUILD_INFO_FLAG"E_GOSUB to label "VT100_CYAN"%s"VT100_DEFAULT" will resolve to address "VT100_CYAN"0x%08x"VT100_DEFAULT" at index %d\r\n", a30, resolved_address, ez_idx);
+				BUNNY_BUILD_PRINTF(BUNNY_BUILD_INFO_FLAG"E_GOSUB to label "VT100_CYAN"%s"VT100_DEFAULT" will resolve to address "VT100_CYAN"0x%08x"VT100_DEFAULT" at index %d\r\n", a30, resolved_address, ez_idx);
 		}
 		else
 		{
-			EZBUILD_PRINTF(EZBUILD_ERROR_FLAG"E_GOSUB Error at index %d. label %s was not defined \r\n", ez_idx, a30);
+			BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"E_GOSUB Error at index %d. label %s was not defined \r\n", ez_idx, a30);
 				ezbuild_add_instruction(0);
 		}
 	}
@@ -295,14 +282,14 @@ static inline void  E_INT_TRIGGER(uint32_t x24) { ezbuild_add_instruction(0x14 +
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                                       E_GOTO
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static inline void  E_GOTO(uint32_t a21)									        { ezbuild_add_instruction(0); if (ez_pass_num) { EZBUILD_PRINTF(EZBUILD_ERROR_FLAG"E_GOTO NOT YET IMPLEMENTED\r\n");} }//__asm(".word 0x15 + (1<<9) + " #a21 "<<9")
-static inline void  E_GOTO_REG(uint32_t raddr)									    { ezbuild_add_instruction(0); if (ez_pass_num) { EZBUILD_PRINTF(EZBUILD_ERROR_FLAG"E_GOTO_REG NOT YET IMPLEMENTED\r\n");} }//__asm(".word %c0" : : "i" (0x15  + (raddr<<14)))
-static inline void  E_GOTOL(uint32_t a21)											{ ezbuild_add_instruction(0); if (ez_pass_num) { EZBUILD_PRINTF(EZBUILD_ERROR_FLAG"E_GOTOL NOT YET IMPLEMENTED\r\n"); } }//__asm(".word 0x15  + (1<<10) + (1<<9)  + " #a21 "<<9")
-static inline void  E_GOTO_REGL(uint32_t raddr)										{ ezbuild_add_instruction(0); if (ez_pass_num) { EZBUILD_PRINTF(EZBUILD_ERROR_FLAG"E_GOTO_REGL NOT YET IMPLEMENTED\r\n"); } }//__asm(".word %c0" : : "i" (0x15  + (raddr<<14)+ (1<<10)))
-static inline void  E_COND_GOTO(uint32_t cond, uint32_t a21)									{ ezbuild_add_instruction(0); if (ez_pass_num) { EZBUILD_PRINTF(EZBUILD_ERROR_FLAG"E_COND_GOTO NOT YET IMPLEMENTED\r\n"); } }//__asm(".word 0x15  +(cond<<5) + (1<<9) + " #a21 "<<9")
-static inline void  E_COND_GOTO_REG(uint32_t cond, uint32_t raddr)							{ ezbuild_add_instruction(0); if (ez_pass_num) { EZBUILD_PRINTF(EZBUILD_ERROR_FLAG"E_COND_GOTO_REG NOT YET IMPLEMENTED\r\n"); } }//__asm(".word %c0" : : "i" (0x15  + (raddr<<14) +(cond<<5)))
-static inline void  E_COND_GOTOL(uint32_t cond, uint32_t a21)								{ ezbuild_add_instruction(0); if (ez_pass_num) { EZBUILD_PRINTF(EZBUILD_ERROR_FLAG"E_COND_GOTOL NOT YET IMPLEMENTED\r\n");} }         //__asm(".word 0x15  + (1<<10)  +(cond<<5)  + (1<<9) + " #a21 "<<9")
-static inline void  E_COND_GOTO_REGL(uint32_t cond, uint32_t raddr)							{ ezbuild_add_instruction(0); if (ez_pass_num) { EZBUILD_PRINTF(EZBUILD_ERROR_FLAG"E_COND_GOTO_REGL NOT YET IMPLEMENTED\r\n");} }//__asm(".word %c0" : : "i" (0x15  + (raddr<<14)+ (1<<10) +(cond<<5)))
+static inline void  E_GOTO(uint32_t a21)									        { ezbuild_add_instruction(0); if (ez_pass_num) { BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"E_GOTO NOT YET IMPLEMENTED\r\n");} }//__asm(".word 0x15 + (1<<9) + " #a21 "<<9")
+static inline void  E_GOTO_REG(uint32_t raddr)									    { ezbuild_add_instruction(0); if (ez_pass_num) { BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"E_GOTO_REG NOT YET IMPLEMENTED\r\n");} }//__asm(".word %c0" : : "i" (0x15  + (raddr<<14)))
+static inline void  E_GOTOL(uint32_t a21)											{ ezbuild_add_instruction(0); if (ez_pass_num) { BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"E_GOTOL NOT YET IMPLEMENTED\r\n"); } }//__asm(".word 0x15  + (1<<10) + (1<<9)  + " #a21 "<<9")
+static inline void  E_GOTO_REGL(uint32_t raddr)										{ ezbuild_add_instruction(0); if (ez_pass_num) { BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"E_GOTO_REGL NOT YET IMPLEMENTED\r\n"); } }//__asm(".word %c0" : : "i" (0x15  + (raddr<<14)+ (1<<10)))
+static inline void  E_COND_GOTO(uint32_t cond, uint32_t a21)									{ ezbuild_add_instruction(0); if (ez_pass_num) { BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"E_COND_GOTO NOT YET IMPLEMENTED\r\n"); } }//__asm(".word 0x15  +(cond<<5) + (1<<9) + " #a21 "<<9")
+static inline void  E_COND_GOTO_REG(uint32_t cond, uint32_t raddr)							{ ezbuild_add_instruction(0); if (ez_pass_num) { BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"E_COND_GOTO_REG NOT YET IMPLEMENTED\r\n"); } }//__asm(".word %c0" : : "i" (0x15  + (raddr<<14) +(cond<<5)))
+static inline void  E_COND_GOTOL(uint32_t cond, uint32_t a21)								{ ezbuild_add_instruction(0); if (ez_pass_num) { BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"E_COND_GOTOL NOT YET IMPLEMENTED\r\n");} }         //__asm(".word 0x15  + (1<<10)  +(cond<<5)  + (1<<9) + " #a21 "<<9")
+static inline void  E_COND_GOTO_REGL(uint32_t cond, uint32_t raddr)							{ ezbuild_add_instruction(0); if (ez_pass_num) { BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"E_COND_GOTO_REGL NOT YET IMPLEMENTED\r\n");} }//__asm(".word %c0" : : "i" (0x15  + (raddr<<14)+ (1<<10) +(cond<<5)))
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                                       E_MOV
@@ -2110,10 +2097,10 @@ static inline void  E_COND_FBIT_LSR_SBCS(uint32_t cond, uint32_t dest, uint32_t 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                                                         opcode      Dest            Src1               src2           SFlag              Cond         SRC3                    
 // ANDOR
-static inline void  E_ANDOR(uint32_t dest, uint32_t rsrc, uint32_t rand, uint32_t ror) { if (ez_pass_num) { EZBUILD_PRINTF(EZBUILD_WARNING_FLAG"DOUBLE CHECK E_ANDOR ENCODING\n");} ezbuild_add_instruction(0x16 + (dest << 10) + (rsrc << 14) + (rand << 20) + (0 << 9) + (EU << 5) + (ror << 24)); }
-static inline void  E_ANDORS(uint32_t dest, uint32_t rsrc, uint32_t rand, uint32_t ror) { if (ez_pass_num) { EZBUILD_PRINTF(EZBUILD_WARNING_FLAG"WARNING DOUBLE CHECK E_ANDORS ENCODING\n");} ezbuild_add_instruction(0x16 + (dest << 10) + (rsrc << 14) + (rand << 20) + (1 << 9) + (EU << 5) + (ror << 24)); }
-static inline void  E_COND_ANDOR(uint32_t cond, uint32_t dest, uint32_t rsrc, uint32_t rand, uint32_t ror) { if (ez_pass_num) { EZBUILD_PRINTF(EZBUILD_WARNING_FLAG"WARNING DOUBLE CHHCK E_COND_ANDOR ENCODING\n"); } ezbuild_add_instruction(0x16 + (dest << 10) + (rsrc << 14) + (rand << 20) + (0 << 9) + (cond << 5) + (ror << 24)); }
-static inline void  E_COND_ANDORS(uint32_t cond, uint32_t dest, uint32_t rsrc, uint32_t rand, uint32_t ror) { if (ez_pass_num) { EZBUILD_PRINTF(EZBUILD_WARNING_FLAG"WARNING DOUBLE CGECK E_COND_ANDORS ENCODING\n"); } ezbuild_add_instruction(0x16 + (dest << 10) + (rsrc << 14) + (rand << 20) + (1 << 9) + (cond << 5) + (ror << 24)); }
+static inline void  E_ANDOR(uint32_t dest, uint32_t rsrc, uint32_t rand, uint32_t ror) { if (ez_pass_num) { BUNNY_BUILD_PRINTF(BUNNY_BUILD_WARNING_FLAG"DOUBLE CHECK E_ANDOR ENCODING\n");} ezbuild_add_instruction(0x16 + (dest << 10) + (rsrc << 14) + (rand << 20) + (0 << 9) + (EU << 5) + (ror << 24)); }
+static inline void  E_ANDORS(uint32_t dest, uint32_t rsrc, uint32_t rand, uint32_t ror) { if (ez_pass_num) { BUNNY_BUILD_PRINTF(BUNNY_BUILD_WARNING_FLAG"WARNING DOUBLE CHECK E_ANDORS ENCODING\n");} ezbuild_add_instruction(0x16 + (dest << 10) + (rsrc << 14) + (rand << 20) + (1 << 9) + (EU << 5) + (ror << 24)); }
+static inline void  E_COND_ANDOR(uint32_t cond, uint32_t dest, uint32_t rsrc, uint32_t rand, uint32_t ror) { if (ez_pass_num) { BUNNY_BUILD_PRINTF(BUNNY_BUILD_WARNING_FLAG"WARNING DOUBLE CHHCK E_COND_ANDOR ENCODING\n"); } ezbuild_add_instruction(0x16 + (dest << 10) + (rsrc << 14) + (rand << 20) + (0 << 9) + (cond << 5) + (ror << 24)); }
+static inline void  E_COND_ANDORS(uint32_t cond, uint32_t dest, uint32_t rsrc, uint32_t rand, uint32_t ror) { if (ez_pass_num) { BUNNY_BUILD_PRINTF(BUNNY_BUILD_WARNING_FLAG"WARNING DOUBLE CGECK E_COND_ANDORS ENCODING\n"); } ezbuild_add_instruction(0x16 + (dest << 10) + (rsrc << 14) + (rand << 20) + (1 << 9) + (cond << 5) + (ror << 24)); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                                       E_Shift byte reg Codes
@@ -3459,7 +3446,7 @@ static inline void  E_COND_STR_REGB(uint32_t cond, uint32_t raddr, uint32_t rdat
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                                     GPO modify Byte
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static inline void  E_MODIFY_GPO_BYTE(uint32_t andmask, uint32_t ormask, uint32_t xormask) { if (ez_pass_num) { EZBUILD_PRINTF(EZBUILD_WARNING_FLAG"DOUBLE CHECK ENCODING OF E_MODIFY_GPO_BYTE \n"); } ezbuild_add_instruction(0x1E + (andmask << 8) + (ormask << 16) + (xormask << 24)); }
+static inline void  E_MODIFY_GPO_BYTE(uint32_t andmask, uint32_t ormask, uint32_t xormask) { if (ez_pass_num) { BUNNY_BUILD_PRINTF(BUNNY_BUILD_WARNING_FLAG"DOUBLE CHECK ENCODING OF E_MODIFY_GPO_BYTE \n"); } ezbuild_add_instruction(0x1E + (andmask << 8) + (ormask << 16) + (xormask << 24)); }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                                    HeartBeat opcodes

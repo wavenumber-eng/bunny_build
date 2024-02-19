@@ -1,4 +1,4 @@
-#include "ezbuild.h"
+#include "bunny_build.h"
 #include "stdio.h"
 
 uint32_t my_ezh_program[1024];
@@ -297,6 +297,44 @@ void ezh_camera_interface_builder(void)
 void main()
 {
 
+	BUNNY_BUILD_PRINTF("\033[2J");
+	BUNNY_BUILD_PRINTF("\033[?25l");
+	BUNNY_BUILD_PRINTF("\033[H");
+
+	BUNNY_BUILD_PRINTF("\r\n");
+
+	BUNNY_BUILD_PRINTF(VT100_WHITE"    *----------------------------*\r\n");
+	BUNNY_BUILD_PRINTF(VT100_WHITE"    |	     / \\                 |\r\n");
+	BUNNY_BUILD_PRINTF(VT100_WHITE"    |	    / _ \\                |\r\n");
+	BUNNY_BUILD_PRINTF(VT100_WHITE"    |	   | / \\ |               |\r\n");
+	BUNNY_BUILD_PRINTF(VT100_WHITE"    |	   ||   || _______       |\r\n");
+	BUNNY_BUILD_PRINTF(VT100_WHITE"    |	   ||   || |\\     \\      |\r\n");
+	BUNNY_BUILD_PRINTF(VT100_WHITE"    |	   ||   || ||\\     \\     |\r\n");
+	BUNNY_BUILD_PRINTF(VT100_WHITE"    |	   ||   || || \\    |     | \r\n");
+	BUNNY_BUILD_PRINTF(VT100_WHITE"    |	   ||   || ||  \\__/      |\r\n");
+	BUNNY_BUILD_PRINTF(VT100_WHITE"    |	   ||   || ||   ||       |\r\n");
+	BUNNY_BUILD_PRINTF(VT100_WHITE"    |	    \\\\_/ \\_/ \\_//        |\r\n");
+	BUNNY_BUILD_PRINTF(VT100_WHITE"    |	   /   _     _   \\       |\r\n");
+	BUNNY_BUILD_PRINTF(VT100_WHITE"    |	  /               \\      |\r\n");
+	BUNNY_BUILD_PRINTF(VT100_WHITE"    |	  |    "VT100_CYAN"O     "VT100_CYAN"O"VT100_WHITE"    |      |\r\n");
+	BUNNY_BUILD_PRINTF(VT100_WHITE"    |	  |   \\  ___  /   |      |\r\n");
+	BUNNY_BUILD_PRINTF(VT100_WHITE"    |	 /     \\ \\_/ /     \\     |\r\n");
+	BUNNY_BUILD_PRINTF(VT100_WHITE"    |	/  -----  |  -----  \\    |\r\n");
+	BUNNY_BUILD_PRINTF(VT100_WHITE"    |	|     \\__/|\\__/     |    |\r\n");
+	BUNNY_BUILD_PRINTF(VT100_WHITE"    |	\\       |_|_|       /    |\r\n");
+	BUNNY_BUILD_PRINTF(VT100_WHITE"    |	 \\_____       _____/     |\r\n");
+	BUNNY_BUILD_PRINTF(VT100_WHITE"    |	       \\     /           |\r\n");
+	BUNNY_BUILD_PRINTF(VT100_WHITE"    |	       |     |           |\r\n");
+	BUNNY_BUILD_PRINTF(VT100_WHITE"    |	       |     |           |\r\n");
+	BUNNY_BUILD_PRINTF(VT100_WHITE"    |----------------------------|\r\n");
+	BUNNY_BUILD_PRINTF(VT100_WHITE"    |        Bunny Build         |\r\n");
+	BUNNY_BUILD_PRINTF(VT100_WHITE"    |	EZH Validation Test 0.1  |\r\n");
+	BUNNY_BUILD_PRINTF(VT100_WHITE"    *----------------------------*\r\n\r\n\r\n");
+
+
+	BUNNY_BUILD_PRINTF(VT100_YELLOW"Testing bunny_build against the MCX/LPC55 camera interface generator....\r\n"VT100_DEFAULT);
+
+
 	/*
 		build camera generator example
 	*/
@@ -320,24 +358,24 @@ void main()
 	{
 		for (uint32_t i = 0; i < ez_idx; i++)
 		{
-			printf("0x%08x : 0x%08x , 0x%08x",ezh_target_memory_base_address + (4 * i),
+			BUNNY_BUILD_PRINTF("0x%08x : 0x%08x , 0x%08x",ezh_target_memory_base_address + (4 * i),
 											  my_ezh_program[i],
 											  ezh_camera_keil_reference_code[i]
 			       );
 
 			if (my_ezh_program[i] != ezh_camera_keil_reference_code[i])
 			{
-				EZBUILD_PRINTF(VT100_RED"   <<<   error here @ index %d\r\n"VT100_DEFAULT, i);
+				BUNNY_BUILD_PRINTF(VT100_RED"   <<<   error here @ index %d\r\n"VT100_DEFAULT, i);
 			}
 			else
 			{
-				EZBUILD_PRINTF("\r\n");
+				BUNNY_BUILD_PRINTF("\r\n");
 			}
 		}
 	}
 	else
 	{
-		EZBUILD_PRINTF(VT100_GREEN"ezbuild output matches the keil reference!\r\n"VT100_DEFAULT);
+		BUNNY_BUILD_PRINTF(VT100_GREEN"bunny_build output matches the keil EZH reference code for the MCX/LPC55 Camera generator code \r\n"VT100_DEFAULT);
 	}
 
 	/*
