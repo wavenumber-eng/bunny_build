@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#include "ezbuild.h"
+#include "bunny_build.h"
 
 
 
@@ -14,7 +14,7 @@
 
 uint32_t   *ez_out;
 uint32_t   ez_idx;
-ez_label_t ez_labels[EZBUILD_MAX_LABELS];
+ez_label_t ez_labels[BUNNY_BUILD_MAX_LABELS];
 uint32_t   ez_num_labels;
 uint32_t   ez_base_address;
 uint32_t   ez_pass_num = 0;
@@ -29,7 +29,7 @@ ezbuild_label_result_t ezbuild__add_label(char* label,uint32_t *resolved_address
 	ezbuild_label_result_t r = ezbuild_label__ok;
 	uint32_t Address = 0;
 
-	if (ez_num_labels >= EZBUILD_MAX_LABELS)
+	if (ez_num_labels >= BUNNY_BUILD_MAX_LABELS)
 	{
 
 		r = ezbuild_label__out_of_mem;
@@ -90,7 +90,7 @@ void ezbuild(uint32_t* ezh_prog_mem_array,
 
 	if (ezh_program == NULL)
 	{
-		EZBUILD_PRINTF(EZBUILD_ERROR_FLAG"pointer to EZH program is null.  Please pass valid ezh builder function\r\n");
+		BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"pointer to EZH program is null.  Please pass valid ezh builder function\r\n");
 		return;
 	}
 
@@ -101,8 +101,8 @@ void ezbuild(uint32_t* ezh_prog_mem_array,
 	ez_base_address = ezh_prog_mem_base_address;
 	ez_out_len = ezh_prog_mem_length;
 
-	EZBUILD_PRINTF("\r\nezbuild pass 1\r\n");
-	EZBUILD_PRINTF("----------------------------\r\n");
+	BUNNY_BUILD_PRINTF("\r\nbunny_build pass 1\r\n");
+	BUNNY_BUILD_PRINTF("----------------------------\r\n");
 
 	ezh_program();
 
@@ -110,13 +110,13 @@ void ezbuild(uint32_t* ezh_prog_mem_array,
 	ez_pass_num++;
 	ez_idx = 0;
 
-	EZBUILD_PRINTF("\r\nezbuild pass 2\r\n");
-	EZBUILD_PRINTF("----------------------------\r\n\r");
+	BUNNY_BUILD_PRINTF("\r\nbunny_build pass 2\r\n");
+	BUNNY_BUILD_PRINTF("----------------------------\r\n\r");
 
 	ezh_program();
 
-	EZBUILD_PRINTF("\r\nAll done\r\n");
-	EZBUILD_PRINTF("----------------------------\r\n\r");
+	BUNNY_BUILD_PRINTF("\r\nAll done\r\n");
+	BUNNY_BUILD_PRINTF("----------------------------\r\n\r");
 
 
 
@@ -133,7 +133,7 @@ void ezbuild_add_instruction(uint32_t instruction_encoding)
 		}
 		else
 		{
-			EZBUILD_PRINTF(EZBUILD_ERROR_FLAG"out of program memory @ index %d\r\n", ez_idx++);
+			BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"out of program memory @ index %d\r\n", ez_idx++);
 		}
 	}
 	else
