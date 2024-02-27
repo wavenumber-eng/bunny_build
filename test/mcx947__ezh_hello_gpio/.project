@@ -30,4 +30,26 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 		<nature>org.eclipse.xtext.ui.shared.xtextNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>drivers/bunny_build.c</name>
+			<type>1</type>
+			<locationURI>copy_PARENT/src/bunny_build.c</locationURI>
+		</link>
+		<link>
+			<name>drivers/bunny_build.h</name>
+			<type>1</type>
+			<locationURI>copy_PARENT/src/bunny_build.h</locationURI>
+		</link>
+	</linkedResources>
+	<variableList>
+		<variable>
+			<name>BUNNY_BUILD_LOC</name>
+			<value>file:/C:/Users/Jerry/Desktop/Wavenumber/bunny_build/bunny_build/src</value>
+		</variable>
+		<variable>
+			<name>copy_PARENT</name>
+			<value>$%7BPARENT-1-BUNNY_BUILD_LOC%7D</value>
+		</variable>
+	</variableList>
 </projectDescription>

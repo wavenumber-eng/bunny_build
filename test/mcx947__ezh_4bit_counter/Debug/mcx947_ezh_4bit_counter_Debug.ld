@@ -5,7 +5,7 @@
  * Generated linker script file for MCXN947
  * Created from linkscript.ldt by FMCreateLinkLibraries
  * Using Freemarker v2.3.30
- * MCUXpresso IDE v11.9.0 [Build 2144] [2024-01-05] on Feb 27, 2024, 2:33:07 PM
+ * MCUXpresso IDE v11.9.0 [Build 2144] [2024-01-05] on Feb 27, 2024, 4:27:42 PM
  */
 
 INCLUDE "mcx947_ezh_4bit_counter_Debug_library.ld"

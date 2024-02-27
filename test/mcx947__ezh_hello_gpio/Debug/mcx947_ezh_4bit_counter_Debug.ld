@@ -5,11 +5,11 @@
  * Generated linker script file for MCXN947
  * Created from linkscript.ldt by FMCreateLinkLibraries
  * Using Freemarker v2.3.30
- * MCUXpresso IDE v11.9.0 [Build 2144] [2024-01-05] on Feb 25, 2024, 4:07:32 PM
+ * MCUXpresso IDE v11.9.0 [Build 2144] [2024-01-05] on Feb 27, 2024, 4:36:17 PM
  */
 
-INCLUDE "ezh_hello_gpio_Debug_library.ld"
-INCLUDE "ezh_hello_gpio_Debug_memory.ld"
+INCLUDE "mcx947_ezh_4bit_counter_Debug_library.ld"
+INCLUDE "mcx947_ezh_4bit_counter_Debug_memory.ld"
 
 ENTRY(ResetISR)
 
@@ -95,7 +95,6 @@ SECTIONS
     /* USB_RAM */
     .m_usb_data (NOLOAD) :
     {
-        *(m_usb_bdt)
         *(m_usb_global)
     } > USB_RAM AT> USB_RAM
     /* DATA section for SRAMX */

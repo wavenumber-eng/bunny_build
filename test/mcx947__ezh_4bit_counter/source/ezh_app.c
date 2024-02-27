@@ -1,8 +1,9 @@
 #include <ezh_app.h>
-#include "fsl_debug_console.h"
-#include <cr_section_macros.h>
+#include <stdbool.h>
+#include <stdint.h>
 
-#include "bunny_build.h"
+#include "../../../src/bunny_build.h"
+
 
 /*******************************************************************************
  * Definitions
@@ -54,17 +55,17 @@ void ezh_4_bit_counter_app (void){
 	E_BSET_IMM(GPO, GPO, EZH_CTR_b3);
 
     E_HEART_RYTHM_IMM(37493);
-    
+
     E_LOAD_IMM(R0, 0);  // R0 has the counter value
 
 E_LABEL("COUNTER_INC_LOOP");
-    E_ADD_IMM(R0, R0, 1);               // R0 = R0 + 1   
+    E_ADD_IMM(R0, R0, 1);               // R0 = R0 + 1
     E_AND_IMM(R0, R0, 0XF);             // R0 = R0 % 0b1111
-    
+
     E_LSL(GPO, R0, 22);                 // Set output bits of counter
 
     E_BTST_IMMS(R1, GPI, EZH_FRQ_SEL);  //if(FRQ_SEL == 1) ctr_freq = 8000, else ctr_freq = 4000
-    E_COND_ADD(PO, PC, PC, 4);                    
+    E_COND_ADD(PO, PC, PC, 4);
     E_HEART_RYTHM_IMM(37500);           // ctr_freq = 8000
     E_HEART_RYTHM_IMM(18750);           // ctr_freq = 4000
 
