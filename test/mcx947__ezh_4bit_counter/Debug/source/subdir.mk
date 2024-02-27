@@ -4,19 +4,16 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../source/bunny_build.c \
 ../source/ezh_app.c \
 ../source/main.c \
 ../source/semihost_hardfault.c 
 
 C_DEPS += \
-./source/bunny_build.d \
 ./source/ezh_app.d \
 ./source/main.d \
 ./source/semihost_hardfault.d 
 
 OBJS += \
-./source/bunny_build.o \
 ./source/ezh_app.o \
 ./source/main.o \
 ./source/semihost_hardfault.o 
@@ -34,7 +31,7 @@ source/%.o: ../source/%.c source/subdir.mk
 clean: clean-source
 
 clean-source:
-	-$(RM) ./source/bunny_build.d ./source/bunny_build.o ./source/ezh_app.d ./source/ezh_app.o ./source/main.d ./source/main.o ./source/semihost_hardfault.d ./source/semihost_hardfault.o
+	-$(RM) ./source/ezh_app.d ./source/ezh_app.o ./source/main.d ./source/main.o ./source/semihost_hardfault.d ./source/semihost_hardfault.o
 
 .PHONY: clean-source
 

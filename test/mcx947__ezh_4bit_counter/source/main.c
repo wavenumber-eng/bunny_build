@@ -37,7 +37,7 @@ int main(void) {
 
     CLOCK_EnableClock(kCLOCK_Port2);
 
-    PORT_SetPinMux(PORT2, 2U, kPORT_MuxAlt7);   // counter b0  
+    PORT_SetPinMux(PORT2, 2U, kPORT_MuxAlt7);   // counter b0
     PORT_SetPinMux(PORT2, 3U, kPORT_MuxAlt7);   // counter b1
     PORT_SetPinMux(PORT2, 4U, kPORT_MuxAlt7);   // counter b2
     PORT_SetPinMux(PORT2, 5U, kPORT_MuxAlt7);   // counter b3
