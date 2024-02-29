@@ -139,6 +139,9 @@ typedef struct {
 #define BS7(c)			(c<<29)
 
 
+// Size verification mask
+#define A21_MASK	0xFFE00000
+
 //  typedef enum{ezh_trap_low = 1, ezh_trap_high = 0} trap_pol;
 // 
 //   // Config Control
@@ -173,6 +176,7 @@ typedef enum
 extern uint32_t  *ez_out;
 extern uint32_t   ez_idx;
 extern ez_label_t ez_labels[BUNNY_BUILD_MAX_LABELS];
+extern uint32_t   ez_base_address;
 extern uint32_t   ez_pass_num;
 
 
@@ -282,14 +286,216 @@ static inline void  E_INT_TRIGGER(uint32_t x24) { ezbuild_add_instruction(0x14 +
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                                       E_GOTO
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static inline void  E_GOTO(uint32_t a21)									        { ezbuild_add_instruction(0); if (ez_pass_num) { BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"E_GOTO NOT YET IMPLEMENTED\r\n");} }//__asm(".word 0x15 + (1<<9) + " #a21 "<<9")
-static inline void  E_GOTO_REG(uint32_t raddr)									    { ezbuild_add_instruction(0); if (ez_pass_num) { BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"E_GOTO_REG NOT YET IMPLEMENTED\r\n");} }//__asm(".word %c0" : : "i" (0x15  + (raddr<<14)))
-static inline void  E_GOTOL(uint32_t a21)											{ ezbuild_add_instruction(0); if (ez_pass_num) { BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"E_GOTOL NOT YET IMPLEMENTED\r\n"); } }//__asm(".word 0x15  + (1<<10) + (1<<9)  + " #a21 "<<9")
-static inline void  E_GOTO_REGL(uint32_t raddr)										{ ezbuild_add_instruction(0); if (ez_pass_num) { BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"E_GOTO_REGL NOT YET IMPLEMENTED\r\n"); } }//__asm(".word %c0" : : "i" (0x15  + (raddr<<14)+ (1<<10)))
-static inline void  E_COND_GOTO(uint32_t cond, uint32_t a21)									{ ezbuild_add_instruction(0); if (ez_pass_num) { BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"E_COND_GOTO NOT YET IMPLEMENTED\r\n"); } }//__asm(".word 0x15  +(cond<<5) + (1<<9) + " #a21 "<<9")
-static inline void  E_COND_GOTO_REG(uint32_t cond, uint32_t raddr)							{ ezbuild_add_instruction(0); if (ez_pass_num) { BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"E_COND_GOTO_REG NOT YET IMPLEMENTED\r\n"); } }//__asm(".word %c0" : : "i" (0x15  + (raddr<<14) +(cond<<5)))
-static inline void  E_COND_GOTOL(uint32_t cond, uint32_t a21)								{ ezbuild_add_instruction(0); if (ez_pass_num) { BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"E_COND_GOTOL NOT YET IMPLEMENTED\r\n");} }         //__asm(".word 0x15  + (1<<10)  +(cond<<5)  + (1<<9) + " #a21 "<<9")
-static inline void  E_COND_GOTO_REGL(uint32_t cond, uint32_t raddr)							{ ezbuild_add_instruction(0); if (ez_pass_num) { BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"E_COND_GOTO_REGL NOT YET IMPLEMENTED\r\n");} }//__asm(".word %c0" : : "i" (0x15  + (raddr<<14)+ (1<<10) +(cond<<5)))
+//#define E_GOTO(a21)			__asm(".word 0x15 + (1<<9) + " #a21 "<<9")
+static inline void  E_GOTO(char *a21)
+{ 
+	uint32_t resolved_address;
+	int32_t relative_address;
+	if (ez_pass_num == 1)
+	{
+		
+		if (ezbuild__label_get_address(a21, &resolved_address))
+		{
+			relative_address = resolved_address - ez_base_address;	//assuming E_GOTO uses relative address
+
+			if((relative_address & A21_MASK) == 0)
+			{
+				ezbuild_add_instruction(0x15 + (1<<9) + (relative_address << 9)); 
+					BUNNY_BUILD_PRINTF(BUNNY_BUILD_INFO_FLAG"E_GOTO to label "VT100_CYAN"%s"VT100_DEFAULT" will resolve to address "VT100_CYAN"0x%08x"VT100_DEFAULT" at index %d\r\n", a21, resolved_address, ez_idx);
+			}
+			else
+			{
+				BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"E_GOTO Error at index %d. label %s relative direction  %08x doesn't fit in 21bits \r\n", ez_idx, a21, relative_address);
+					ezbuild_add_instruction(0);
+			}
+		}
+		else
+		{
+			BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"E_GOTO Error at index %d. label %s was not defined \r\n", ez_idx, a21);
+				ezbuild_add_instruction(0);
+		}
+	}
+	else
+	{
+		//make sure to always add something in pass 0 so address get resolved in pass 1
+		ezbuild_add_instruction(0);
+	}
+}
+
+
+//#define E_GOTO_REG(raddr)			__asm(".word %c0" : : "i" (0x15  + (raddr<<14)))
+static inline void  E_GOTO_REG(uint32_t raddr)									    
+{ 
+	if (ez_pass_num == 1)
+	{
+		ezbuild_add_instruction(0x15 + (raddr<<14)); 
+			BUNNY_BUILD_PRINTF(BUNNY_BUILD_INFO_FLAG"E_GOTO to address in register "VT100_CYAN"%02d"VT100_DEFAULT" at index %d\r\n", raddr, ez_idx);
+	}
+	else
+	{
+		//make sure to always add something in pass 0 so address get resolved in pass 1
+		ezbuild_add_instruction(0);
+	}
+}
+
+
+//#define E_GOTOL(a21)			__asm(".word 0x15  + (1<<10) + (1<<9)  + " #a21 "<<9") , GOTO and Link
+static inline void  E_GOTOL(char *a21)											
+{ 
+	uint32_t resolved_address;
+	int32_t relative_address;
+	if (ez_pass_num == 1)
+	{
+		
+		if (ezbuild__label_get_address(a21, &resolved_address))
+		{
+			relative_address = resolved_address - ez_base_address;	//assuming E_GOTO uses relative address
+
+			if((relative_address & A21_MASK) == 0)
+			{
+				ezbuild_add_instruction(0x15 + (1<<10) + (1<<9) + (relative_address << 9)); 
+					BUNNY_BUILD_PRINTF(BUNNY_BUILD_INFO_FLAG"E_GOTOL to label "VT100_CYAN"%s"VT100_DEFAULT" will resolve to address "VT100_CYAN"0x%08x"VT100_DEFAULT" at index %d\r\n", a21, resolved_address, ez_idx);
+			}
+			else
+			{
+				BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"E_GOTOL Error at index %d. label %s relative direction  %08x doesn't fit in 21bits \r\n", ez_idx, a21, relative_address);
+					ezbuild_add_instruction(0);
+			}
+		}
+		else
+		{
+			BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"E_GOTOL Error at index %d. label %s was not defined \r\n", ez_idx, a21);
+				ezbuild_add_instruction(0);
+		}
+	}
+	else
+	{
+		//make sure to always add something in pass 0 so address get resolved in pass 1
+		ezbuild_add_instruction(0);
+	}
+}
+
+
+//#define E_GOTO_REGL(raddr)			__asm(".word %c0" : : "i" (0x15  + (raddr<<14)+ (1<<10)))
+static inline void  E_GOTO_REGL(uint32_t raddr)										
+{ 
+	if (ez_pass_num == 1)
+	{
+		ezbuild_add_instruction(0x15  + (raddr<<14) + (1<<10)); 
+			BUNNY_BUILD_PRINTF(BUNNY_BUILD_INFO_FLAG"E_GOTO to address in register "VT100_CYAN"%02d"VT100_DEFAULT" at index %d\r\n", raddr, ez_idx);
+	}
+	else
+	{
+		//make sure to always add something in pass 0 so address get resolved in pass 1
+		ezbuild_add_instruction(0);
+	}
+}
+
+
+//#define E_COND_GOTO(cond,a21)			__asm(".word 0x15  +(cond<<5) + (1<<9) + " #a21 "<<9")
+static inline void  E_COND_GOTO(uint32_t cond, char* a21)									
+{ 
+	uint32_t resolved_address;
+	int32_t relative_address;
+	if (ez_pass_num == 1)
+	{
+		
+		if (ezbuild__label_get_address(a21, &resolved_address))
+		{
+			relative_address = resolved_address - ez_base_address;	//assuming E_GOTO uses relative address
+
+			if((relative_address & A21_MASK) == 0)
+			{
+				ezbuild_add_instruction(0x15 + (cond << 5) + (1 << 9) +  (relative_address << 9)); 
+					BUNNY_BUILD_PRINTF(BUNNY_BUILD_INFO_FLAG"E_GOTOL to label "VT100_CYAN"%s"VT100_DEFAULT" will resolve to address "VT100_CYAN"0x%08x"VT100_DEFAULT" at index %d\r\n", a21, resolved_address, ez_idx);
+			}
+			else
+			{
+				BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"E_GOTOL Error at index %d. label %s relative direction  %08x doesn't fit in 21bits \r\n", ez_idx, a21, relative_address);
+					ezbuild_add_instruction(0);
+			}
+		}
+		else
+		{
+			BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"E_GOTOL Error at index %d. label %s was not defined \r\n", ez_idx, a21);
+				ezbuild_add_instruction(0);
+		}
+	}
+	else
+	{
+		//make sure to always add something in pass 0 so address get resolved in pass 1
+		ezbuild_add_instruction(0);
+	}
+}
+
+
+//#define E_COND_GOTO_REG(cond,raddr)			__asm(".word %c0" : : "i" (0x15  + (raddr<<14) +(cond<<5)))
+static inline void  E_COND_GOTO_REG(uint32_t cond, uint32_t raddr)							
+{ 
+	if (ez_pass_num == 1)
+	{
+		ezbuild_add_instruction(0x15 + (raddr<<14) + (cond << 5)); 
+			BUNNY_BUILD_PRINTF(BUNNY_BUILD_INFO_FLAG"E_GOTO to address in register "VT100_CYAN"%02d"VT100_DEFAULT" at index %d\r\n", raddr, ez_idx);
+	}
+	else
+	{
+		//make sure to always add something in pass 0 so address get resolved in pass 1
+		ezbuild_add_instruction(0);
+	}
+}
+
+
+//#define E_COND_GOTOL(cond,a21)			__asm(".word 0x15  + (1<<10)  +(cond<<5)  + (1<<9) + " #a21 "<<9")
+static inline void  E_COND_GOTOL(uint32_t cond, char* a21)								
+{ 
+	uint32_t resolved_address;
+	int32_t relative_address;
+	if (ez_pass_num == 1)
+	{
+		
+		if (ezbuild__label_get_address(a21, &resolved_address))
+		{
+			relative_address = resolved_address - ez_base_address;	//assuming E_GOTO uses relative address
+
+			if((relative_address & A21_MASK) == 0)
+			{
+				ezbuild_add_instruction(0x15 + (1<<10)  + (cond << 5) + (1 << 9) + (relative_address << 9)); 
+					BUNNY_BUILD_PRINTF(BUNNY_BUILD_INFO_FLAG"E_GOTOL to label "VT100_CYAN"%s"VT100_DEFAULT" will resolve to address "VT100_CYAN"0x%08x"VT100_DEFAULT" at index %d\r\n", a21, resolved_address, ez_idx);
+			}
+			else
+			{
+				BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"E_GOTOL Error at index %d. label %s relative direction  %08x doesn't fit in 21bits \r\n", ez_idx, a21, relative_address);
+					ezbuild_add_instruction(0);
+			}
+		}
+		else
+		{
+			BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"E_GOTOL Error at index %d. label %s was not defined \r\n", ez_idx, a21);
+				ezbuild_add_instruction(0);
+		}
+	}
+	else
+	{
+		//make sure to always add something in pass 0 so address get resolved in pass 1
+		ezbuild_add_instruction(0);
+	}
+}        
+
+
+//#define E_COND_GOTO_REGL(cond,raddr)			__asm(".word %c0" : : "i" (0x15  + (raddr<<14)+ (1<<10) +(cond<<5)))
+static inline void  E_COND_GOTO_REGL(uint32_t cond, uint32_t raddr)							
+{ 
+	if (ez_pass_num == 1)
+	{
+		ezbuild_add_instruction(0x15 + (raddr<<14) + (1<<10) + (cond << 5)); 
+			BUNNY_BUILD_PRINTF(BUNNY_BUILD_INFO_FLAG"E_GOTO to address in register "VT100_CYAN"%02d"VT100_DEFAULT" at index %d\r\n", raddr, ez_idx);
+	}
+	else
+	{
+		//make sure to always add something in pass 0 so address get resolved in pass 1
+		ezbuild_add_instruction(0);
+	}
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                                       E_MOV
