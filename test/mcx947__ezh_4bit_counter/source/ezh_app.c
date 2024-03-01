@@ -84,12 +84,10 @@ void EZH_cfgHandshake(bool _enable_handshake, bool _enable_event){
 
 void EZH_Init(void *pPara){
 
-    ezbuild(&my_ezh_program[0],
-                sizeof(my_ezh_program),
-				0x04000000, //start address of for_ezh_ram
-                ezh_4_bit_counter_app
-                );
-
+    bunny_build(&my_ezh_program[0],
+    	                sizeof(my_ezh_program),
+						ezh_4_bit_counter_app
+    	                );
 
 	MCX_EZH_ARCH_B0->EZHB_CTRL |= (0xC0DE0000 | (1<<EZHB_ENABLE_GPISYNCH));
     MCX_EZH_ARCH_B0->EZHB_ARM2EZH = (uint32_t)pPara;

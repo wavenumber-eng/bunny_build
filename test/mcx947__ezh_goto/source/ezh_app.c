@@ -184,7 +184,7 @@ E_LABEL("END");
 
 // This application test E_COND_GOTO_REGL
 // If the input number is odd write the word "odd" in the shared buffer, else write the word "even"
-#define N3  9
+#define N3  25
 void ezh_even_or_odd_app2(){
     E_NOP();
     E_PER_READ(R6, ARM2EZH);            // Peripheral Read
@@ -238,12 +238,15 @@ void EZH_cfgHandshake(bool _enable_handshake, bool _enable_event){
 
 void EZH_Init(void *pPara){
 
-    ezbuild(&my_ezh_program[0],
-                sizeof(my_ezh_program),
-				0x04000000, //start address of for_ezh_ram
-                ezh_even_or_odd_app2
-                );
-
+    //bunny_build__relocate(&my_ezh_program[0],
+    //            sizeof(my_ezh_program),
+	//			(uint32_t)my_ezh_program, //start address of for_ezh_ram
+    //            ezh_even_or_odd_app2
+    //            );
+	bunny_build(&my_ezh_program[0],
+	                sizeof(my_ezh_program),
+	                ezh_even_or_odd_app2
+	                );
 
 	MCX_EZH_ARCH_B0->EZHB_CTRL |= (0xC0DE0000 | (1<<EZHB_ENABLE_GPISYNCH));
     MCX_EZH_ARCH_B0->EZHB_ARM2EZH = (uint32_t)pPara;

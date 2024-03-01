@@ -12,48 +12,48 @@
 
 
 
-uint32_t   *ez_out;
-uint32_t   ez_idx;
-ez_label_t ez_labels[BUNNY_BUILD_MAX_LABELS];
-uint32_t   ez_num_labels;
-uint32_t   ez_base_address;
-uint32_t   ez_pass_num = 0;
-uint32_t   ez_out_len = 0;
+uint32_t   *bunny_build__out;
+uint32_t   bunny_build__idx;
+bunny_build__label_t bunny_build__labels[BUNNY_BUILD_MAX_LABELS];
+uint32_t   bunny_build__num_labels;
+uint32_t   bunny_build__base_address;
+uint32_t   bunny_build__pass_num = 0;
+uint32_t   bunny_build__out_len = 0;
 
 /*
-	Adds a label to the ezbuild storage.  Also checks if already exists
+	Adds a label to the bunny_build storage.  Also checks if already exists
 */
 
-ezbuild_label_result_t ezbuild__add_label(char* label,uint32_t *resolved_address)
+bunny_build_label__result_t bunny_build__add_label(char* label,uint32_t *resolved_address)
 {
-	ezbuild_label_result_t r = ezbuild_label__ok;
+	bunny_build_label__result_t r = bunny_build_label__ok;
 	uint32_t Address = 0;
 
-	if (ez_num_labels >= BUNNY_BUILD_MAX_LABELS)
+	if (bunny_build__num_labels >= BUNNY_BUILD_MAX_LABELS)
 	{
 
-		r = ezbuild_label__out_of_mem;
+		r = bunny_build_label__out_of_mem;
 	}
 	else
 	{
-		if (ezbuild__label_get_address(label, &Address) == false)
+		if (bunny_build__label_get_address(label, &Address) == false)
 		{
 
-			ez_labels[ez_num_labels].address = ez_base_address + (ez_idx * 4);
-			ez_labels[ez_num_labels].label = label;
+			bunny_build__labels[bunny_build__num_labels].address = bunny_build__base_address + (bunny_build__idx * 4);
+			bunny_build__labels[bunny_build__num_labels].label = label;
 
 			if (resolved_address != NULL)
 			{
-				*resolved_address = ez_labels[ez_num_labels].address;
+				*resolved_address = bunny_build__labels[bunny_build__num_labels].address;
 			}
 
-			ez_num_labels++;
+			bunny_build__num_labels++;
 
-			r = ezbuild_label__ok;
+			r = bunny_build_label__ok;
 		}
 		else
 		{
-			r = ezbuild_label__exists;
+			r = bunny_build_label__exists;
 		}
 	}
 
@@ -61,15 +61,15 @@ ezbuild_label_result_t ezbuild__add_label(char* label,uint32_t *resolved_address
 }
 
 
-bool ezbuild__label_get_address(char* label, uint32_t *Address)
+bool bunny_build__label_get_address(char* label, uint32_t *Address)
 {
-	for (uint32_t i = 0; i < ez_num_labels; i++)
+	for (uint32_t i = 0; i < bunny_build__num_labels; i++)
 	{
-		if (ez_labels[i].label != NULL)
+		if (bunny_build__labels[i].label != NULL)
 		{
-			if (strcmp(label, ez_labels[i].label) == 0)
+			if (strcmp(label, bunny_build__labels[i].label) == 0)
 			{
-				*Address = ez_labels[i].address;
+				*Address = bunny_build__labels[i].address;
 
 				return true;
 			}
@@ -82,7 +82,7 @@ bool ezbuild__label_get_address(char* label, uint32_t *Address)
 
 
 
-void ezbuild(uint32_t* ezh_prog_mem_array,
+void bunny_build__relocate(uint32_t* ezh_prog_mem_array,
 			 uint32_t ezh_prog_mem_length, 
 	         uint32_t ezh_prog_mem_base_address,
 			 void(*ezh_program)(void))
@@ -94,12 +94,12 @@ void ezbuild(uint32_t* ezh_prog_mem_array,
 		return;
 	}
 
-	ez_out = ezh_prog_mem_array;
-	ez_idx = 0;
-	ez_pass_num = 0;
-	ez_num_labels = 0;
-	ez_base_address = ezh_prog_mem_base_address;
-	ez_out_len = ezh_prog_mem_length;
+	bunny_build__out = ezh_prog_mem_array;
+	bunny_build__idx = 0;
+	bunny_build__pass_num = 0;
+	bunny_build__num_labels = 0;
+	bunny_build__base_address = ezh_prog_mem_base_address;
+	bunny_build__out_len = ezh_prog_mem_length;
 
 	BUNNY_BUILD_PRINTF("\r\nbunny_build pass 1\r\n");
 	BUNNY_BUILD_PRINTF("----------------------------\r\n");
@@ -107,8 +107,8 @@ void ezbuild(uint32_t* ezh_prog_mem_array,
 	ezh_program();
 
 
-	ez_pass_num++;
-	ez_idx = 0;
+	bunny_build__pass_num++;
+	bunny_build__idx = 0;
 
 	BUNNY_BUILD_PRINTF("\r\nbunny_build pass 2\r\n");
 	BUNNY_BUILD_PRINTF("----------------------------\r\n\r");
@@ -118,26 +118,35 @@ void ezbuild(uint32_t* ezh_prog_mem_array,
 	BUNNY_BUILD_PRINTF("\r\nAll done\r\n");
 	BUNNY_BUILD_PRINTF("----------------------------\r\n\r");
 
-
-
 }
 
-void ezbuild_add_instruction(uint32_t instruction_encoding)
+void bunny_build(uint32_t* ezh_prog_mem_array,
+			 uint32_t ezh_prog_mem_length, 
+			 void(*ezh_program)(void))
 {
-	if (ez_pass_num == 1)
+	bunny_build__relocate(ezh_prog_mem_array,
+		ezh_prog_mem_length,
+		(uint32_t)(&ezh_prog_mem_array), 
+		ezh_program
+	);
+}
+
+void bunny_build__add_instruction(uint32_t instruction_encoding)
+{
+	if (bunny_build__pass_num == 1)
 	{
-		if (ez_idx < ez_out_len)
+		if (bunny_build__idx < bunny_build__out_len)
 		{
-			ez_out[ez_idx] = instruction_encoding;
-			ez_idx++;
+			bunny_build__out[bunny_build__idx] = instruction_encoding;
+			bunny_build__idx++;
 		}
 		else
 		{
-			BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"out of program memory @ index %d\r\n", ez_idx++);
+			BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"out of program memory @ index %d\r\n", bunny_build__idx++);
 		}
 	}
 	else
 	{
-		ez_idx++;
+		bunny_build__idx++;
 	}
 }
