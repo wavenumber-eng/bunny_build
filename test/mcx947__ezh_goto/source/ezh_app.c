@@ -245,7 +245,7 @@ void EZH_Init(void *pPara){
     //            );
 	bunny_build(&my_ezh_program[0],
 	                sizeof(my_ezh_program),
-	                ezh_even_or_odd_app2
+					ezh_4_bit_counter_up_app
 	                );
 
 	MCX_EZH_ARCH_B0->EZHB_CTRL |= (0xC0DE0000 | (1<<EZHB_ENABLE_GPISYNCH));
