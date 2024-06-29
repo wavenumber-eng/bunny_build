@@ -10,7 +10,7 @@ set(APP_SOURCE
 
 add_executable(bunny_build  ${APP_SOURCE})
 
-target_compile_definitions(bunny_build PUBLIC  SIMULATOR=1)
+target_compile_definitions(bunny_build PUBLIC)
 
 target_include_directories(bunny_build PUBLIC "${CMAKE_SOURCE_DIR}/../../src")
      

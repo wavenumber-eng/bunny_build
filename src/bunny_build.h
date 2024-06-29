@@ -204,13 +204,15 @@ bool bunny_build__label_get_address(char* label, uint32_t* Address);
 		This was provided so we could run on a PC where the prog_mem_array will be somewhere else
 	Pass the length of the program memory array.
 	Pass a pointer to the builder function
+
+	returns to the total number of words assembled
 	*/
-extern void bunny_build__relocate(uint32_t* ezh_prog_mem_array,
+extern uint32_t bunny_build__relocate(uint32_t* ezh_prog_mem_array,
 	uint32_t ezh_prog_mem_length,
 	uint32_t ezh_prog_mem_base_address,
 	void(*ezh_program)(void));
 
-extern void bunny_build(uint32_t* ezh_prog_mem_array,
+extern uint32_t bunny_build(uint32_t* ezh_prog_mem_array,
 	uint32_t ezh_prog_mem_length,
 	void(*ezh_program)(void));
 
