@@ -82,7 +82,7 @@ bool bunny_build__label_get_address(char* label, uint32_t *Address)
 
 
 
-void bunny_build__relocate(uint32_t* ezh_prog_mem_array,
+uint32_t bunny_build__relocate(uint32_t* ezh_prog_mem_array,
 			 uint32_t ezh_prog_mem_length, 
 	         uint32_t ezh_prog_mem_base_address,
 			 void(*ezh_program)(void))
@@ -118,9 +118,11 @@ void bunny_build__relocate(uint32_t* ezh_prog_mem_array,
 	BUNNY_BUILD_PRINTF("\r\nAll done\r\n");
 	BUNNY_BUILD_PRINTF("----------------------------\r\n\r");
 
+	return bunny_build__idx;
+
 }
 
-void bunny_build(uint32_t* ezh_prog_mem_array,
+uint32_t bunny_build(uint32_t* ezh_prog_mem_array,
 			 uint32_t ezh_prog_mem_length, 
 			 void(*ezh_program)(void))
 {

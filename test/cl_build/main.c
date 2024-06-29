@@ -340,13 +340,13 @@ void main()
 	*/
 
 	uint32_t ezh_target_memory_base_address = 0x20067000;
+		
 
-	
-	ezbuild(&my_ezh_program[0],
-		    sizeof(my_ezh_program), 
-			ezh_target_memory_base_address,  //location of the camera interface code on the target
-			ezh_camera_interface_builder
-			);
+	uint32_t ez_idx = bunny_build__relocate(&my_ezh_program[0],
+											sizeof(my_ezh_program), 
+											ezh_target_memory_base_address,  //location of the camera interface code on the target
+											ezh_camera_interface_builder
+											);
 
 
 
