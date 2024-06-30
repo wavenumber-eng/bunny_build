@@ -24,6 +24,48 @@
 #include <string.h>
 #include <stdlib.h>
 
+
+		
+#define LPC_EZH_ARCH_B_BOOT_OFFSET			(0x20)
+
+#define LPC_EZH_ARCH_B_CON_BASE__LPC556x	(0x4001D000 + LPC_EZH_ARCH_B_BOOT_OFFSET)
+#define LPC_EZH_ARCH_B_CON_BASE__LPC552x	(0x4001D000 + LPC_EZH_ARCH_B_BOOT_OFFSET)
+#define LPC_EZH_ARCH_B_CON_BASE__LPC553x	(0x4001D000 + LPC_EZH_ARCH_B_BOOT_OFFSET)
+
+#define LPC_EZH_ARCH_B_CON_BASE__LPC51U68	(0x4001D000 + LPC_EZH_ARCH_B_BOOT_OFFSET)
+#define LPC_EZH_ARCH_B_CON_BASE__LPC54114	(0x4001D000 + LPC_EZH_ARCH_B_BOOT_OFFSET)
+#define LPC_EZH_ARCH_B_CON_BASE__LPC5410x 	(0x4004C000 + LPC_EZH_ARCH_B_BOOT_OFFSET)
+
+#define LPC_EZH_ARCH_B_CON_BASE__IMXRT500	(0x40027000 + LPC_EZH_ARCH_B_BOOT_OFFSET)
+#define LPC_EZH_ARCH_B_CON_BASE__MCX		(0x40033000 + LPC_EZH_ARCH_B_BOOT_OFFSET)
+
+
+#ifndef LPC_EZH_ARCH_B_CON_BASE
+	#define LPC_EZH_ARCH_B_CON_BASE		LPC_EZH_ARCH_B_CON_BASE__MCX
+#endif
+
+#ifndef ARM2EZH
+	#define ARM2EZH						(LPC_EZH_ARCH_B_CON_BASE   + 0x20)	
+#endif
+
+#ifndef EZH2ARM
+	#define EZH2ARM						(LPC_EZH_ARCH_B_CON_BASE   + 0x24)
+#endif
+
+#ifndef EZHBREAKADDR
+	#define EZHBREAKADDR				(LPC_EZH_ARCH_B_CON_BASE   + 0x10)
+#endif
+
+#ifndef EZHBREAKVECT
+	#define EZHBREAKVECT				(LPC_EZH_ARCH_B_CON_BASE   + 0x14)
+#endif
+
+#ifndef LPC_EZH_ARCH_B0
+	#define LPC_EZH_ARCH_B0             ((EZH_ARCH_B_CON_Type *)     LPC_EZH_ARCH_B_CON_BASE)
+#endif
+
+
+
 #ifdef __cplusplus
 #define   __I     volatile             /*!< Defines 'read only' permissions */
 #else
@@ -140,15 +182,8 @@ typedef struct {
 
 
 // Size verification mask
-#define A21_MASK	0xFFE00000
 
-//  typedef enum{ezh_trap_low = 1, ezh_trap_high = 0} trap_pol;
-// 
-//   // Config Control
-//  
-//  void EZH_init(void); 
-//  void EZH_boot(void * pProgram);
-//  void EZH_cfgHandshake     (bool     enable_handshake, bool enable_event);
+#define A21_MASK	0xFFE00000
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -190,7 +225,7 @@ bunny_build_label__result_t bunny_build__add_label(char* label, uint32_t* resolv
 
 
 /*
-	Returns true if label exists and stuffs it the Address pointer location
+	Returns true if label exists and stuffs it in the address pointer location
 	returns false if we haven't seen this label.
 */
 
@@ -198,6 +233,9 @@ bool bunny_build__label_get_address(char* label, uint32_t* Address);
 
 
 /*
+
+	This function is intended to be used on a host environment relocate the base address of the program
+
 	Pass a pointer of where to store ezh program
 	Pass a base address of where the program will live.
 		If running on the target, this should be the same address of the target memory.
@@ -207,21 +245,26 @@ bool bunny_build__label_get_address(char* label, uint32_t* Address);
 
 	returns to the total number of words assembled
 	*/
+
 extern uint32_t bunny_build__relocate(uint32_t* ezh_prog_mem_array,
 	uint32_t ezh_prog_mem_length,
 	uint32_t ezh_prog_mem_base_address,
 	void(*ezh_program)(void));
 
+/*
+	This function is intended to be used on the target where it is 
+	assumed that the address of ezh_prog_mem_array is exactly where you want the binary
+*/
+
 extern uint32_t bunny_build(uint32_t* ezh_prog_mem_array,
-	uint32_t ezh_prog_mem_length,
-	void(*ezh_program)(void));
+							uint32_t ezh_prog_mem_length,
+							void(*ezh_program)(void));
 
 
 /*
 	This handles storing the encoded value
 */
 extern void bunny_build__add_instruction(uint32_t instruction_encoding);
-
 
 static inline void E_LABEL(char* label)
 {
@@ -285,7 +328,9 @@ static inline void  E_GOSUB(char *a30)
 	}
 }
 
-static inline void  E_NOP() { bunny_build__add_instruction(0x12); }
+#define E_NOP			bunny_build__add_instruction(0x12);
+
+//static inline void  E_NOP() { ; }
 
 static inline void  E_INT_TRIGGER(uint32_t x24) { bunny_build__add_instruction(0x14 + (x24 << 8)); }
 
