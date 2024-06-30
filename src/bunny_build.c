@@ -88,7 +88,7 @@ uint32_t bunny_build__relocate(uint32_t* ezh_prog_mem_array,
 	if (ezh_program == NULL)
 	{
 		BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"pointer to EZH program is null.  Please pass valid ezh builder function\r\n");
-		return;
+		return 0;
 	}
 
 	bunny_build__out = ezh_prog_mem_array;
