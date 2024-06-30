@@ -11,7 +11,6 @@
 #endif // !NULL
 
 
-
 uint32_t   *bunny_build__out;
 uint32_t   bunny_build__idx;
 bunny_build__label_t bunny_build__labels[BUNNY_BUILD_MAX_LABELS];
@@ -80,8 +79,6 @@ bool bunny_build__label_get_address(char* label, uint32_t *Address)
 }
 
 
-
-
 uint32_t bunny_build__relocate(uint32_t* ezh_prog_mem_array,
 			 uint32_t ezh_prog_mem_length, 
 	         uint32_t ezh_prog_mem_base_address,
@@ -128,7 +125,7 @@ uint32_t bunny_build(uint32_t* ezh_prog_mem_array,
 {
 	bunny_build__relocate(ezh_prog_mem_array,
 		ezh_prog_mem_length,
-		(uint32_t)(&ezh_prog_mem_array), 
+		(uint32_t)(ezh_prog_mem_array), 
 		ezh_program
 	);
 }

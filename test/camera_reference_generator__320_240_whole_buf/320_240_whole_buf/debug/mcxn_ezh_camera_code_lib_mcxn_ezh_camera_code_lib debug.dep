@@ -1,0 +1,25 @@
+Dependencies for Project 'mcxn_ezh_camera_code_lib', Target 'mcxn_ezh_camera_code_lib debug': (DO NOT MODIFY !)
+CompilerVersion: 6190000::V6.19::ARMCLANG
+F (doc/readme.txt)(0x661412A0)()
+F (.\source\ezh_camera.c)(0x66156A2A)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m33 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__EVAL -D__MICROLIB -gdwarf-4 -O1 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I board -I CMSIS -I component/lists -I component/uart -I device -I drivers -I mcxn9xxbrk/demo_apps/hello_world/cm33_core0 -I utilities -fno-common -fdata-sections -ffreestanding -fno-builtin -mthumb-I-D__UVISION_VERSION="538" -DDEBUG -DCPU_MCXN947VDF_cm33_core0 -DPRINTF_FLOAT_ENABLE="0" -DSCANF_FLOAT_ENABLE="0" -DPRINTF_ADVANCED_ENABLE="0" -DSCANF_ADVANCED_ENABLE="0" -DMCUXPRESSO_SDK-o debug/ezh_camera.o -MD)
+I (source\fsl_ezh_armclang.h)(0x661412A0)
+I (C:\Keil_v5\ARM\ARMCLANG\include\assert.h)(0x6388FFD8)
+I (C:\Keil_v5\ARM\ARMCLANG\include\stdbool.h)(0x6388FFD8)
+I (C:\Keil_v5\ARM\ARMCLANG\include\stdint.h)(0x6388FFD8)
+I (C:\Keil_v5\ARM\ARMCLANG\include\string.h)(0x6388FFD8)
+I (C:\Keil_v5\ARM\ARMCLANG\include\stdlib.h)(0x6388FFD8)
+I (source\ezh_camera.h)(0x661412A0)
+F (.\source\ezh_camera.h)(0x661412A0)()
+F (.\source\fsl_ezh_armclang.h)(0x661412A0)()
+F (.\startup\startup_MCXN947_cm33_core0.S)(0x661412A0)(--target=arm-arm-none-eabi -mcpu=cortex-m33 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -masm=gnu -c-gdwarf-4 -D__MICROLIB -D__EVAL-I-D__UVISION_VERSION=538 -DCPU_LPC55S69JBD100_cm33_core0 -DDEBUG -DKEIL -DDEBUG-o debug/startup_mcxn947_cm33_core0.o)
+F (.\device\system_MCXN947_cm33_core0.c)(0x661412A0)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m33 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__EVAL -D__MICROLIB -gdwarf-4 -O1 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I board -I CMSIS -I component/lists -I component/uart -I device -I drivers -I mcxn9xxbrk/demo_apps/hello_world/cm33_core0 -I utilities -fno-common -fdata-sections -ffreestanding -fno-builtin -mthumb-I-D__UVISION_VERSION="538" -DDEBUG -DCPU_MCXN947VDF_cm33_core0 -DPRINTF_FLOAT_ENABLE="0" -DSCANF_FLOAT_ENABLE="0" -DPRINTF_ADVANCED_ENABLE="0" -DSCANF_ADVANCED_ENABLE="0" -DMCUXPRESSO_SDK-o debug/system_mcxn947_cm33_core0.o -MD)
+I (C:\Keil_v5\ARM\ARMCLANG\include\stdint.h)(0x6388FFD8)
+I (device\fsl_device_registers.h)(0x661412A0)
+I (device\MCXN947_cm33_core0.h)(0x661412A0)
+I (CMSIS\core_cm33.h)(0x661412A0)
+I (CMSIS\cmsis_version.h)(0x661412A0)
+I (CMSIS\cmsis_compiler.h)(0x661412A0)
+I (CMSIS\cmsis_armclang.h)(0x661412A0)
+I (CMSIS\mpu_armv8.h)(0x661412A0)
+I (device\system_MCXN947_cm33_core0.h)(0x661412A0)
+I (device\MCXN947_cm33_core0_features.h)(0x661412A0)

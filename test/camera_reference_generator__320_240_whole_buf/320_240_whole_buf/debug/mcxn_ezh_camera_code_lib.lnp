@@ -1,0 +1,8 @@
+--cpu=Cortex-M33
+"debug\ezh_camera.o"
+"debug\startup_mcxn947_cm33_core0.o"
+"debug\system_mcxn947_cm33_core0.o"
+--library_type=microlib --diag_suppress 6314 --strict --scatter "MCXN947/arm/MCXN947_cm33_core0_flash.scf"
+--remove --entry=Reset_Handler --remove --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list ".\Listings\mcxn_ezh_camera_code_lib.map" -o debug\mcxn_ezh_camera_code_lib.out
