@@ -108,12 +108,12 @@ uint32_t bunny_build__relocate(uint32_t* ezh_prog_mem_array,
 	bunny_build__idx = 0;
 
 	BUNNY_BUILD_PRINTF("\r\nbunny_build pass 2\r\n");
-	BUNNY_BUILD_PRINTF("----------------------------\r\n\r");
+	BUNNY_BUILD_PRINTF("----------------------------\r\n");
 
 	ezh_program();
 
 	BUNNY_BUILD_PRINTF("\r\nAll done\r\n");
-	BUNNY_BUILD_PRINTF("----------------------------\r\n\r");
+	BUNNY_BUILD_PRINTF("----------------------------\r\n");
 
 	return bunny_build__idx;
 
