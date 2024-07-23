@@ -1,9 +1,50 @@
+
 #include "bunny_build__config.h"
 
 
 #ifndef _BUNNY_BUILD_H_
 #define _BUNNY_BUILD_H_
 
+
+#ifndef VT100_ESC
+    #define VT100_ESC                  "\x1b"
+#endif
+
+#ifndef VT100_CSI
+#define VT100_CSI                  "\x1b["
+#endif
+
+#ifndef VT100_RED
+#define VT100_RED                  VT100_CSI"31;40m"
+#endif
+
+#ifndef VT100_GREEN
+#define VT100_GREEN                VT100_CSI"32;40m"
+#endif
+
+#ifndef VT100_YELLOW
+#define VT100_YELLOW               VT100_CSI"33;40m"
+#endif
+
+#ifndef VT100_BLUE
+#define VT100_BLUE                 VT100_CSI"34;40m"
+#endif
+
+#ifndef VT100_MAGENTA
+#define VT100_MAGENTA              VT100_CSI"35;40m"
+#endif
+
+#ifndef VT100_CYAN
+#define VT100_CYAN                 VT100_CSI"36;40m"
+#endif
+
+#ifndef VT100_WHITE
+#define VT100_WHITE                VT100_CSI"37;40m"
+#endif
+
+#ifndef VT100_DEFAULT
+#define VT100_DEFAULT              VT100_WHITE
+#endif
 
 
 #include <assert.h>
@@ -33,7 +74,7 @@
 #endif
 
 #ifndef ARM2EZH
-	#define ARM2EZH						(LPC_EZH_ARCH_B_CON_BASE   + 0x20)	
+	#define ARM2EZH						(LPC_EZH_ARCH_B_CON_BASE   + 0x20)
 #endif
 
 #ifndef EZH2ARM
