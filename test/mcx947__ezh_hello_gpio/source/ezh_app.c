@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "../../../src/bunny_build.h"
+#include "../../src/bunny_build.h"
 
 
 /*******************************************************************************
