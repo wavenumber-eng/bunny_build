@@ -5,18 +5,15 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "fsl_debug_console.h"
-#include "bunny_build__targets.h"
+
 
 #ifndef _BUNNY_BUILD_CONF_H
 #define _BUNNY_BUILD_CONF_H
 
-#define LPC_EZH_ARCH_B_CON_BASE 			LPC_EZH_ARCH_B_CON_BASE__LPC556x
+#define LPC_EZH_ARCH_B_CON_BASE		LPC_EZH_ARCH_B_CON_BASE__MCX
 
-
-#define BUNNY_BUILD_PRINTF					 PRINTF
+#define BUNNY_BUILD_PRINTF(...)			     printf(__VA_ARGS__)
 #define BUNNY_BUILD_MAX_LABELS				 32
-
 
 /*
 	Output formatting for printf messages

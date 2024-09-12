@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>lpc55s69_hello_gpio</name>
+	<name>lpc55s69_hello_ezh_gpio</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -28,7 +28,23 @@
 		<link>
 			<name>source/bunny_build.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/bunny_build.c</locationURI>
+			<locationURI>copy_PARENT/src/bunny_build.c</locationURI>
+		</link>
+		<link>
+			<name>source/ezh_init.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/ezh_init.c</locationURI>
+		</link>
+		<link>
+			<name>source/ezh_init.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/ezh_init.h</locationURI>
 		</link>
 	</linkedResources>
+	<variableList>
+		<variable>
+			<name>copy_PARENT</name>
+			<value>$%7BPARENT-3-ECLIPSE_HOME%7D/ELI/projects/wavenumber/bunny_build</value>
+		</variable>
+	</variableList>
 </projectDescription>
