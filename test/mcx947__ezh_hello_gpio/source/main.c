@@ -6,18 +6,27 @@
 #include "fsl_port.h"
 #include "pin_mux.h"
 #include "fsl_debug_console.h"
+
+#include "bunny_build.h"
+#include "ezh_init.h"
 #include "ezh_app.h"
 
-
-uint32_t stack[1];
-EZHPWM_Para para;
-uint32_t EZH_DEBUGREG[5];
+#include "cr_section_macros.h"
 
 
+uint32_t ezh_stack[16];
+EZHPWM_Para ezh_parameters;
+uint32_t ezh_debug_params[5];
+__DATA(SRAMX) uint32_t  my_ezh_program[128];
+
+uint32_t test_val;
 
 void SMARTDMA_DriverIRQHandler()
 {
 	EZH_SetExternalFlag(1) ;
+
+	test_val = LPC_EZH_ARCH_B0->EZHB_EZH2ARM;
+
 	EZH_SetExternalFlag(0) ;
 }
 
@@ -37,35 +46,32 @@ int main(void) {
 
     CLOCK_EnableClock(kCLOCK_Port2);
 
-    PORT_SetPinMux(PORT2, 2U, kPORT_MuxAlt7);   // counter b0
-    PORT_SetPinMux(PORT2, 3U, kPORT_MuxAlt7);   // counter b1
     PORT_SetPinMux(PORT2, 4U, kPORT_MuxAlt7);   // counter b2
-    PORT_SetPinMux(PORT2, 5U, kPORT_MuxAlt7);   // counter b3
-
-	EZH_SetExternalFlag(0) ;
 
     RESET_PeripheralReset(kSMART_DMA_RST_SHIFT_RSTn);
     CLOCK_EnableClock(kCLOCK_Smartdma);
 
+	bunny_build(&my_ezh_program[0],
+	    	    sizeof(my_ezh_program),
+				ezh_app
+				);
 
+	//EZH_SetExternalFlag(0) ;
 	DisableIRQ(SMARTDMA_IRQn);            // EZH irq NUMBER 30
 
-    para.coprocessor_stack = (void *)stack;
-	para.p_buffer =  (uint32_t *)EZH_DEBUGREG;
+	ezh_parameters.coprocessor_stack = (void *)ezh_stack;
+	ezh_parameters.p_buffer =  (uint32_t *)ezh_debug_params;
 
-    EZH_Init(&para);					       //EZH initialisation
-	EZH_Start();				  			   //start EZH
-
+    EZH_Init(&ezh_parameters);		 //EZH initialization
 
 
-    /* Force the counter to be placed into memory. */
-    volatile static int i = 0 ;
-    /* Enter an infinite loop, just incrementing a counter. */
+
+    EZH_boot(my_ezh_program);	    //start EZH
+
+	EnableIRQ(SMARTDMA_IRQn);            // EZH irq NUMBER 30
+
+
     while(1) {
-        i++ ;
-        /* 'Dummy' NOP to allow source level single stepping of
-            tight while() loop */
-        __asm volatile ("nop");
     }
     return 0 ;
 }

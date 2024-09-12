@@ -123,11 +123,12 @@ uint32_t bunny_build(uint32_t* ezh_prog_mem_array,
 			 uint32_t ezh_prog_mem_length, 
 			 void(*ezh_program)(void))
 {
-	bunny_build__relocate(ezh_prog_mem_array,
+	return bunny_build__relocate(ezh_prog_mem_array,
 		ezh_prog_mem_length,
 		(uint32_t)(ezh_prog_mem_array), 
 		ezh_program
 	);
+
 }
 
 void bunny_build__add_instruction(uint32_t instruction_encoding)
