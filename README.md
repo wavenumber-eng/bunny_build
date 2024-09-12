@@ -1,4 +1,5 @@
  # bunny_build
+ 
 
          / \
         / _ \
@@ -47,13 +48,14 @@ and....  It will be used on the MCX947 BunnyBrain board.
 
 ## Current state
 
-- bunny_build can currently recreate the EZH/SmartDMA "Camera Generator".  The camera generator code was for the MCX (and LPC55).  bunny_build can input the same code and generator the samy binary blob.  We need more test cases and to validate that all instructions are generated correctly.
+- bunny_build can currently recreate the EZH/SmartDMA "Camera Generator".  The camera generator code was for the MCX (and LPC55).  bunny_build can input the same code and generate the same binary blob.  We need more test cases and to validate that all instructions are generated correctly.
 
-- there are a few simple IO output tests cases to demonstrate simple programs
+- There are a few simple IO output tests cases to demonstrate simple programs
 
-- we have some goto etst cases that all appear to function well.  (this was an issue from the previoud macro approach)
+- we have some goto etst cases that all appear to function well.  (this was an issue from the previous macro approach)
 
-Test Cases Needed
+Test Cases Needed:
+
 - A program that use zero overhead loops.
 
 ## Building the Validator.
