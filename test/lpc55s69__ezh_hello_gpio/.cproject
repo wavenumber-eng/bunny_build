@@ -287,7 +287,7 @@
 								<option id="com.crt.advproject.link.gcc.lto.251538736" name="Enable Link-time optimization (-flto)" superClass="com.crt.advproject.link.gcc.lto"/>
 								<option id="com.crt.advproject.link.gcc.lto.optmization.level.1092828295" name="Link-time optimization level" superClass="com.crt.advproject.link.gcc.lto.optmization.level"/>
 								<option id="com.crt.advproject.link.manage.1782775100" name="Manage linker script" superClass="com.crt.advproject.link.manage" value="true" valueType="boolean"/>
-								<option id="com.crt.advproject.link.script.696567231" name="Linker script" superClass="com.crt.advproject.link.script" value="lpc55s69_hello_gpio_Debug.ld" valueType="string"/>
+								<option id="com.crt.advproject.link.script.696567231" name="Linker script" superClass="com.crt.advproject.link.script" value="lpc55s69_hello_ezh_gpio_Debug.ld" valueType="string"/>
 								<option id="com.crt.advproject.link.scriptdir.872740561" name="Script path" superClass="com.crt.advproject.link.scriptdir"/>
 								<option id="com.crt.advproject.link.crpenable.952013490" name="Enable automatic placement of Code Read Protection field in image" superClass="com.crt.advproject.link.crpenable"/>
 								<option id="com.crt.advproject.link.flashconfigenable.1935968665" name="Enable automatic placement of Flash Configuration field in image" superClass="com.crt.advproject.link.flashconfigenable" value="true" valueType="boolean"/>
@@ -609,7 +609,7 @@
 								<option id="com.crt.advproject.link.gcc.lto.optmization.level.211948951" name="Link-time optimization level" superClass="com.crt.advproject.link.gcc.lto.optmization.level"/>
 								<option id="com.crt.advproject.link.fpu.1886785299" name="Floating point" superClass="com.crt.advproject.link.fpu" value="com.crt.advproject.link.fpu.fpv5sp.hard" valueType="enumerated"/>
 								<option id="com.crt.advproject.link.manage.1123254400" name="Manage linker script" superClass="com.crt.advproject.link.manage" value="true" valueType="boolean"/>
-								<option id="com.crt.advproject.link.script.1572485887" name="Linker script" superClass="com.crt.advproject.link.script" value="lpc55s69_hello_gpio_Release.ld" valueType="string"/>
+								<option id="com.crt.advproject.link.script.1572485887" name="Linker script" superClass="com.crt.advproject.link.script" value="lpc55s69_hello_ezh_gpio_Release.ld" valueType="string"/>
 								<option id="com.crt.advproject.link.scriptdir.39482044" name="Script path" superClass="com.crt.advproject.link.scriptdir"/>
 								<option id="com.crt.advproject.link.crpenable.1036434204" name="Enable automatic placement of Code Read Protection field in image" superClass="com.crt.advproject.link.crpenable"/>
 								<option id="com.crt.advproject.link.flashconfigenable.144111651" name="Enable automatic placement of Flash Configuration field in image" superClass="com.crt.advproject.link.flashconfigenable" value="true" valueType="boolean"/>

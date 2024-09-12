@@ -32,14 +32,19 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>drivers/bunny_build.c</name>
+			<name>source/bunny_build.c</name>
 			<type>1</type>
-			<locationURI>copy_PARENT/src/bunny_build.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/src/bunny_build.c</locationURI>
 		</link>
 		<link>
-			<name>drivers/bunny_build.h</name>
+			<name>source/ezh_init.c</name>
 			<type>1</type>
-			<locationURI>copy_PARENT/src/bunny_build.h</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/src/ezh_init.c</locationURI>
+		</link>
+		<link>
+			<name>source/ezh_init.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/ezh_init.h</locationURI>
 		</link>
 	</linkedResources>
 	<variableList>

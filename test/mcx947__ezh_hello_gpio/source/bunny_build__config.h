@@ -11,9 +11,10 @@
 #define _BUNNY_BUILD_CONF_H
 
 
+#define LPC_EZH_ARCH_B_CON_BASE 			LPC_EZH_ARCH_B_CON_BASE__MCX
+
 #define BUNNY_BUILD_PRINTF					 PRINTF
 #define BUNNY_BUILD_MAX_LABELS				 32
-
 
 /*
 	Output formatting for printf messages
