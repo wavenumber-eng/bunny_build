@@ -1,14 +1,18 @@
+#include "stdint.h"
+
+#ifndef _EZH_APP_H
+#define _EZH_APP_H
 
 
-#include "fsl_common.h"
-
-typedef struct _EZHPWM_Para{
+typedef struct _EZHPWM_Para
+{
     void  *coprocessor_stack;
-		uint32_t *p_buffer;
+    uint32_t *p_buffer;
 } EZHPWM_Para;
 
-void EZH_Pin_Init(void);
-void EZH_SetExternalFlag(uint8_t flag);
-void EZH_boot(void * pProgram);
 
-void ezh_app (void);
+void ezh_app(void);
+
+
+#endif
+

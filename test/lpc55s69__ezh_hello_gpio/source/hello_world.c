@@ -5,55 +5,38 @@
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#include <ezh_app.h>
+
 #include "fsl_device_registers.h"
 #include "fsl_debug_console.h"
 #include "pin_mux.h"
 #include "clock_config.h"
 #include "board.h"
-#include "bunny_build.h"
 #include "fsl_gpio.h"
 
 #include "fsl_power.h"
 #include "cr_section_macros.h"
 
-#define PINFUNC_EZH        15
-
-/*******************************************************************************
- * Definitions
- ******************************************************************************/
-uint32_t stack[1];
-EZHPWM_Para para;
-uint32_t EZH_DEBUGREG[5];
+#include "bunny_build.h"
+#include "ezh_init.h"
+#include "ezh_app.h"
 
 
-/*******************************************************************************
- * Prototypes
- ******************************************************************************/
-/**
- * @brief	 EZH block initialisation
- * @return	Nothing
- */
-extern void EZH_Init(void *pPara);
-/**
- * @brief	 EZH application start
- * @return	Nothing
- */
-extern void EZH_Start(void);
+uint32_t ezh_stack[16];
+EZHPWM_Para ezh_parameters;
+uint32_t ezh_debug_params[5];
+__DATA(SRAMX) uint32_t  my_ezh_program[128];
 
-/*******************************************************************************
- * Code
- ******************************************************************************/
-void Reserved46_IRQHandler(){
+uint32_t test_val = 0;
+
+void Reserved46_IRQHandler()
+{
 	EZH_SetExternalFlag(1) ;
+
+	test_val = LPC_EZH_ARCH_B0->EZHB_EZH2ARM;
 	//PRINTF("GPI::%x \r\n",EZH_DEBUGREG[0]);
 	//PRINTF("R5:%x \r\n",EZH_DEBUGREG[1]);
 	EZH_SetExternalFlag(0) ;
 };
-
-
-__DATA(SRAMX) uint32_t  my_ezh_program[1024];
-
 
 int main(void)
 {
@@ -68,24 +51,27 @@ int main(void)
     BOARD_InitBootPins();
     BOARD_InitBootClocks();
     BOARD_InitDebugConsole();
+
 #if !defined(DONT_ENABLE_FLASH_PREFETCH)
     /* enable flash prefetch for better performance */
     SYSCON->FMCCR |= SYSCON_FMCCR_PREFEN_MASK;
 #endif
 
-    /* Enables the clock for the I/O controller.: Enable Clock. */
-    CLOCK_EnableClock(kCLOCK_Iocon);
+
+
+    //Magic mux setting to to use port 0.3 directly in EZH
     IOCON->PIO[0][3]             = PINFUNC_EZH | 2<<4 | 1<<8;
-   // IOCON->PIO[0][2]             = PINFUNC_EZH | 2<<4 | 1<<8;
+
 	EZH_SetExternalFlag(0) ;
 
-	 DisableIRQ(Reserved46_IRQn);            // EZH irq NUMBER 30
-	 CLOCK_EnableClock( kCLOCK_Ezhb);        // enable EZH clock
+	DisableIRQ(Reserved46_IRQn);            // EZH irq NUMBER 30
 
-     para.coprocessor_stack = (void *)stack;
-	 para.p_buffer =  (uint32_t *)EZH_DEBUGREG;
+	CLOCK_EnableClock( kCLOCK_Ezhb);        // enable EZH clock
 
-	EZH_Init(&para);					       //EZH initialisation
+    ezh_parameters.coprocessor_stack = (void *)ezh_stack;
+	ezh_parameters.p_buffer =  (uint32_t *)ezh_debug_params;
+
+	EZH_Init(&ezh_parameters);					       //EZH initialisation
 
 	bunny_build(&my_ezh_program[0],
 	    	    sizeof(my_ezh_program),
@@ -93,15 +79,14 @@ int main(void)
 				);
 
 	EZH_boot(my_ezh_program);				     //start EZH
-    EnableIRQ(Reserved46_IRQn);                //EZH irq number 30
+
+	EnableIRQ(Reserved46_IRQn);                //EZH irq number 30
 
 
     PRINTF("hello world.\r\n");
 
     while (1)
     {
-    	//GPIO->NOT[0] = 1<<3;
-        //ch = GETCHAR();	GPIO->NOT[0] = 1<<3;z
-       // PUTCHAR(ch);
+
     }
 }
