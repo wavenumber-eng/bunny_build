@@ -5,7 +5,7 @@
 uint32_t my_ezh_program[1024];
 
 
-#define WRITE_OUTPUT_TO_TERMINAL		(0)
+#define WRITE_OUTPUT_TO_TERMINAL		(1)
 
 #if WRITE_OUTPUT_TO_TERMINAL > 0
 	#define TERMINAL_OUTPUT(...) 	BUNNY_BUILD_PRINTF(__VA_ARGS__)

@@ -68,7 +68,7 @@ int main(void) {
 
     EZH_boot(my_ezh_program);	    //start EZH
 
-	EnableIRQ(SMARTDMA_IRQn);            // EZH irq NUMBER 30
+	EnableIRQ(SMARTDMA_IRQn);          // EZH irq NUMBER 30
 
 
     while(1) {
