@@ -85,6 +85,34 @@ uint32_t bunny_build__relocate(uint32_t* ezh_prog_mem_array,
 			 void(*ezh_program)(void))
 {
 
+
+    BUNNY_BUILD_PRINTF("\r\n\r\n");
+    BUNNY_BUILD_PRINTF(VT100_WHITE "    *----------------------------*\r\n");
+    BUNNY_BUILD_PRINTF(VT100_WHITE "    |	     / \\                 |\r\n");
+    BUNNY_BUILD_PRINTF(VT100_WHITE "    |	    / _ \\                |\r\n");
+    BUNNY_BUILD_PRINTF(VT100_WHITE "    |	   | / \\ |               |\r\n");
+    BUNNY_BUILD_PRINTF(VT100_WHITE "    |	   ||   || _______       |\r\n");
+    BUNNY_BUILD_PRINTF(VT100_WHITE "    |	   ||   || |\\     \\      |\r\n");
+    BUNNY_BUILD_PRINTF(VT100_WHITE "    |	   ||   || ||\\     \\     |\r\n");
+    BUNNY_BUILD_PRINTF(VT100_WHITE "    |	   ||   || || \\    |     | \r\n");
+    BUNNY_BUILD_PRINTF(VT100_WHITE "    |	   ||   || ||  \\__/      |\r\n");
+    BUNNY_BUILD_PRINTF(VT100_WHITE "    |	   ||   || ||   ||       |\r\n");
+    BUNNY_BUILD_PRINTF(VT100_WHITE "    |	    \\\\_/ \\_/ \\_//        |\r\n");
+    BUNNY_BUILD_PRINTF(VT100_WHITE "    |	   /   _     _   \\       |\r\n");
+    BUNNY_BUILD_PRINTF(VT100_WHITE "    |	  /               \\      |\r\n");
+    BUNNY_BUILD_PRINTF(VT100_WHITE "    |	  |    " VT100_CYAN "O     " VT100_CYAN "O" VT100_WHITE "    |      |\r\n");
+    BUNNY_BUILD_PRINTF(VT100_WHITE "    |	  |   \\  ___  /   |      |\r\n");
+    BUNNY_BUILD_PRINTF(VT100_WHITE "    |	 /     \\ \\_/ /     \\     |\r\n");
+    BUNNY_BUILD_PRINTF(VT100_WHITE "    |	/  -----  |  -----  \\    |\r\n");
+    BUNNY_BUILD_PRINTF(VT100_WHITE "    |	|     \\__/|\\__/     |    |\r\n");
+    BUNNY_BUILD_PRINTF(VT100_WHITE "    |	\\       |_|_|       /    |\r\n");
+    BUNNY_BUILD_PRINTF(VT100_WHITE "    |	 \\_____       _____/     |\r\n");
+    BUNNY_BUILD_PRINTF(VT100_WHITE "    |	       \\     /           |\r\n");
+    BUNNY_BUILD_PRINTF(VT100_WHITE "    |	       |     |           |\r\n");
+    BUNNY_BUILD_PRINTF(VT100_WHITE "    |	       |     |           |\r\n");
+    BUNNY_BUILD_PRINTF(VT100_WHITE "    |----------------------------|\r\n");
+    BUNNY_BUILD_PRINTF("\r\n\r\n");
+
 	if (ezh_program == NULL)
 	{
 		BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG"pointer to EZH program is null.  Please pass valid ezh builder function\r\n");

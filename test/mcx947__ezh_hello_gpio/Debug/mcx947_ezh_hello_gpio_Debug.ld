@@ -5,7 +5,7 @@
  * Generated linker script file for MCXN947
  * Created from linkscript.ldt by FMCreateLinkLibraries
  * Using Freemarker v2.3.30
- * MCUXpresso IDE v11.9.1 [Build 2170] [2024-04-19] on Sep 12, 2024, 9:25:08 PM
+ * MCUXpresso IDE v11.9.1 [Build 2170] [2024-04-19] on Sep 13, 2024, 10:28:20 AM
  */
 
 INCLUDE "mcx947_ezh_hello_gpio_Debug_library.ld"

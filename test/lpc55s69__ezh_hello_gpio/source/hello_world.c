@@ -57,9 +57,7 @@ int main(void)
     SYSCON->FMCCR |= SYSCON_FMCCR_PREFEN_MASK;
 #endif
 
-
-
-    //Magic mux setting to to use port 0.3 directly in EZH
+    //Magic mux setting to use port 0.3 directly in EZH
     IOCON->PIO[0][3]             = PINFUNC_EZH | 2<<4 | 1<<8;
 
 	EZH_SetExternalFlag(0) ;
@@ -77,6 +75,8 @@ int main(void)
 	    	    sizeof(my_ezh_program),
 				ezh_app
 				);
+
+
 
 	EZH_boot(my_ezh_program);				     //start EZH
 
