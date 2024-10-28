@@ -12,6 +12,8 @@ void EZH_Init(void *pPara);
 
 void EZH_boot(void * pProgram);
 
+void EZH_stop();
+
 #define PINFUNC_EZH        0xF
 
 #endif

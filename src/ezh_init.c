@@ -20,6 +20,11 @@ void EZH_boot(void * pProgram) {
 	LPC_EZH_ARCH_B0->EZHB_CTRL = 0xC0DE0011 | (0<<EZHB_MASK_RESP) |(0<<EZHB_ENABLE_AHBBUF) ; // BOOT
 };
 
+void EZH_stop()
+{
+	LPC_EZH_ARCH_B0->EZHB_CTRL = (0xC0DE0000 | (1<<EZHB_ENABLE_GPISYNCH));
+}
+
 void EZH_SetExternalFlag(uint8_t flag)
 {
     volatile uint32_t ezh_ctrl = (LPC_EZH_ARCH_B0->EZHB_CTRL & 0x0000FFFF);
