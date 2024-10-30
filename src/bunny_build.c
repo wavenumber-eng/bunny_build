@@ -167,7 +167,7 @@ void bunny_build__add_instruction(uint32_t instruction_encoding)
 		{
 			bunny_build__out[bunny_build__idx] = instruction_encoding;
 
-			BUNNY_BUILD_PRINTF(BUNNY_BUILD_INFO_FLAG"Adding encoded instruction 0x%08x at 0x%08x\r\n", instruction_encoding, bunny_build__base_address + bunny_build__idx);
+			BUNNY_BUILD_PRINTF(BUNNY_BUILD_INFO_FLAG"Adding encoded instruction 0x%08x at 0x%08x\r\n", instruction_encoding, bunny_build__base_address + (4 * bunny_build__idx));
 
 			bunny_build__idx++;
 		}
