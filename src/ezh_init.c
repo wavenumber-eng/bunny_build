@@ -7,7 +7,7 @@ void EZH_cfgHandshake(bool _enable_handshake, bool _enable_event){
 	enable_handshake = (_enable_handshake) ? 1 : 0;
 	enable_event     = (_enable_event)     ? 1 : 0;
 	LPC_EZH_ARCH_B0->EZHB_ARM2EZH |= (enable_handshake<<EZHB_HANDSHAKE_ENABLE) + (enable_event<<EZHB_HANDSHAKE_EVENT);
-};
+}
 
 void EZH_Init(void *pPara){
 	LPC_EZH_ARCH_B0->EZHB_CTRL |= (0xC0DE0000 | (1<<EZHB_ENABLE_GPISYNCH));
@@ -18,7 +18,18 @@ void EZH_Init(void *pPara){
 void EZH_boot(void * pProgram) {
 	LPC_EZH_ARCH_B0->EZHB_BOOT = (uint32_t) pProgram;
 	LPC_EZH_ARCH_B0->EZHB_CTRL = 0xC0DE0011 | (0<<EZHB_MASK_RESP) |(0<<EZHB_ENABLE_AHBBUF) ; // BOOT
-};
+}
+
+void EZH_init_and_boot(void * program, void * param_struct)
+{
+	LPC_EZH_ARCH_B0->EZHB_CTRL |= (0xC0DE0000 | (1<<EZHB_ENABLE_GPISYNCH));
+	LPC_EZH_ARCH_B0->EZHB_ARM2EZH = (uint32_t)param_struct;
+	EZH_cfgHandshake(true,false);
+
+	LPC_EZH_ARCH_B0->EZHB_BOOT = (uint32_t) program;
+	LPC_EZH_ARCH_B0->EZHB_CTRL = 0xC0DE0011 | (0<<EZHB_MASK_RESP) |(0<<EZHB_ENABLE_AHBBUF) ; // BOOT
+}
+
 
 void EZH_stop()
 {
