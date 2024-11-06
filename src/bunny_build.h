@@ -361,24 +361,14 @@ typedef struct {
 	static inline void  E_GOTO(char* a21)
 	{
 		uint32_t resolved_address;
-		int32_t relative_address;
+		uint32_t masked_address;
 		if (bunny_build__pass_num == 1)
 		{
 
 			if (bunny_build__label_get_address(a21, &resolved_address))
 			{
-				relative_address = resolved_address - bunny_build__base_address;	//assuming E_GOTO uses relative address
-
-				if ((relative_address & A21_MASK) == 0)
-				{
-					bunny_build__add_instruction(0x15 + (1 << 9) + (relative_address << 9));
-					BUNNY_BUILD_PRINTF(BUNNY_BUILD_INFO_FLAG "E_GOTO to label " VT100_CYAN "%s" VT100_DEFAULT " will resolve to address " VT100_CYAN "0x%08x" VT100_DEFAULT " at index %d\r\n", a21, resolved_address, bunny_build__idx);
-				}
-				else
-				{
-					BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG "E_GOTO Error at index %d. label %s relative direction  %08x doesn't fit in 21bits \r\n", bunny_build__idx, a21, relative_address);
-					bunny_build__add_instruction(0);
-				}
+				masked_address = resolved_address & 0x1FFFFF;					// Using absoulte address
+				bunny_build__add_instruction(0x15 + (1 << 9) + (masked_address << 9));
 			}
 			else
 			{
@@ -414,24 +404,14 @@ typedef struct {
 	static inline void  E_GOTOL(char* a21)
 	{
 		uint32_t resolved_address;
-		int32_t relative_address;
+		int32_t masked_address;
 		if (bunny_build__pass_num == 1)
 		{
 
 			if (bunny_build__label_get_address(a21, &resolved_address))
 			{
-				relative_address = resolved_address - bunny_build__base_address;	//assuming E_GOTO uses relative address
-
-				if ((relative_address & A21_MASK) == 0)
-				{
-					bunny_build__add_instruction(0x15 + (1 << 10) + (1 << 9) + (relative_address << 9));
-					BUNNY_BUILD_PRINTF(BUNNY_BUILD_INFO_FLAG "E_GOTOL to label " VT100_CYAN "%s" VT100_DEFAULT " will resolve to address " VT100_CYAN "0x%08x" VT100_DEFAULT " at index %d\r\n", a21, resolved_address, bunny_build__idx);
-				}
-				else
-				{
-					BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG "E_GOTOL Error at index %d. label %s relative direction  %08x doesn't fit in 21bits \r\n", bunny_build__idx, a21, relative_address);
-					bunny_build__add_instruction(0);
-				}
+				masked_address = resolved_address & 0x1FFFFF;
+				bunny_build__add_instruction(0x15 + (1 << 10) + (1 << 9) + (masked_address << 9));		// Using absoulte address
 			}
 			else
 			{
@@ -467,24 +447,14 @@ typedef struct {
 	static inline void  E_COND_GOTO(uint32_t cond, char* a21)
 	{
 		uint32_t resolved_address;
-		int32_t relative_address;
+		int32_t masked_address;
 		if (bunny_build__pass_num == 1)
 		{
 
 			if (bunny_build__label_get_address(a21, &resolved_address))
 			{
-				relative_address = resolved_address - bunny_build__base_address;	//assuming E_GOTO uses relative address
-
-				if ((relative_address & A21_MASK) == 0)
-				{
-					bunny_build__add_instruction(0x15 + (cond << 5) + (1 << 9) + (relative_address << 9));
-					BUNNY_BUILD_PRINTF(BUNNY_BUILD_INFO_FLAG"E_GOTOL to label " VT100_CYAN "%s" VT100_DEFAULT " will resolve to address " VT100_CYAN "0x%08x" VT100_DEFAULT " at index %d\r\n", a21, resolved_address, bunny_build__idx);
-				}
-				else
-				{
-					BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG "E_GOTOL Error at index %d. label %s relative direction  %08x doesn't fit in 21bits \r\n", bunny_build__idx, a21, relative_address);
-					bunny_build__add_instruction(0);
-				}
+				masked_address = resolved_address & 0x1FFFFF;
+				bunny_build__add_instruction(0x15 + (cond << 5) + (1 << 9) + (masked_address << 9));		// Using absoulte address
 			}
 			else
 			{
@@ -520,24 +490,14 @@ typedef struct {
 	static inline void  E_COND_GOTOL(uint32_t cond, char* a21)
 	{
 		uint32_t resolved_address;
-		int32_t relative_address;
+		int32_t masked_address;
 		if (bunny_build__pass_num == 1)
 		{
 
 			if (bunny_build__label_get_address(a21, &resolved_address))
 			{
-				relative_address = resolved_address - bunny_build__base_address;	//assuming E_GOTO uses relative address
-
-				if ((relative_address & A21_MASK) == 0)
-				{
-					bunny_build__add_instruction(0x15 + (1 << 10) + (cond << 5) + (1 << 9) + (relative_address << 9));
-					BUNNY_BUILD_PRINTF(BUNNY_BUILD_INFO_FLAG "E_GOTOL to label " VT100_CYAN "%s" VT100_DEFAULT " will resolve to address " VT100_CYAN "0x%08x"  VT100_DEFAULT " at index %d\r\n", a21, resolved_address, bunny_build__idx);
-				}
-				else
-				{
-					BUNNY_BUILD_PRINTF(BUNNY_BUILD_ERROR_FLAG "E_GOTOL Error at index %d. label %s relative direction  %08x doesn't fit in 21bits \r\n", bunny_build__idx, a21, relative_address);
-					bunny_build__add_instruction(0);
-				}
+				masked_address = resolved_address & 0x1FFFFF;		// Using absoulte address
+				bunny_build__add_instruction(0x15 + (1 << 10) + (cond << 5) + (1 << 9) + (masked_address << 9));
 			}
 			else
 			{
