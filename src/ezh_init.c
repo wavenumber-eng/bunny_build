@@ -1,6 +1,7 @@
 #include "bunny_build.h"
 #include "ezh_init.h"
 
+
 void EZH_cfgHandshake(bool _enable_handshake, bool _enable_event){
 	int enable_handshake;
 	int enable_event;

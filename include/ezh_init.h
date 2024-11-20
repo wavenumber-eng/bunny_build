@@ -1,6 +1,12 @@
 #include "stdint.h"
 #include "stdbool.h"
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #ifndef _EZH_INIT_H
 #define _EZH_INIT_H
 
@@ -18,4 +24,9 @@ void EZH_stop();
 
 #define PINFUNC_EZH        0xF
 
+#endif
+
+
+#ifdef __cplusplus
+}
 #endif
