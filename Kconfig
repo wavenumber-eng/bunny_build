@@ -1,0 +1,8 @@
+menu "Bunny Build"
+
+config BUNNY_BUILD
+	bool "Include the EZH builder"
+	help
+	  Includes the EZH builder
+
+endmenu
