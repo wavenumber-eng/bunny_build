@@ -213,7 +213,7 @@ typedef struct {
 	typedef struct
 	{
 
-		char* label;
+		const char* label;
 		uint32_t address;
 
 	} bunny_build__label_t;
@@ -241,7 +241,7 @@ typedef struct {
 		Pass in a pointer to get the resolved address.
 
 	*/
-	bunny_build_label__result_t bunny_build__add_label(char* label, uint32_t* resolved_address);
+	bunny_build_label__result_t bunny_build__add_label(const char* label, uint32_t* resolved_address);
 
 
 	/*
@@ -249,7 +249,7 @@ typedef struct {
 		returns false if we haven't seen this label.
 	*/
 
-	bool bunny_build__label_get_address(char* label, uint32_t* Address);
+	bool bunny_build__label_get_address(const char* label, uint32_t* Address);
 
 
 	/*
@@ -286,7 +286,7 @@ typedef struct {
 	*/
 	extern void bunny_build__add_instruction(uint32_t instruction_encoding);
 
-	static inline void E_LABEL(char* label)
+	static inline void E_LABEL(const char* label)
 	{
 		uint32_t resolved_address;
 
@@ -324,7 +324,7 @@ typedef struct {
 	//                                      Unconditional OpCodes
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//#define E_GOSUB(a30)                    __asm(".word %c0" : : "i" (0x03 + a30))
-	static inline void  E_GOSUB(char* a30)
+	static inline void  E_GOSUB(const char* a30)
 	{
 		uint32_t resolved_address;
 		if (bunny_build__pass_num == 1)
@@ -358,7 +358,7 @@ typedef struct {
 	//                                       E_GOTO
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//#define E_GOTO(a21)			__asm(".word 0x15 + (1<<9) + " #a21 "<<9")
-	static inline void  E_GOTO(char* a21)
+	static inline void  E_GOTO(const char* a21)
 	{
 		uint32_t resolved_address;
 		uint32_t masked_address;
@@ -401,7 +401,7 @@ typedef struct {
 
 
 	//#define E_GOTOL(a21)			__asm(".word 0x15  + (1<<10) + (1<<9)  + " #a21 "<<9") , GOTO and Link
-	static inline void  E_GOTOL(char* a21)
+	static inline void  E_GOTOL(const char* a21)
 	{
 		uint32_t resolved_address;
 		int32_t masked_address;
@@ -444,7 +444,7 @@ typedef struct {
 
 
 	//#define E_COND_GOTO(cond,a21)			__asm(".word 0x15  +(cond<<5) + (1<<9) + " #a21 "<<9")
-	static inline void  E_COND_GOTO(uint32_t cond, char* a21)
+	static inline void  E_COND_GOTO(uint32_t cond, const char* a21)
 	{
 		uint32_t resolved_address;
 		int32_t masked_address;
@@ -487,7 +487,7 @@ typedef struct {
 
 
 	//#define E_COND_GOTOL(cond,a21)			__asm(".word 0x15  + (1<<10)  +(cond<<5)  + (1<<9) + " #a21 "<<9")
-	static inline void  E_COND_GOTOL(uint32_t cond, char* a21)
+	static inline void  E_COND_GOTOL(uint32_t cond, const char* a21)
 	{
 		uint32_t resolved_address;
 		int32_t masked_address;
