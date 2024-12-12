@@ -23,7 +23,7 @@ uint32_t   bunny_build__out_len = 0;
 	Adds a label to the bunny_build storage.  Also checks if already exists
 */
 
-bunny_build_label__result_t bunny_build__add_label(char* label,uint32_t *resolved_address)
+bunny_build_label__result_t bunny_build__add_label(const char* label,uint32_t *resolved_address)
 {
 	bunny_build_label__result_t r = bunny_build_label__ok;
 	uint32_t Address = 0;
@@ -60,7 +60,7 @@ bunny_build_label__result_t bunny_build__add_label(char* label,uint32_t *resolve
 }
 
 
-bool bunny_build__label_get_address(char* label, uint32_t *Address)
+bool bunny_build__label_get_address(const char* label, uint32_t *Address)
 {
 	for (uint32_t i = 0; i < bunny_build__num_labels; i++)
 	{
