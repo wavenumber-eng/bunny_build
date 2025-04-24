@@ -38,9 +38,9 @@ and....  It will be used on the MCX947 BunnyBrain board.
 
 1. Retain compatibility (mostly) with old keil/c macro syntax to validate functionality
 2. Not require the keil tools....  Works with GCC and ezh programs can be build on a windows/linux PC
-3. EZH code can be assembled in the target/application as needed. The assembler will be a simple C file.  Assemble at run time.
+3. EZH code can be assembled in the target/application as needed. The assembler is simple .c/.h file(s)
 4. The build process has been upgraded to be two-pass (vs C macros only in the original EZH builder) to handle labels, etc.  
-5. Because of #3, we can use the C linker to get references to application variables, etc  Makes developing ezh much simpler.
+5. Because of #3, we can use the C linker to get references to application variables, etc  Makes developing ezh code much simpler.
 6. Easy to wrap in a simple command line application. Be able to generate binary blobs in different formats (c arrays, etc) to include in MCU application code.
 7. Ability to make psuedo instructions with the C compiler
 
@@ -54,7 +54,6 @@ and....  It will be used on the MCX947 BunnyBrain board.
 
 - we have some goto testcases that all appear to function well.  (this was an issue from the previous macro approach)
 
-- 
 Test cases needed:
 
 - A program that use zero overhead loops.
@@ -72,7 +71,7 @@ It also is demo of how to make a PC based tool to build EZH programs and generat
 
 2. generate a build system like : `cmake ./ -B"build"`
 
-- Windows : cmake will create a visual studio project a Visual Studio Project in the `build` folder
+- Windows : cmake will create a visual studio project in the `build` folder
 - 
 ![bb_vs](https://github.com/user-attachments/assets/396c17ec-ac7f-4ef0-86fb-7bc750edae49)
 
