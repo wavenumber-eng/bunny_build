@@ -51,16 +51,18 @@ extern "C" {
 #endif
 
 
-#include <assert.h>
-#include <stdbool.h>
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
+#ifndef BUNNY_BUILD_PRINTF
+	#error "Please set BUNNY_BUILD_PRINTF to something in bunny_build__config.h..."
+#endif
 
+
+#ifndef BUNNY_BUILD_MAX_LABELS				 
+	#error "Please set BUNNY_BUILD_MAX_LABELS to something in bunny_build__config.h..."
+#endif
 
 
 #ifndef LPC_EZH_ARCH_B_CON_BASE
-	//#warning "Please set LPC_EZH_ARCH_B_CON_BASE to an option in bunny_build__targets.h  in the bunny_build__config.h"
+	#error "Please set LPC_EZH_ARCH_B_CON_BASE to an option in bunny_build__targets.h  in the bunny_build__config.h"
 		//	#define LPC_EZH_ARCH_B_CON_BASE		LPC_EZH_ARCH_B_CON_BASE__MCX
 #endif
 

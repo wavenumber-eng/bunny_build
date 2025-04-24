@@ -50,17 +50,21 @@ and....  It will be used on the MCX947 BunnyBrain board.
 
 - bunny_build can currently recreate the EZH/SmartDMA "Camera Generator".  The camera generator code was for the MCX (and LPC55).  bunny_build can input the same code and generate the same binary blob.  We need more test cases and to validate that all instructions are generated correctly.
 
+- bunny_build is being used in some commercial projects.
+
 - There are a few simple IO output tests cases to demonstrate simple programs
 
-- we have some goto etst cases that all appear to function well.  (this was an issue from the previous macro approach)
+- we have some goto testcases that all appear to function well.  (this was an issue from the previous macro approach)
 
-Test Cases Needed:
+- 
+Test cases needed:
 
 - A program that use zero overhead loops.
 
 ## Building the Validator.
 
 1. cd to `test/cl_build`
+
 2. generate a build system like : `cmake ./ -B"build"`
 
 - on Windows, that should make a Visual Studio Project in the `build` folder
@@ -70,9 +74,9 @@ Test Cases Needed:
 
 `cmake ./ -B"build" -G"Ninja`
 
-`cd build`
+`ninja -C "build"`
 
-`ninja`
+`./build/bunny_build`
 
 Run the output binary and it should tell you that validation of the camera code worked.
 
