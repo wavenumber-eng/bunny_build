@@ -1,11 +1,12 @@
-
-
 .vscode/
+.vscode/settings.json
 
 build/
 build_vs/
 .settings/
 Debug/
+
+*.launch
 
 *.jdebug.user
 

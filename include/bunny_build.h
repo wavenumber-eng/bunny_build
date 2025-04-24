@@ -1,6 +1,9 @@
 #include "bunny_build__targets.h"
 #include "bunny_build__config.h"
 
+#include "stdint.h"
+#include "string.h"
+#include "stdbool.h"
 
 #ifndef _BUNNY_BUILD_H_
 #define _BUNNY_BUILD_H_

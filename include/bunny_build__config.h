@@ -87,7 +87,45 @@ Sample bunny build configs for zephyr, the host pc test sample and some of the m
 #endif
 
 
+#ifdef __MCUXPRESSO
 
+
+	#include "board.h"
+	#include "fsl_common.h"
+	#include "fsl_debug_console.h"
+
+	#ifdef CPU_MCXN947VDF
+
+		#define LPC_EZH_ARCH_B_CON_BASE 			 LPC_EZH_ARCH_B_CON_BASE__MCX
+
+	#endif
+
+
+	#ifdef CPU_LPC55S69JBD100
+			#define LPC_EZH_ARCH_B_CON_BASE 			 LPC_EZH_ARCH_B_CON_BASE__LPC556x
+	#endif
+
+
+		#define VT100_RED     "\033[31;40m"
+		#define VT100_GREEN   "\033[32;40m"
+		#define VT100_YELLOW  "\033[33;40m"
+		#define VT100_BLUE    "\033[34;40m"
+		#define VT100_MAGENTA "\033[35;40m"
+		#define VT100_CYAN    "\033[36;40m"
+		#define VT100_WHITE   "\033[37;40m"
+		#define VT100_DEFAULT  VT100_WHITE
+
+
+		#define BUNNY_BUILD_ERROR_FLAG				VT100_RED "[ERROR] " VT100_DEFAULT
+		#define BUNNY_BUILD_WARNING_FLAG			VT100_YELLOW "[WARNING] " VT100_DEFAULT
+		#define BUNNY_BUILD_INFO_FLAG				VT100_GREEN "[INFO] " VT100_DEFAULT
+
+		#define BUNNY_BUILD_PRINTF 					 PRINTF
+		#define BUNNY_BUILD_MAX_LABELS				 64
+
+
+
+#endif
 
 
 #endif 
