@@ -63,7 +63,9 @@ Test Cases Needed:
 1. cd to `test/cl_build`
 2. generate a build system like : `cmake ./ -B"build"`
 
-- on Windows, that should make a visual studio project in the `build` folder
+- on Windows, that should make a Visual Studio Project in the `build` folder
+
+
 - on *nix you get make files.  Although,  I like "ninja".  Makes me feel powerful
 
 `cmake ./ -B"build" -G"Ninja`
@@ -72,7 +74,7 @@ Test Cases Needed:
 
 `ninja`
 
-run the output binary and it should tell you that validation of the camera code worked.
+Run the output binary and it should tell you that validation of the camera code worked.
 
 ## Notes
 

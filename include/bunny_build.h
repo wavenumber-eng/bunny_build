@@ -60,7 +60,7 @@ extern "C" {
 
 
 #ifndef LPC_EZH_ARCH_B_CON_BASE
-	#warning "Please set LPC_EZH_ARCH_B_CON_BASE to an option in bunny_build__targets.h  in the bunny_build__config.h"
+	//#warning "Please set LPC_EZH_ARCH_B_CON_BASE to an option in bunny_build__targets.h  in the bunny_build__config.h"
 		//	#define LPC_EZH_ARCH_B_CON_BASE		LPC_EZH_ARCH_B_CON_BASE__MCX
 #endif
 
