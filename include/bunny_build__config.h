@@ -1,6 +1,11 @@
+/*
+
+Sample bunny build configs for zephyr, the host pc test sample and some of the mcx/lpc55 sampless
+
+*/
+
 
 #include "bunny_build__targets.h"
-
 
 #ifndef _BUNNY_BUILD_CONF_H
 #define _BUNNY_BUILD_CONF_H
@@ -19,7 +24,7 @@
 
 
 	#define BUNNY_BUILD_PRINTF					 printk
-	#define BUNNY_BUILD_MAX_LABELS				 32
+	#define BUNNY_BUILD_MAX_LABELS				 64
 
 
 	/*
@@ -59,7 +64,7 @@
 	#define LPC_EZH_ARCH_B_CON_BASE 			 LPC_EZH_ARCH_B_CON_BASE__MCX
 
 	#define BUNNY_BUILD_PRINTF					 printf
-	#define BUNNY_BUILD_MAX_LABELS				 32
+	#define BUNNY_BUILD_MAX_LABELS				 64
 
 	/*
 		Output formatting for printf messages
