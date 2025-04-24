@@ -1,9 +1,13 @@
 
 
-.vscode
+.vscode/
 
 build/
 build_vs/
+.settings/
+Debug/
+
+*.jdebug.user
 
 ## CMake ###
 CMakeLists.txt.user
@@ -79,3 +83,4 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
