@@ -61,16 +61,24 @@ Test cases needed:
 
 - A program that use zero overhead loops.
 
+
+# Examples
+
 ## Building the Validator.
+
+This is a test project that runs on a host PC. It builds a the camera generator project and compares it against the keil/arm tooling (the old ezh build macros)
+
+It also is demo of how to make a PC based tool to build EZH programs and generate the a C binary to include in an embedded project
 
 1. cd to `test/cl_build`
 
 2. generate a build system like : `cmake ./ -B"build"`
 
-- on Windows, that should make a Visual Studio Project in the `build` folder
+- Windows : cmake will create a visual studio project a Visual Studio Project in the `build` folder
+- 
+![bb_vs](https://github.com/user-attachments/assets/396c17ec-ac7f-4ef0-86fb-7bc750edae49)
 
-
-- on *nix you get make files.  Although,  I like "ninja".  Makes me feel powerful
+- on *nix you get make files.  Although,  I like "ninja".  Makes me feel powerful like a ninja
 
 `cmake ./ -B"build" -G"Ninja`
 
@@ -78,10 +86,21 @@ Test cases needed:
 
 `./build/bunny_build`
 
+![bb_linux](https://github.com/user-attachments/assets/951dea1f-9368-4efd-aec6-507a4091d91d)
+
 Run the output binary and it should tell you that validation of the camera code worked.
 
-## Notes
+## MCUXpresso / Embedded
 
-- bunny_build.c/.h was bootstrapped from the fsl_ezh_armclang.h file.  See the camera generator example, or any of the LPC55 samples. 
-- I added code to support the "C" way of building the instructions.  Added print/warnings/errors to instructions that have not yet been implemented.
+See the test/mcx947__ezh_hello_gpio project.
+
+It was last build in MCUXpresso 24.9.25
+
+This sample will toggle and IO pin and the EZH will IRQ the CM33 on the MCX to send a test counter value
+
+![bb_mcux](https://github.com/user-attachments/assets/43efa848-1b97-4bd9-9c0c-cf5f2562b58b)
+
+## Zephyr
+
+This repo can be added to your west manifest.  See the KConfig file
 
