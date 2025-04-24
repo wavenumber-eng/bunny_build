@@ -3,7 +3,8 @@
 
 #define EZH_OP_1      		 24         	/* GPIO24  us PIO2_4 on MCX */
 
-void ezh_app (void){
+void ezh_app (void)
+{
     E_NOP;
     E_NOP;
     E_PER_READ(R6, ARM2EZH); //Peripheral Read

@@ -32,14 +32,59 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>drivers/bunny_build.c</name>
-			<type>1</type>
-			<locationURI>copy_PARENT/src/bunny_build.c</locationURI>
+			<name>source/bunny_build</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>drivers/bunny_build.h</name>
+			<name>source/bunny_build/include</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>source/bunny_build/src</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>source/bunny_build/include/bunny_build.h</name>
 			<type>1</type>
-			<locationURI>copy_PARENT/src/bunny_build.h</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/include/bunny_build.h</locationURI>
+		</link>
+		<link>
+			<name>source/bunny_build/include/bunny_build__config.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/bunny_build__config.h</locationURI>
+		</link>
+		<link>
+			<name>source/bunny_build/include/bunny_build__config.h.in</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/bunny_build__config.h.in</locationURI>
+		</link>
+		<link>
+			<name>source/bunny_build/include/bunny_build__targets.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/bunny_build__targets.h</locationURI>
+		</link>
+		<link>
+			<name>source/bunny_build/include/ezh_init.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/include/ezh_init.h</locationURI>
+		</link>
+		<link>
+			<name>source/bunny_build/src/CMakeLists.txt</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/CMakeLists.txt</locationURI>
+		</link>
+		<link>
+			<name>source/bunny_build/src/bunny_build.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/bunny_build.c</locationURI>
+		</link>
+		<link>
+			<name>source/bunny_build/src/ezh_init.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/ezh_init.c</locationURI>
 		</link>
 	</linkedResources>
 	<variableList>

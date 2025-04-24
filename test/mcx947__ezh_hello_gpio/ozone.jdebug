@@ -22,8 +22,6 @@ void OnProjectLoad (void) {
   //
   // Dialog-generated settings
   //
-  Project.AddPathSubstitute ("C:/ELI/projects/wavenumber/bunny_build/test/mcx947__ezh_hello_gpio", "$(ProjectDir)");
-  Project.AddPathSubstitute ("c:/eli/projects/wavenumber/bunny_build/test/mcx947__ezh_hello_gpio", "$(ProjectDir)");
   Project.SetDevice ("MCXN947_M33_0");
   Project.SetHostIF ("USB", "");
   Project.SetTargetIF ("SWD");
@@ -32,7 +30,7 @@ void OnProjectLoad (void) {
   //
   // User settings
   //
-  File.Open ("$(ProjectDir)/Debug/mcx947__ezh_hello_gpio.axf");
+  File.Open ("./Debug/mcx947__ezh_hello_gpio.axf");
 }
 
 /*********************************************************************

@@ -1,21 +1,10 @@
-#include <ezh_app.h>
+
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "../../../src/bunny_build.h"
+#include "bunny_build.h"
 
 
-/*******************************************************************************
- * Definitions
- ******************************************************************************/
-
-#define MCX_EZH_ARCH_B_CON_BASE 0x40033020
-#define ARM2EZH      		(MCX_EZH_ARCH_B_CON_BASE   + 0x20)
-#define EZH2ARM    			(MCX_EZH_ARCH_B_CON_BASE   + 0x24)
-
-#define EZHBREAKADDR 		(MCX_EZH_ARCH_B_CON_BASE   + 0x10)
-#define EZHBREAKVECT 		(MCX_EZH_ARCH_B_CON_BASE   + 0x14)
-#define MCX_EZH_ARCH_B0     ((EZH_ARCH_B_CON_Type *)     MCX_EZH_ARCH_B_CON_BASE)  
 
 #define EZH_CTR_b0      		 22         	/* GPIO22  us PIO2_2 on MCX */
 #define EZH_CTR_b1      		 23         	/* GPIO23  us PIO2_3 on MCX */
@@ -23,7 +12,7 @@
 #define EZH_CTR_b3      		 25         	/* GPIO25  us PIO2_5 on MCX */
 #define EZH_FRQ_SEL              27             /* GPIO27  us PIO2_7 on MCX */
 
-uint32_t __attribute__ ((section("for_ezh_ram"))) my_ezh_program[1024];
+
 
 /*******************************************************************************
  * Prototypes
@@ -37,7 +26,7 @@ uint32_t __attribute__ ((section("for_ezh_ram"))) my_ezh_program[1024];
 // This application tests GOTOL, GOTOL and GOTO_REG instructions
 // Counter up from 0 to 0xF
 void ezh_4_bit_counter_up_app (void){
-    E_NOP();
+    E_NOP;
     E_PER_READ(R6, ARM2EZH); //Peripheral Read
     E_LSR(R6, R6, 2);        //remove bit 0:1
     E_LSL(R6, R6, 2);        //bit 0:1 now = 0
@@ -77,7 +66,7 @@ E_LABEL("UPDATE_OUTPUT");
 // This application tests E_GOTO(), E_GOTOL(), E_COND_GOTO_REG() and E_COND_GOTO
 // Counter down from 0xF to 1, when the counter restarts it shows 0xf during 3 counter periods.
 void ezh_4_bit_counter_down_app (void){
-    E_NOP();
+    E_NOP;
     E_PER_READ(R6, ARM2EZH);            //Peripheral Read
     E_LSR(R6, R6, 2);                   //remove bit 0:1
     E_LSL(R6, R6, 2);                   //bit 0:1 now = 0
@@ -115,7 +104,7 @@ E_LABEL("COUNTER_DEC_LOOP");
 // Calculates the value of 2*N1 + 1, and stores it on the shared buffer
 #define N1  2
 void ezh_fun1_app(){
-    E_NOP();
+    E_NOP;
     E_PER_READ(R6, ARM2EZH);            // Peripheral Read
     E_LSR(R6, R6, 2);                   // remove bit 0:1
     E_LSL(R6, R6, 2);                   // bit 0:1 now = 0
@@ -144,7 +133,7 @@ E_LABEL("RESULT");
 // If the input number is odd write the word "odd" in the shared buffer, else write the word "even"
 #define N2  7
 void ezh_even_or_odd_app(){
-    E_NOP();
+    E_NOP;
     E_PER_READ(R6, ARM2EZH);            // Peripheral Read
     E_LSR(R6, R6, 2);                   // remove bit 0:1
     E_LSL(R6, R6, 2);                   // bit 0:1 now = 0
@@ -186,7 +175,7 @@ E_LABEL("END");
 // If the input number is odd write the word "odd" in the shared buffer, else write the word "even"
 #define N3  25
 void ezh_even_or_odd_app2(){
-    E_NOP();
+    E_NOP;
     E_PER_READ(R6, ARM2EZH);            // Peripheral Read
     E_LSR(R6, R6, 2);                   // remove bit 0:1
     E_LSL(R6, R6, 2);                   // bit 0:1 now = 0
@@ -225,51 +214,4 @@ E_LABEL("EVEN");                        // Write even in the shared buffer
     E_GOTO_REG(RA);
 
 E_LABEL("END");
-}
-
-
-void EZH_cfgHandshake(bool _enable_handshake, bool _enable_event){
-	int enable_handshake;
-	int enable_event;
-	enable_handshake = (_enable_handshake) ? 1 : 0;
-	enable_event     = (_enable_event)     ? 1 : 0;
-	MCX_EZH_ARCH_B0->EZHB_ARM2EZH |= (enable_handshake<<EZHB_HANDSHAKE_ENABLE) + (enable_event<<EZHB_HANDSHAKE_EVENT);
-};
-
-void EZH_Init(void *pPara){
-
-    //bunny_build__relocate(&my_ezh_program[0],
-    //            sizeof(my_ezh_program),
-	//			(uint32_t)my_ezh_program, //start address of for_ezh_ram
-    //            ezh_even_or_odd_app2
-    //            );
-	bunny_build(&my_ezh_program[0],
-	                sizeof(my_ezh_program),
-					ezh_4_bit_counter_up_app
-	                );
-
-	MCX_EZH_ARCH_B0->EZHB_CTRL |= (0xC0DE0000 | (1<<EZHB_ENABLE_GPISYNCH));
-    MCX_EZH_ARCH_B0->EZHB_ARM2EZH = (uint32_t)pPara;
-	EZH_cfgHandshake(true,false);
-}
-
-void EZH_boot(void * pProgram) {
-	MCX_EZH_ARCH_B0->EZHB_BOOT = (uint32_t) pProgram;
-	MCX_EZH_ARCH_B0->EZHB_CTRL = 0xC0DE0011 | (0<<EZHB_MASK_RESP) |(0<<EZHB_ENABLE_AHBBUF) ; // BOOT
-};
-
-void EZH_Start(void){
-	EZH_boot(my_ezh_program);
-}
-
-
-void EZH_SetExternalFlag(uint8_t flag)
-{
-    volatile uint32_t ezh_ctrl = (MCX_EZH_ARCH_B0->EZHB_CTRL & 0x0000FFFF);
-    if (flag == 0) {
-        ezh_ctrl &= ~(1 << EZHB_EXTERNAL_FLAG);
-    } else {
-        ezh_ctrl |= (1 << EZHB_EXTERNAL_FLAG);
-    }
-    MCX_EZH_ARCH_B0->EZHB_CTRL = (0xC0DE0000 | ezh_ctrl);
 }

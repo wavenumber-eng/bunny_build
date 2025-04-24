@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:manifest xmlns:ns2="http://nxp.com/ksdk/2.0/ksdk_manifest_v3.0.xsd" format_version="3.14" api_version="2.0.0" configuration="78cd8deb31d4bbc2175e7a0ac6613430" id="SDK_2.x_FRDM-MCXN947" name="FRDM-MCXN947" brief="This is SDK version 2.16.100 manifest file. It describes the content of the FRDM-MCXN947 and additional settings for tools that support SDK version 2.16.100">
+    <externalDefinitions>
+        <definition extID="mcxn9xxbrk"/>
+        <definition extID="mcxn9xxevk"/>
+        <definition extID="PROGRAM_FLASH_MCXN947"/>
+    </externalDefinitions>
+    <ksdk id="MCUXpresso216100" name="MCUXpresso216100" version="2.16.100" revision="epluginsite809 2024-10-02"/>
+    <compilers>
+        <compiler type="gcc" id="compiler_gcc" name="gcc"/>
+    </compilers>
+    <core_slave_roles_definitions>
+        <slave_role id="M33SLAVE" name="Cortex-M33 core1 acts as slave by default"/>
+    </core_slave_roles_definitions>
+    <toolchainSettings>
+        <toolchainSetting id="com.nxp.mcuxpresso" name="mcuxpresso" full_name="MCUXpresso IDE" version="11.10.0" toolchain="mcuxpresso" compiler="compiler_gcc">
+            <option id="gnu.cpp.compiler.option.optimization.flags" type="string" user_name="">
+                <value>-fno-common</value>
+            </option>
+            <option id="gnu.c.compiler.option.optimization.flags" type="string" user_name="">
+                <value>-fno-common</value>
+            </option>
+            <option id="gnu.cpp.link.option.nostdlibs" type="boolean" user_name="">
+                <value>true</value>
+            </option>
+            <option id="com.crt.advproject.link.cpp.flashconfigenable" type="boolean" user_name="">
+                <value>true</value>
+            </option>
+            <option id="com.crt.advproject.link.flashconfigenable" type="boolean" user_name="">
+                <value>true</value>
+            </option>
+            <option id="gnu.c.link.option.nostdlibs" type="boolean" user_name="">
+                <value>true</value>
+            </option>
+        </toolchainSetting>
+    </toolchainSettings>
+    <toolchains>
+        <toolchain type="mcuxpresso" vendor="NXP Semiconductors" vendor_url="http://www.nxp.com" id="mcuxpresso" name="MCUXpresso_IDE" full_name="MCUXpresso IDE" version="11.10.0" compiler="compiler_gcc">
+            <debug>
+                <debug_configuration probe="LinkServer" id="com.crt.advproject.config.exe.release" name="Release Configuration">
+                    <scripts>
+                        <script type="init" silent="false" emulators="${gdb.stub} -mi -info-emu">
+                            <script>
+set remotetimeout 60000
+##target_extended_remote##
+set mem inaccessible-by-default ${mem.access}
+mon ondisconnect ${ondisconnect}
+set arm force-mode thumb
+${load}</script>
+                        </script>
+                        <script type="run" silent="false" emulators="${gdb.stub} -mi -info-emu">
+                            <script>${run}</script>
+                        </script>
+                    </scripts>
+                    <params>
+                        <params value="false" id="vector.catch.release.mcuxpresso" name="vector.catch"/>
+                        <params value="Disable" id="internal.cache.release.mcuxpresso" name="internal.cache"/>
+                    </params>
+                </debug_configuration>
+                <debug_configuration probe="LinkServer" id="com.crt.advproject.config.exe.debug" name="Debug Configuration">
+                    <scripts>
+                        <script type="init" silent="false" emulators="${gdb.stub} -mi -info-emu">
+                            <script>
+set remotetimeout 60000
+##target_extended_remote##
+set mem inaccessible-by-default ${mem.access}
+mon ondisconnect ${ondisconnect}
+set arm force-mode thumb
+${load}</script>
+                        </script>
+                        <script type="run" silent="false" emulators="${gdb.stub} -mi -info-emu">
+                            <script>${run}</script>
+                        </script>
+                    </scripts>
+                    <params>
+                        <params value="false" id="vector.catch.debug.mcuxpresso" name="vector.catch"/>
+                        <params value="Disable" id="internal.cache.debug.mcuxpresso" name="internal.cache"/>
+                    </params>
+                </debug_configuration>
+                <debug_configuration probe="Segger" id="com.nxp.mcuxpresso.core.debug.support.segger.debug" name="Debug Configuration"/>
+                <debug_configuration probe="Segger" id="com.nxp.mcuxpresso.core.debug.support.segger.release" name="Release Configuration"/>
+            </debug>
+        </toolchain>
+    </toolchains>
+    <boards>
+        <board package="MCXN947VDF" id="frdmmcxn947" name="FRDM-MCXN947" version="1.0.0">
+            <description>FRDM-MCXN947</description>
+            <image path="boards/frdmmcxn947" type="image">
+                <files mask="frdmmcxn947.png"/>
+            </image>
+        </board>
+        <board package="MCXN947VDF" type="kit" id="frdmmcxn947_om13790host" name="FRDM-MCXN947-OM13790HOST" version="1.0.0">
+            <description>Development Board for MCXN10 family of MCUs with USB Type-C Host Shield Board Gen 2 with Display Port Alt Mode</description>
+            <image path="boards/frdmmcxn947_om13790host" type="image">
+                <files mask="frdmmcxn947_om13790host.png"/>
+            </image>
+        </board>
+        <board package="MCXN947VDF" type="kit" id="frdmmcxn947_a8974" name="FRDM-MCXN947-A8974" version="1.0.0">
+            <description>MCXN947 MCU evaluation kit with FRDM-STBI-A8974 sensor shield board having FXLS8974CF Ultra-low power motion wakeup sensor for Industrial, Medical IoT Applications.</description>
+            <image path="boards/frdmmcxn947_a8974" type="image">
+                <files mask="frdmmcxn947_a8974.png"/>
+            </image>
+        </board>
+    </boards>
+    <devices>
+        <device family="MCXN9XX" platform="MCX" id="MCXN947" name="MCXN947" full_name="MCXN947" version="1.0.0">
+            <description>150 MHz Arm® Dual Cortex-M33 TrustZone® microcontroller for Industrial and Consumer IoT Applications.</description>
+            <metadataSet>
+                <metadata key="compatible_device.segger" value="MCXN947"/>
+                <metadata key="vendor" value="NXP"/>
+            </metadataSet>
+            <defines>
+                <define name="CPU_$|package|" value=""/>
+                <define name="CPU_$|package|_$|core|" value=""/>
+                <define name="CPU_$|package|_$|core_name|" value=""/>
+            </defines>
+            <core fpu="true" dsp="true" type="cm33" boot_role="primary" id="cm33_core0_MCXN947" name="cm33_core0"/>
+            <core fpu="false" dsp="false" type="cm33_nodsp" slave_roles="M33SLAVE" boot_role="primary_secondary" id="cm33_core1_MCXN947" name="cm33_core1"/>
+            <memory>
+                <memoryBlock addr="00000000" size="00100000" type="Flash" access="RO" id="PROGRAM_FLASH0_MCXN947" name="PROGRAM_FLASH0"/>
+                <memoryBlock addr="00100000" size="00100000" type="Flash" access="RO" id="PROGRAM_FLASH1_MCXN947" name="PROGRAM_FLASH1"/>
+                <memoryBlock addr="20000000" size="00060000" type="RAM" access="RW" id="SRAM_MCXN947" name="SRAM"/>
+                <memoryBlock addr="04000000" size="00018000" type="RAM" access="RW" id="SRAMX_MCXN947" name="SRAMX"/>
+                <memoryBlock addr="20060000" size="00008000" type="RAM" access="RW" id="SRAMH_MCXN947" name="SRAMH"/>
+                <memoryBlock addr="400BA000" size="00001000" type="RAM" access="RW" id="USB_RAM_MCXN947" name="USB_RAM"/>
+            </memory>
+            <total_memory flash_size_kb="1024" ram_size_kb="4"/>
+            <package id="MCXN947VDF" name="MCXN947VDF"/>
+            <package id="MCXN947VPB" name="MCXN947VPB"/>
+            <package id="MCXN947VNL" name="MCXN947VNL"/>
+            <evaluation_boards>
+                <evaluation_board name="frdmmcxn947"/>
+            </evaluation_boards>
+            <debug_configurations>
+                <debug_configuration id_refs="com.crt.advproject.config.exe.debug com.crt.advproject.config.exe.release">
+                    <params>
+                        <params value="true" id="internal.attach.slave.release.MCXN947" name="internal.attach.slave"/>
+                        <params value="true" id="internal.multi.swd.release.MCXN947" name="internal.multi.swd"/>
+                        <params value="SWD" id="internal.wiretype.release.MCXN947" name="internal.wiretype"/>
+                        <params value="true" id="internal.has_swo.release.MCXN947" name="internal.has_swo"/>
+                        <params value="--bootromstall 0x50000040 --romstalldelay 600" id="misc.options.MCXN947" name="misc.options"/>
+                    </params>
+                    <drivers>
+                        <driver id_refs="PROGRAM_FLASH_MCXN947">
+                            <driverBinary path="devices/MCXN947/mcuxpresso" type="binary">
+<files mask="MCXNxxx.cfx"/>
+                            </driverBinary>
+                        </driver>
+                        <driver id_refs="PROGRAM_FLASH0_MCXN947">
+                            <driverBinary path="devices/MCXN947/mcuxpresso" type="binary">
+<files mask="MCXNxxx.cfx"/>
+                            </driverBinary>
+                        </driver>
+                        <driver id_refs="PROGRAM_FLASH1_MCXN947">
+                            <driverBinary path="devices/MCXN947/mcuxpresso" type="binary">
+<files mask="MCXNxxx.cfx"/>
+                            </driverBinary>
+                        </driver>
+                    </drivers>
+                </debug_configuration>
+            </debug_configurations>
+            <linkerSettings nature="c_nature">
+                <linker property="start_symbol" value="ResetISR"/>
+                <linker property="text_align" value="4"/>
+                <linker property="data_align" value="4"/>
+                <linker property="bss_align" value="4"/>
+                <linker property="mtb_supported" value="false"/>
+            </linkerSettings>
+            <linkerSettings nature="cpp_nature">
+                <linker property="start_symbol" value="ResetISR"/>
+                <linker property="text_align" value="4"/>
+                <linker property="data_align" value="4"/>
+                <linker property="bss_align" value="4"/>
+                <linker property="mtb_supported" value="false"/>
+            </linkerSettings>
+        </device>
+    </devices>
+    <components>
+        <component user_visible="true" type="debugger" package_base_path="devices/MCXN947" project_base_path="svd" category="Board Support/SDK Project Template" id="platform.devices.MCXN947_debugger.MCXN947" name="Device MCXN947_debugger" full_name="Device MCXN947_debugger" brief="Device MCXN947_debugger" version="1.0.0">
+            <dependencies>
+                <device_dependency value="MCXN947"/>
+            </dependencies>
+            <source relative_path="./" type="xml">
+                <files mask="MCXN947_cm33_core0.xml"/>
+                <files mask="MCXN947_cm33_core1.xml"/>
+            </source>
+        </component>
+    </components>
+</ns2:manifest>
