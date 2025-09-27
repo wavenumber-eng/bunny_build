@@ -4,7 +4,9 @@ project(bunny_build)
 
 set(APP_SOURCE
     ${CMAKE_SOURCE_DIR}/../../src/bunny_build.c
-    ${CMAKE_SOURCE_DIR}/../ezh_apps/camera_reference_test.c
+	${CMAKE_SOURCE_DIR}/../../src/bunny_build__instr.c
+	${CMAKE_SOURCE_DIR}/../../src/bunny_build__psuedo_instr.c
+	${CMAKE_SOURCE_DIR}/../ezh_apps/camera_reference_test.c
     ${CMAKE_SOURCE_DIR}/main.c
    )
 
