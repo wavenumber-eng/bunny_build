@@ -2,13 +2,13 @@
 #include "stdbool.h"
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 
 #ifndef _EZH_INIT_H
 #define _EZH_INIT_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 void EZH_SetExternalFlag(uint8_t flag);
 
@@ -22,11 +22,14 @@ void EZH_init_and_boot(void * program, void * param_struct);
 
 void EZH_stop();
 
+//Todo  Nuke this
 #define PINFUNC_EZH        0xF
-
-#endif
-
 
 #ifdef __cplusplus
 }
 #endif
+
+
+#endif
+
+
