@@ -96,7 +96,7 @@ void  EZH_Camera_320240_Whole_Buf(void)
 
 
 /*
-	Note: We are using theEZH_Camera_320240_Whole_Buf from from  NXP AN14191SW.
+	Note: We are using the EZH_Camera_320240_Whole_Buf from from  NXP AN14191SW.
 
 	This software has several ezh programs packed into 1 array called s_smartdmaCameraFirmware .The 1st 8 32-bit words (32bytes) represents an ezh progam/api table.
 	The EZH_Camera_320240_Whole_Buf  program is the 1st option and starts directly after the table
