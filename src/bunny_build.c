@@ -4,8 +4,6 @@
 
 #include "bunny_build.h"
 
-
-
 #ifndef NULL
 	#define NULL 0
 #endif // !NULL
@@ -59,7 +57,6 @@ bunny_build_label__result_t bunny_build__add_label(const char* label,uint32_t *r
 	return r;
 }
 
-
 bool bunny_build__label_get_address(const char* label, uint32_t *Address)
 {
 	for (uint32_t i = 0; i < bunny_build__num_labels; i++)
@@ -77,7 +74,6 @@ bool bunny_build__label_get_address(const char* label, uint32_t *Address)
 
 	return false;
 }
-
 
 uint32_t bunny_build__relocate(uint32_t* ezh_prog_mem_array,
 			 uint32_t ezh_prog_mem_length, 
