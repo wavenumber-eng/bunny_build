@@ -18,7 +18,8 @@ restrictions = [
 ]
 
 [timing]
-cycles = "tbd"
+cycles = "1 scheduled / 3 ordinary"
+notes = "Single cycle for a scheduled branch (the next two opcodes are not flushed), three cycles for an ordinary branch. SPO/UNS conditions force a scheduled branch; SNE/NZS schedule when NZ is set (AN14650 section 5.22)"
 
 [[provenance]]
 source = "bunny_build"

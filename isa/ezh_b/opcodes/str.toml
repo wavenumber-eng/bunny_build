@@ -16,7 +16,8 @@ writeback, and post-increment.
 restrictions = []
 
 [timing]
-cycles = "tbd"
+cycles = "1+"
+notes = "Same performance as E_LDR (AN14650 section 5.25)"
 
 [[provenance]]
 source = "bunny_build"

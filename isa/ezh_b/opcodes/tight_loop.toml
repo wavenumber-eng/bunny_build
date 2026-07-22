@@ -14,7 +14,7 @@ while the count register decrements to zero, without branch overhead.
 restrictions = []
 
 [timing]
-cycles = "tbd"
+cycles = "1"
 
 [[provenance]]
 source = "bunny_build"

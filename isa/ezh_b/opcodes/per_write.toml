@@ -21,7 +21,7 @@ restrictions = [
 
 [timing]
 cycles = "1+"
-notes = "Single cycle or more depending on peripheral bus response"
+notes = "Same performance as E_LDR (AN14650 section 5.28)"
 
 [[provenance]]
 source = "fsl_header"

@@ -19,7 +19,8 @@ restrictions = [
 ]
 
 [timing]
-cycles = "tbd"
+cycles = "1+"
+notes = "Read submits in a single cycle; total latency including submission is at least 2 cycles. Execution stalls only if the destination register is used (other than written) before data returns; the DFETCH unit buffers one transaction, and consecutive reads into the same register serialize (AN14650 section 5.24)"
 
 [[provenance]]
 source = "bunny_build"

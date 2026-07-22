@@ -26,6 +26,17 @@ may declare `mnemonic = {...}` or `mnemonics = [{...}, ...]`; each entry may
 carry `when = { field = value, ... }` fixing fields non-positionally (used
 where token ORDER depends on a field, e.g. rshift's RLSL_ADD vs ADD_RLSL).
 Aliases expand as `E_[COND_]<name>` when their form has a cond modifier.
+
+Reading a green result, two caveats:
+
+  - Zero-valued bindings contribute no bits to the predicted base word, so a
+    binding whose every enumerated value is 0 is not exercised by the base
+    check (harmless - zero means "token absent" - but a green run only
+    verifies the nonzero side of each binding).
+  - For the 9 known-defective fsl macros (extract_fsl.DEFECTS), prediction is
+    checked against the *repaired* intended encoding, not the uncompilable
+    text as written - those remain adjudication items regardless of this
+    check's result.
 """
 from __future__ import annotations
 

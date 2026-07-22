@@ -20,7 +20,8 @@ restrictions = [
 ]
 
 [timing]
-cycles = "tbd"
+cycles = "3"
+notes = "Three cycles (AN14650 Table 12 row 23)"
 
 [[provenance]]
 source = "bunny_build"

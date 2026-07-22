@@ -24,6 +24,7 @@ restrictions = [
 
 [timing]
 cycles = "1"
+notes = "NOP, HEART_RYTHM, and SYNCH_ALL_TO_BEAT are single cycle; WAIT_FOR_BEAT halts until the next heartbeat (AN14650 sections 5.17-5.20, Table 12 rows 17-20)"
 
 [[provenance]]
 source = "fsl_header"

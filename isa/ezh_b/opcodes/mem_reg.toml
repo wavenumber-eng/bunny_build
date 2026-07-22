@@ -17,7 +17,8 @@ restrictions = [
 ]
 
 [timing]
-cycles = "tbd"
+cycles = "1+"
+notes = "Same performance as E_LDR: single-cycle submission, total latency at least 2 cycles, stalls only on early use of the destination (AN14650 sections 5.26-5.27)"
 
 [[provenance]]
 source = "bunny_build"

@@ -24,7 +24,7 @@ depends_on = ["isa-schema"]
 [[steps]]
 id = "verify-encodings"
 title = "Mechanically verify: parse fsl header + bunny_build encoders, three-way diff against ISA db; camera blob as integration anchor"
-status = "active"
+status = "done"
 depends_on = ["populate-isa-db"]
 
 [[steps]]

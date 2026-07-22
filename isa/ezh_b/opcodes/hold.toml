@@ -18,7 +18,8 @@ RA. ACC variants carry a per-vector acceleration mask byte in [31:24] (bit
 restrictions = []
 
 [timing]
-cycles = "tbd"
+cycles = "1"
+notes = "Issues in a single cycle, then halts until the Boolean pattern is matched (AN14650 Table 12 row 16)"
 
 [[provenance]]
 source = "bunny_build"
