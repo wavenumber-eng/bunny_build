@@ -55,10 +55,15 @@ templates.</td></tr>
 into every page at build time (self-contained output).</td></tr>
 </table>
 
-<p><strong>Output:</strong> <code>docs/html/</code> — an index page, one page
-per base opcode, and one page per prose chapter. Fully self-contained: no CDN
-fonts, scripts, or images; diagrams are inline SVG. Output is deterministic
-(stable ordering, no timestamps) and committed to the repository.</p>
+<p><strong>Output:</strong> <code>docs/html/</code> — the instruction
+reference is ONE page (per direction, 2026-07-22): the index carries every
+base opcode as a collapsed, expandable panel inline (header: name, opcode
+value, mnemonic count) — no separate per-opcode pages. Deep links
+(<code>index.html#mov</code>) and search results auto-expand the target
+panel via a hash handler. Prose chapters remain their own pages. Fully
+self-contained: no CDN fonts, scripts, or images; diagrams are inline SVG.
+Output is deterministic (stable ordering, no timestamps) and committed to
+the repository.</p>
 
 <h2>Regeneration and drift check</h2>
 
@@ -97,16 +102,20 @@ the expanded mnemonic set to opcode-page links, unresolved names are build
 errors.</li>
 </ul>
 
-<h2>Opcode page structure</h2>
+<h2>Opcode section structure (one expandable panel per opcode)</h2>
 
 <ol>
-<li>Opcode name, 5-bit value, family.</li>
+<li>Panel header: opcode name, 5-bit value, mnemonic count (collapsed by
+default; anchor id = opcode name).</li>
 <li>Semantics prose and restrictions (from the db, synthesized text only).</li>
 <li>Timing: cycles plus qualifying note.</li>
-<li>Per form: syntax line; derived decode mask/match; bitfield diagram;
+<li>Per form: syntax line; derived decode mask/match; bitfield diagram
+with an "opcode" caption on the fixed low bits and a one-line color
+legend (green fixed / tinted fields / dim reserved-zero);
 form notes; expanded mnemonic table (name, canonical base word) —
 including alias mnemonics (<code>E_POP</code>/<code>E_PUSH</code>
-families) on their base form's page, presented as presets of that form.</li>
+families) on their base form's section, presented as presets of that
+form.</li>
 <li>Public-source citations only (see Provenance).</li>
 </ol>
 

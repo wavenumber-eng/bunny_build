@@ -199,6 +199,8 @@ a { color: var(--amber); text-decoration: none; }
 a:hover { color: var(--text); text-decoration: underline; }
 
 svg { display: block; margin: 8px 0; max-width: 100%; }
+.legend { margin: -2px 0 8px 0; }
+.lg-fx { color: var(--green); }
 svg rect { stroke: var(--border); }
 svg text { fill: var(--text); }
 svg text.bit { fill: var(--text-dim); }
@@ -246,6 +248,14 @@ if (fontBtn) fontBtn.addEventListener('click', () => {
     applyPrefs();
 });
 applyPrefs();
+// Deep links: #opcode expands that section (search anchors land here too).
+function openHash() {
+    const el = location.hash && document.getElementById(location.hash.slice(1));
+    if (el && el.classList.contains('collapsed')) el.classList.remove('collapsed');
+    if (el) el.scrollIntoView();
+}
+window.addEventListener('hashchange', openHash);
+openHash();
 """
 
 N_FIELD_COLORS = 6
@@ -296,10 +306,17 @@ def bitfield_svg(form: dict, fields: dict) -> str:
         text = label if kind != "rsvd" else "0"
         size = 11 if len(text) * 7 <= w else max(7, int(w / len(text) * 1.6))
         tattr = f' class="{tcls}"' if tcls else ""
+        caption = "opcode" if kind == "fixed" and lo == 0 else ""
+        ty = TICK + 13 if caption else TICK + H / 2 + 4
         parts.append(
-            f'<text x="{x + w / 2}" y="{TICK + H / 2 + 4}" text-anchor="middle" '
+            f'<text x="{x + w / 2}" y="{ty}" text-anchor="middle" '
             f'font-size="{size}"{tattr}>{html.escape(text)}</text>'
         )
+        if caption:
+            parts.append(
+                f'<text x="{x + w / 2}" y="{TICK + H - 6}" text-anchor="middle" '
+                f'font-size="8" class="bit">{caption}</text>'
+            )
         parts.append(f'<text x="{x + 2}" y="{TICK - 2}" font-size="9" class="bit">{hi}</text>')
         if lo != hi:
             parts.append(
@@ -307,6 +324,12 @@ def bitfield_svg(form: dict, fields: dict) -> str:
                 f'text-anchor="end">{lo}</text>'
             )
     parts.append("</svg>")
+    parts.append(
+        "<div class='prov legend'>"
+        "<span class='lg-fx'>green</span> = fixed bits (decode mask/match) · "
+        "tinted = operand/modifier fields · "
+        "dim 0 = reserved (canonical 0, decode don't-care)</div>"
+    )
     return "".join(parts)
 
 
@@ -338,10 +361,11 @@ def alias_rows(op: dict, fields: dict) -> list[tuple[str, int, str]]:
     return sorted(rows)
 
 
-def panel(header: str, content: str, collapsed: bool = False) -> str:
+def panel(header: str, content: str, collapsed: bool = False, anchor: str = "") -> str:
     cls = "panel collapsed" if collapsed else "panel"
+    aid = f' id="{anchor}"' if anchor else ""
     return (
-        f'<div class="{cls}"><div class="panel-header">{html.escape(header)}</div>'
+        f'<div class="{cls}"{aid}><div class="panel-header">{html.escape(header)}</div>'
         f'<div class="panel-content">{content}</div></div>'
     )
 
@@ -457,46 +481,33 @@ def main() -> int:
     arch, fields, opcodes = load()
     ordered = sorted(opcodes.items(), key=lambda kv: kv[1]["opcode"]["value"])
 
-    idx_rows = []
+    # Single expandable reference: every opcode is a collapsed panel on the
+    # index itself (per direction: expandable details, not links to pages).
+    sections = []
     total_mnem = 0
     for name, op in ordered:
-        body = bunny_header("instruction set reference") + render_opcode(name, op, fields, arch)
-        body += "<div class='prose'><a href='index.html'>&lt; index</a></div>"
-        (outdir / f"{name}.html").write_text(
-            page(f"EZH {op['opcode']['name']}", body), encoding="utf-8"
-        )
         n_mnem = sum(len(mnemonic_rows(op, f, fields)) for f in op.get("forms", []))
         n_mnem += len(alias_rows(op, fields))
         total_mnem += n_mnem
-        idx_rows.append(
-            f"<tr><td class='mn'><a href='{name}.html'>{html.escape(op['opcode']['name'])}"
-            f"</a></td><td class='enc'>0x{op['opcode']['value']:02x}</td>"
-            f"<td class='enc'>{n_mnem}</td></tr>"
-        )
-    idx_table = (
-        "<div class='tblwrap'><table class='results-table'>"
-        "<tr><th>opcode</th><th>value</th><th>mnemonics</th></tr>"
-        + "".join(idx_rows)
-        + "</table></div>"
-    )
-    index_body = bunny_header("instruction set reference") + panel(
-        "INSTRUCTION SET", idx_table
+        header = (f"{op['opcode']['name']} — 0x{op['opcode']['value']:02X} · "
+                  f"{n_mnem} mnemonics")
+        sections.append(panel(header, render_opcode(name, op, fields, arch),
+                              collapsed=True, anchor=name))
+    index_body = (
+        bunny_header("instruction set reference")
+        + "<div class='prose'>Click an instruction to expand its reference. "
+        "All encodings, mnemonic expansions, and timing are generated from "
+        "the machine-readable ISA database.</div>"
+        + "\n".join(sections)
     )
     (outdir / "index.html").write_text(page("EZH instruction set", index_body),
                                        encoding="utf-8")
-    print(f"{len(ordered)} opcode pages + index -> {outdir}")
+    print(f"expandable index ({len(ordered)} opcode sections) -> {outdir}")
     print(f"{total_mnem} mnemonics rendered (expand_mnemonics.py guarantees 1502 vs fsl)")
 
     if single:
-        parts = [bunny_header("instruction set reference — single-page preview")]
-        parts.append(panel("INSTRUCTION SET", idx_table.replace(".html'", "'")
-                           .replace("<a href='", "<a href='#")))
-        for name, op in ordered:
-            parts.append(f"<a id='{name}'></a>")
-            parts.append(render_opcode(name, op, fields, arch))
         single.write_text(
-            page("EZH instruction set (single-page preview)", "\n".join(parts)),
-            encoding="utf-8",
+            page("EZH instruction set (preview)", index_body), encoding="utf-8"
         )
         print(f"single-page preview -> {single}")
     return 0
