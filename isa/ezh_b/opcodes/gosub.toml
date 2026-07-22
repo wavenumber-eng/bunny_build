@@ -1,0 +1,43 @@
+# E_GOSUB — opcode 0x03: subroutine call overlay.
+
+[opcode]
+name = "GOSUB"
+value = 0x03
+family = "control"
+mnemonics_base = ["E_GOSUB"]
+
+[semantics]
+prose = """
+Calls a subroutine: any instruction word whose bits [1:0] are 0b11 is a GOSUB;
+the remaining bits hold the word-aligned target byte address directly. The
+return address is written to RA. Because GOSUB overlays the whole encoding
+space, decoders must match it before any other opcode (most-specific-first by
+mask popcount does this naturally - GOSUB has the smallest mask).
+"""
+restrictions = [
+  "Target address must be word aligned (bits [1:0] of the address are implied 0b00, replaced by the 0b11 tag)",
+  "No conditional variant: the cond field bits belong to the target address",
+]
+
+[timing]
+cycles = "tbd"
+
+[[provenance]]
+source = "bunny_build"
+detail = "E_GOSUB label prototype; two-pass assembler emits 0x03 + target address"
+
+[[provenance]]
+source = "an14650"
+detail = "section 5, E_GOSUB"
+
+[[forms]]
+name = "default"
+syntax = "E_GOSUB (label)"
+mnemonic = { pattern = "E_GOSUB", binds = [] }
+fixed = [{ bits = "1:0", value = 0x3 }]
+operands = ["gosub_addr"]
+modifiers = []
+notes = "Only bits [1:0] are fixed; bits [4:2] of the opcode field carry address bits."
+
+[forms.encoding_reference]
+bunny_build = "E_GOSUB(a30) = 0x03 + a30  (a30 = word-aligned byte address)"

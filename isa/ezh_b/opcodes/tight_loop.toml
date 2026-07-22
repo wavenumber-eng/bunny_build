@@ -1,0 +1,37 @@
+# E_TIGHT_LOOP — opcode 0x1a: hardware loop.
+
+[opcode]
+name = "TIGHT_LOOP"
+value = 0x1a
+family = "control"
+mnemonics_base = ["E_TIGHT_LOOP"]
+
+[semantics]
+prose = """
+Hardware loop: repeats the instruction block up to the end-address register
+while the count register decrements to zero, without branch overhead.
+"""
+restrictions = []
+
+[timing]
+cycles = "tbd"
+
+[[provenance]]
+source = "bunny_build"
+detail = "E_TIGHT_LOOP(rend,rcount) = 0x1A + (rend<<14) + (rcount<<20)"
+
+[[provenance]]
+source = "an14650"
+detail = "section 5, E_TIGHT_LOOP"
+
+[[forms]]
+name = "default"
+syntax = "E_[COND_]TIGHT_LOOP ([cond,] rend, rcount)"
+mnemonic = { pattern = "E_[COND_]TIGHT_LOOP", binds = ["cond"] }
+fixed = [{ bits = "4:0", value = 0x1a }]
+operands = ["src1", "src2"]
+modifiers = ["cond"]
+notes = "End-address register rides in src1 [17:14], loop count register in src2 [23:20]."
+
+[forms.encoding_reference]
+bunny_build = "E_TIGHT_LOOP(rend,rcount) = 0x1A + (rend<<14) + (rcount<<20)"

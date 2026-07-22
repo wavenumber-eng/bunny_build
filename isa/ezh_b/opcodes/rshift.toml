@@ -1,0 +1,41 @@
+# RSHIFT — opcode 0x19: register-amount barrel shift fused with ALU op.
+
+[opcode]
+name = "RSHIFT"
+value = 0x19
+family = "shift"
+mnemonics_base = ["E_RLSL", "E_RLSR", "E_RASR", "E_RROR"]
+
+[semantics]
+prose = """
+Shifts a register by an amount taken from another register (R prefix:
+RLSL/RLSR/RASR/RROR), optionally fused with an ALU operation. The order
+modifier selects the pipeline direction: shift-then-op (e.g. E_RLSL_ADD) or
+op-then-shift (e.g. E_ADD_RLSL). The N modifier inverts the result.
+"""
+restrictions = [
+  "Shift-amount register is a 3-bit field: R0-R7 only (bit 27 is the N modifier)",
+]
+
+[timing]
+cycles = "1"
+
+[[provenance]]
+source = "bunny_build"
+detail = "E_R*/E_*_R* register-shift encoder formulas"
+
+[[provenance]]
+source = "an14650"
+detail = "section 5, register-shift instruction group"
+
+[[forms]]
+name = "default"
+syntax = "E_[COND_]R{LSL|ASR|LSR|ROR}[N][_op][S] / E_[COND_]op[N]_R{LSL|ASR|LSR|ROR}[S]"
+mnemonic = { pattern = "E_[COND_]{RLSL|RASR|RLSR|RROR}[_FUSEOP][ORDER][N][S]", binds = ["cond", "shift_type", "fuse_op", "order_rshift", "n_rshift", "s"] }
+fixed = [{ bits = "4:0", value = 0x19 }]
+operands = ["dest", "src1", "src2", "rshift3"]
+modifiers = ["cond", "s", "shift_type", "fuse_op", "order_rshift", "n_rshift"]
+notes = "src1 is the fused ALU operand (fuse_op != 0 only), src2 the shifted register, rshift3 the shift-amount register. order 0 = shift-then-op (RLSL_ADD), 1 = op-then-shift (ADD_RLSL). N attaches to the op name in the mnemonic."
+
+[forms.encoding_reference]
+bunny_build = "E_ADD_RLSL(dest,rop,r2s,rsh) = 0x19 + (rop<<14) + (dest<<10) + (r2s<<20) + (rsh<<24) + (4<<29) + (1<<28) + (EU<<5)"

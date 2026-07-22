@@ -1,0 +1,42 @@
+# E_PER_READ — opcode 0x04: single-cycle peripheral register read.
+
+[opcode]
+name = "PER_READ"
+value = 0x04
+family = "peripheral-access"
+mnemonics_base = ["E_PER_READ"]
+
+[semantics]
+prose = """
+Reads a peripheral register through the dedicated peripheral port into a
+destination register. The 20-bit word-aligned byte address selects a location
+within the 1MB peripheral window.
+"""
+restrictions = [
+  "Address must be word aligned",
+  "Address is an offset within the peripheral window, not a full AHB address",
+]
+
+[timing]
+cycles = "1+"
+notes = "Single cycle or more depending on peripheral bus response"
+
+[[provenance]]
+source = "fsl_header"
+detail = "E_PER_READ macro encoding"
+
+[[provenance]]
+source = "an14650"
+detail = "section 5.28 E_PER_READ and E_PER_WRITE"
+
+[[forms]]
+name = "default"
+syntax = "E_[COND_]PER_READ ([cond,] dest, addr20)"
+mnemonic = { pattern = "E_[COND_]PER_READ", binds = ["cond"] }
+fixed = [{ bits = "4:0", value = 0x04 }]
+operands = ["dest", "per_addr20_r"]
+modifiers = ["cond"]
+notes = "Unlike PER_WRITE, the address field is contiguous: instr [31:14] <- addr [19:2]."
+
+[forms.encoding_reference]
+bunny_build = "E_PER_READ(dest,addr20) = 0x4 + (dest<<10) + ((addr20&0xffffc)<<12) + (EU<<5)"

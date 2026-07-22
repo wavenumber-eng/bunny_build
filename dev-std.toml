@@ -1,0 +1,8 @@
+standard_version = "2026.7.18"
+profile = "cpp-library"
+
+[tests]
+roots = ["test"]
+
+[documentation.plans]
+roots = ["docs/plans"]

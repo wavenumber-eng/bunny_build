@@ -1,0 +1,230 @@
+# EZH Architecture B — architecture-level shared definitions.
+# Single source of truth; see isa/README.md and ADR isa-adr-0001.
+
+[arch]
+name = "ezh_b"
+title = "NXP EZH Architecture B (SmartDMA)"
+instruction_width = 32
+opcode_bits = "4:0"
+# GOSUB overlays every encoding whose bits [1:0] == 0b11; decoders must match
+# most-specific-first (sort forms by mask popcount, descending).
+
+# ---------------------------------------------------------------------------
+# Register file: 4-bit register addresses used by dest/src fields.
+# ---------------------------------------------------------------------------
+
+[registers.R0]
+value = 0x0
+class = "gpr"
+desc = "General purpose register 0"
+
+[registers.R1]
+value = 0x1
+class = "gpr"
+desc = "General purpose register 1"
+
+[registers.R2]
+value = 0x2
+class = "gpr"
+desc = "General purpose register 2"
+
+[registers.R3]
+value = 0x3
+class = "gpr"
+desc = "General purpose register 3"
+
+[registers.R4]
+value = 0x4
+class = "gpr"
+desc = "General purpose register 4"
+
+[registers.R5]
+value = 0x5
+class = "gpr"
+desc = "General purpose register 5"
+
+[registers.R6]
+value = 0x6
+class = "gpr"
+desc = "General purpose register 6"
+
+[registers.R7]
+value = 0x7
+class = "gpr"
+desc = "General purpose register 7"
+
+[registers.GPO]
+value = 0x8
+class = "io"
+desc = "General purpose outputs"
+
+[registers.GPD]
+value = 0x9
+class = "io"
+desc = "General purpose output direction/enable"
+
+[registers.CFS]
+value = 0xa
+class = "control"
+desc = "Conditional flag selection"
+
+[registers.CFM]
+value = 0xb
+class = "control"
+desc = "Conditional flag mask (boolean pattern detection)"
+
+[registers.SP]
+value = 0xc
+class = "control"
+desc = "Stack pointer"
+
+[registers.PC]
+value = 0xd
+class = "control"
+desc = "Program counter; writing PC schedules a branch"
+
+[registers.GPI]
+value = 0xe
+class = "io"
+desc = "General purpose inputs (read only)"
+
+[registers.RA]
+value = 0xf
+class = "control"
+desc = "Return address"
+
+# ---------------------------------------------------------------------------
+# Condition codes: 4-bit values for the cond field (instruction bits [8:5]).
+# EU = execute unconditionally.
+# ---------------------------------------------------------------------------
+
+[conditions.EU]
+value = 0x0
+desc = "Execute unconditionally"
+
+[conditions.ZE]
+value = 0x1
+desc = "Zero flag set"
+
+[conditions.NZ]
+value = 0x2
+desc = "Zero flag not set"
+
+[conditions.PO]
+value = 0x3
+desc = "Positive"
+
+[conditions.NE]
+value = 0x4
+desc = "Negative"
+
+[conditions.AZ]
+value = 0x5
+desc = "ALU zero"
+
+[conditions.ZB]
+value = 0x6
+desc = "Zero or below"
+
+[conditions.CA]
+value = 0x7
+desc = "Carry set"
+
+[conditions.NC]
+value = 0x8
+desc = "Carry not set"
+
+[conditions.CZ]
+value = 0x9
+desc = "Carry or zero"
+
+[conditions.SPO]
+value = 0xa
+alias = ["UNS"]
+desc = "Signed positive / unsigned variant (alias UNS)"
+
+[conditions.SNE]
+value = 0xb
+alias = ["NZS"]
+desc = "Signed negative variant (alias NZS)"
+
+[conditions.NBS]
+value = 0xc
+desc = "Boolean slice not set"
+
+[conditions.NEX]
+value = 0xd
+desc = "External flag not set"
+
+[conditions.BS]
+value = 0xe
+desc = "Boolean slice set"
+
+[conditions.EX]
+value = 0xf
+desc = "External flag set"
+
+# ---------------------------------------------------------------------------
+# Bit-slice mux configurations (boolean pattern detector inputs).
+# ---------------------------------------------------------------------------
+
+[bit_slice_cfg.BS_1]
+value = 0
+desc = "Constant 1"
+
+[bit_slice_cfg.BS_RISE]
+value = 1
+desc = "Rising edge"
+
+[bit_slice_cfg.BS_FALL]
+value = 2
+desc = "Falling edge"
+
+[bit_slice_cfg.BS_CHANGE]
+value = 3
+desc = "Any edge"
+
+[bit_slice_cfg.BS_SIG]
+value = 4
+desc = "Signal level"
+
+[bit_slice_cfg.BS_SIGN]
+value = 5
+desc = "Signal level inverted"
+
+[bit_slice_cfg.BS_0]
+value = 6
+desc = "Constant 0"
+
+[bit_slice_cfg.BS_EVENT]
+value = 7
+desc = "Event input"
+
+# ---------------------------------------------------------------------------
+# Provenance source ids, referenced by opcode files.
+# ---------------------------------------------------------------------------
+
+[sources.spec_b_06]
+title = "EZHandler Arch B PreRel0.6 (Adam Fuks)"
+public = false
+note = "NXP confidential; informs, never copied"
+
+[sources.an14650]
+title = "AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28)"
+public = true
+note = "Public NXP application note; citable"
+
+[sources.fsl_header]
+title = "fsl_ezh_armclang.h (hand-created by Adam Fuks)"
+public = false
+note = "Best available encoding reference; NXP confidential banner"
+
+[sources.bunny_build]
+title = "bunny_build__instr.h / .c encoders"
+public = true
+note = "Validated by MCX camera byte-for-byte test"
+
+[sources.sv_tb]
+title = "ezh_tb_package.sv"
+public = false
+note = "Experimental testbench; ADVISORY ONLY, never authoritative"

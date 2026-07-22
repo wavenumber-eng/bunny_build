@@ -1,0 +1,40 @@
+# FSHIFT — opcode 0x11: flip (endian or bit-reverse) + shift, optional fused ALU op.
+
+[opcode]
+name = "FSHIFT"
+value = 0x11
+family = "shift"
+mnemonics_base = ["E_FEND_LSR", "E_FEND_ASR", "E_FBIT_LSR", "E_FBIT_ASR"]
+
+[semantics]
+prose = """
+Flips a register value - FEND reverses byte order (endian flip), FBIT reverses
+bit order - then shifts it right (LSR or ASR) by a 5-bit immediate, optionally
+fusing the result into an ALU operation with a second register operand.
+"""
+restrictions = [
+  "Only right shifts (LSR/ASR) exist in this family",
+]
+
+[timing]
+cycles = "1"
+
+[[provenance]]
+source = "bunny_build"
+detail = "E_FEND_*/E_FBIT_* encoder formulas"
+
+[[provenance]]
+source = "an14650"
+detail = "section 5, flip/shift instruction group"
+
+[[forms]]
+name = "default"
+syntax = "E_[COND_]{FEND|FBIT}_{LSR|ASR}[_{AND|OR|XOR|ADD|SUB|ADC|SBC}][S] ([cond,] dest, [roperand,] r2shift, shift5)"
+mnemonic = { pattern = "E_[COND_]{FEND|FBIT}_{LSR|ASR}[_FUSEOP][S]", binds = ["cond", "fbit", "asr_sel", "fuse_op", "s"] }
+fixed = [{ bits = "4:0", value = 0x11 }]
+operands = ["dest", "src1", "src2", "shift5"]
+modifiers = ["cond", "s", "fbit", "asr_sel", "fuse_op"]
+notes = "Same operand layout as opcode 0x10: src1 is the fused ALU operand, src2 the flipped/shifted register."
+
+[forms.encoding_reference]
+bunny_build = "E_FBIT_ASR(dest,r2s,sh5) = 0x11 + (dest<<10) + (r2s<<20) + (sh5<<24) + (1<<18) + (1<<19) + (EU<<5)"

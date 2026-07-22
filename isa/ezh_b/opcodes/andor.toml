@@ -1,0 +1,62 @@
+# E_ANDOR — opcode 0x16: three-register AND + OR (bit set/clear merge).
+#
+# NOTE: the header author's own encoders carry a pass-1 runtime warning
+# ("DOUBLE CHECK E_ANDOR ENCODING"), and the fsl header's four E_ANDOR*
+# macros cannot compile as written (missing '+' between the src1 and src2
+# terms) — priority adjudication item with the EZH creator before the docs
+# treat this opcode as settled.
+
+[opcode]
+name = "ANDOR"
+value = 0x16
+family = "alu"
+mnemonics_base = ["E_ANDOR"]
+
+[semantics]
+prose = """
+dest = (rsrc AND rand) OR ror: masks a source register with an AND operand,
+then ORs in a third register - simultaneously clearing and setting specific
+bits in a single instruction (AN14650 section 5.9). No shift or rotate is
+involved: the historical argument name "ror" reads register-to-OR, not
+rotate-right. Corrected 2026-07-21 - this file previously typed the fourth
+operand as a 5-bit rotate amount, an interpretation contradicted by both the
+sv_tb decode ((src1 & src2) | src3) and AN14650's option list, which names
+only conditional execution and set-flag.
+"""
+restrictions = [
+  "Encoding flagged 'DOUBLE CHECK' by the original header author; unverified against hardware",
+  "No support for SPO/SNE condition flags",
+  "S with destination PC does not set flags (schedules branch instead)",
+  "OR-source register limited to R0-R7 per sv_tb decode (advisory; field width on the adjudication list)",
+]
+
+[timing]
+cycles = "1"
+
+[[provenance]]
+source = "an14650"
+detail = "section 5.9, E_ANDOR: three-register AND+OR semantics, argument list (Flag, DST, Rsrc, Rand, Ror), restrictions; section 5 summary table row 9: single cycle"
+
+[[provenance]]
+source = "bunny_build"
+detail = "E_ANDOR* encoder formulas (carry a runtime DOUBLE CHECK ENCODING warning)"
+
+[[provenance]]
+source = "fsl_header"
+detail = "E_ANDOR* macros lines 1978-1981 are missing a '+' between (rsrc<<14) and (rand<<20) and cannot compile; intended encoding (with '+') verified"
+
+[[provenance]]
+source = "sv_tb"
+detail = "ADVISORY: e_andor computes (src1 & src2) | src3 with src3 masked to 3 bits [26:24]; corroborates the repaired fsl macros and the register-not-rotate reading"
+
+[[forms]]
+name = "default"
+syntax = "E_[COND_]ANDOR[S] ([cond,] dest, rsrc, rand, ror)"
+mnemonic = { pattern = "E_[COND_]ANDOR[S]", binds = ["cond", "s"] }
+fixed = [{ bits = "4:0", value = 0x16 }]
+operands = ["dest", "src1", "src2", "or_reg3"]
+modifiers = ["cond", "s"]
+notes = "Source register in src1 [17:14], AND operand register in src2 [23:20], OR-source register in or_reg3 [26:24]. Bits [28:27] are reserved-zero (they belonged to the presumed 5-bit rotate before the correction); whether hardware decodes 3 or 4 register bits is for the EZH creator to adjudicate."
+
+[forms.encoding_reference]
+bunny_build = "E_ANDOR(dest,rsrc,rand,ror) = 0x16 + (dest<<10) + (rsrc<<14) + (rand<<20) + (ror<<24) + (EU<<5)"

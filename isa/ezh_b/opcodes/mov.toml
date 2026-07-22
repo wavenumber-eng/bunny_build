@@ -1,0 +1,72 @@
+# E_MOV — opcode 0x00: register move / immediate load family.
+
+[opcode]
+name = "MOV"
+value = 0x00
+family = "data-movement"
+mnemonics_base = ["E_MOV", "E_MVN", "E_LOAD_IMM", "E_LOAD_SIMM"]
+
+[semantics]
+prose = """
+Moves data register-to-register, or loads an immediate into a register. The N
+modifier inverts the value (MVN). Immediates are 11-bit signed and may be left
+shifted 0-31 positions (LOAD_SIMM) before load. Writing PC as destination
+schedules a branch; with S set on a PC write, flags are NOT set - the branch is
+considered scheduled instead.
+"""
+restrictions = [
+  "No support for SPO/SNE condition flags",
+  "S with destination PC does not set flags (schedules branch instead)",
+]
+
+[timing]
+cycles = "1"
+
+[[provenance]]
+source = "fsl_header"
+detail = "E_MOV / E_MVN / E_LOAD_IMM / E_LOAD_SIMM macro encodings"
+
+[[provenance]]
+source = "spec_b_06"
+detail = "section 5, E_MOV: purpose, options, restrictions"
+
+[[provenance]]
+source = "an14650"
+detail = "section 5.1 E_MOV"
+
+# ---------------------------------------------------------------------------
+# Form 1: register to register.  E_[COND_]MOV[N][S] (cond,) dest, src
+# ---------------------------------------------------------------------------
+
+[[forms]]
+name = "reg"
+syntax = "E_[COND_]{MOV|MVN}[S] ([cond,] dest, src)"
+mnemonic = { pattern = "E_[COND_]{MOV|MVN}[S]", binds = ["cond", "n", "s"] }
+fixed = [
+  { bits = "4:0", value = 0x00 },
+  { bits = "18:18", value = 0 },   # 0 = register form (1 selects immediate form)
+]
+operands = ["dest", "src1"]
+modifiers = ["cond", "s", "n"]
+
+[forms.encoding_reference]
+bunny_build = "E_MOV(dest,src) = 0x0 + (src<<14) + (dest<<10) + (EU<<5)"
+
+# ---------------------------------------------------------------------------
+# Form 2: immediate load.  E_[COND_]LOAD_[S]IMM[N][S] (cond,) dest, imm11s (,shift5)
+# ---------------------------------------------------------------------------
+
+[[forms]]
+name = "imm"
+syntax = "E_[COND_]LOAD_{IMM|SIMM}[N][S] ([cond,] dest, imm11s [, shift5])"
+mnemonic = { pattern = "E_[COND_]LOAD_{IMM|SIMM}[N][S]", binds = ["cond", "shift5_simm", "n", "s"] }
+fixed = [
+  { bits = "4:0", value = 0x00 },
+  { bits = "18:18", value = 1 },   # immediate form select
+]
+operands = ["dest", "imm11s", "shift5_simm"]
+modifiers = ["cond", "s", "n"]
+notes = "LOAD_IMM is LOAD_SIMM with shift5 = 0. shift5 is a split field."
+
+[forms.encoding_reference]
+bunny_build = "E_LOAD_SIMM(dest,imm,sam) = 0x0 + (dest<<10) + ((imm&0x7ff)<<20) + (1<<18) + (EU<<5) + ((sam&0xf)<<14) + (((sam&0x10)>>4)<<19)"

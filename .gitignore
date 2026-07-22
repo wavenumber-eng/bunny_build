@@ -85,3 +85,7 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
+
+# Python / uv (wn-dev-std tooling)
+.venv/
+__pycache__/

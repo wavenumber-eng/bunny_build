@@ -1,0 +1,38 @@
+# E_INT_TRIGGER — opcode 0x14: raise interrupt/trigger outputs.
+
+[opcode]
+name = "INT_TRIGGER"
+value = 0x14
+family = "control"
+mnemonics_base = ["E_INT_TRIGGER"]
+
+[semantics]
+prose = """
+Drives a 24-bit value onto the EZH interrupt/trigger output lines, signalling
+the host CPU or other peripherals.
+"""
+restrictions = [
+  "No conditional variant: the 24-bit value occupies the cond field bits",
+]
+
+[timing]
+cycles = "1"
+
+[[provenance]]
+source = "bunny_build"
+detail = "E_INT_TRIGGER(x24) = 0x14 + (x24 << 8)"
+
+[[provenance]]
+source = "an14650"
+detail = "section 5, E_INT_TRIGGER"
+
+[[forms]]
+name = "default"
+syntax = "E_INT_TRIGGER (x24)"
+mnemonic = { pattern = "E_INT_TRIGGER", binds = [] }
+fixed = [{ bits = "4:0", value = 0x14 }]
+operands = ["x24"]
+modifiers = []
+
+[forms.encoding_reference]
+bunny_build = "E_INT_TRIGGER(x24) = 0x14 + (x24<<8)"

@@ -1,0 +1,312 @@
+# Shared field definitions referenced by opcode files (opcodes/*.toml).
+#
+# A field maps VALUE bits to INSTRUCTION bits through one or more slices:
+#   { instr = "msb:lsb", value = "msb:lsb" }
+# Slice widths must match. Multiple slices express split encodings.
+#
+# `kind` drives operand checking and rendering:
+#   register  — value is a 4-bit register address (arch.toml [registers])
+#   condition — value is a 4-bit condition code (arch.toml [conditions])
+#   imm       — immediate; `signed` and constraints as declared
+#   flag      — single modifier bit
+#   sel       — multi-bit selector modifier (shift type, fused ALU op, ...)
+#   fixedval  — not an operand; declared via `fixed` in forms instead
+
+[fields.cond]
+kind = "condition"
+desc = "Conditional execution code; EU (0) executes unconditionally"
+slices = [{ instr = "8:5", value = "3:0" }]
+
+[fields.s]
+kind = "flag"
+desc = "Set flags (S suffix, ALU/MOV families)"
+slices = [{ instr = "9:9", value = "0:0" }]
+
+# The LDRB/LDR_REG load families spell their S suffix as SIGNED access, and it
+# lives at bit 21 — not the bit-9 set-flags position (E_LDRBS = E_LDRB + (1<<21)).
+[fields.sgn]
+kind = "flag"
+desc = "Signed access (S suffix on LDRB/LDR_REG load families)"
+slices = [{ instr = "21:21", value = "0:0" }]
+
+[fields.n]
+kind = "flag"
+desc = "Invert result (N modifier, MOV family: MVN, LOAD_IMMN)"
+slices = [{ instr = "31:31", value = "0:0" }]
+
+# The ALU family (opcodes 0x06-0x0e) spells N at bit 19, not bit 31 (bit 31 is
+# the F flip modifier there). The register-shift family (0x19) spells N at bit 27.
+[fields.n_alu]
+kind = "flag"
+desc = "Invert result (N modifier, ALU family ADD/SUB/ADC/SBC/OR/AND/XOR)"
+slices = [{ instr = "19:19", value = "0:0" }]
+
+[fields.n_rshift]
+kind = "flag"
+desc = "Invert result (N modifier, register-shift fused family)"
+slices = [{ instr = "27:27", value = "0:0" }]
+
+[fields.dest]
+kind = "register"
+desc = "Destination register"
+slices = [{ instr = "13:10", value = "3:0" }]
+
+[fields.src1]
+kind = "register"
+desc = "First source register"
+slices = [{ instr = "17:14", value = "3:0" }]
+
+[fields.src2]
+kind = "register"
+desc = "Second source register"
+slices = [{ instr = "23:20", value = "3:0" }]
+
+[fields.imm11s]
+kind = "imm"
+signed = true
+desc = "11-bit signed immediate"
+slices = [{ instr = "30:20", value = "10:0" }]
+
+# Split field: 5-bit left-shift amount for LOAD_SIMM.
+# Bits [3:0] land in instr [17:14]; bit [4] lands in instr [19].
+[fields.shift5_simm]
+kind = "imm"
+signed = false
+desc = "Left-shift amount 0-31 applied to imm11s (LOAD_SIMM)"
+slices = [
+  { instr = "17:14", value = "3:0" },
+  { instr = "19:19", value = "4:4" },
+]
+
+# Split field: 20-bit peripheral byte address for PER_WRITE, word aligned.
+# Value bits [19:12] -> instr [31:24]; value bits [11:2] -> instr [19:10].
+# (Value bits [1:0] are implied zero: word alignment.)
+[fields.per_addr20_w]
+kind = "imm"
+signed = false
+desc = "Peripheral byte address within 1MB window, word aligned (PER_WRITE split encoding)"
+constraint = "addr % 4 == 0"
+slices = [
+  { instr = "31:24", value = "19:12" },
+  { instr = "19:10", value = "11:2" },
+]
+
+# Contiguous variant used by PER_READ: value bits [19:2] -> instr [31:14].
+[fields.per_addr20_r]
+kind = "imm"
+signed = false
+desc = "Peripheral byte address within 1MB window, word aligned (PER_READ)"
+constraint = "addr % 4 == 0"
+slices = [{ instr = "31:14", value = "19:2" }]
+
+# ---------------------------------------------------------------------------
+# ALU family (opcodes 0x06-0x0e) and shift families (0x10/0x11/0x19)
+# ---------------------------------------------------------------------------
+
+[fields.imm12s]
+kind = "imm"
+signed = true
+desc = "12-bit signed immediate (ALU IMM forms)"
+slices = [{ instr = "31:20", value = "11:0" }]
+
+[fields.shift5]
+kind = "imm"
+signed = false
+desc = "Shift amount 0-31 (immediate barrel-shift fusion)"
+slices = [{ instr = "28:24", value = "4:0" }]
+
+[fields.bit5]
+kind = "imm"
+signed = false
+desc = "Bit number 0-31 (BTST/BSET/BCLR/BTOG IMM forms)"
+slices = [{ instr = "28:24", value = "4:0" }]
+
+[fields.f_alu]
+kind = "flag"
+desc = "F modifier: flip (endian) of shifted operand, ALU family"
+slices = [{ instr = "31:31", value = "0:0" }]
+
+[fields.shift_type_alu]
+kind = "sel"
+desc = "Fused shift type, ALU family: 0=LSL 1=ASR 2=LSR 3=ROR"
+slices = [{ instr = "30:29", value = "1:0" }]
+
+[fields.shift_type]
+kind = "sel"
+desc = "Shift type, shift/register-shift families: 0=LSL 1=ASR 2=LSR 3=ROR"
+slices = [{ instr = "19:18", value = "1:0" }]
+
+[fields.fuse_op]
+kind = "sel"
+desc = "Fused ALU op, shift families: 0=none 1=AND 2=OR 3=XOR 4=ADD 5=SUB 6=ADC 7=SBC"
+slices = [{ instr = "31:29", value = "2:0" }]
+
+[fields.bitop_sel]
+kind = "sel"
+desc = "Bit operation select (opcode 0x18): 1=BCLR 5=BTST 6=BSET 7=BTOG"
+slices = [{ instr = "31:29", value = "2:0" }]
+
+[fields.order_rshift]
+kind = "flag"
+desc = "Pipeline order, register-shift fused family: 0=shift then ALU op, 1=ALU op then shift"
+slices = [{ instr = "28:28", value = "0:0" }]
+
+# 3-bit register address: the shift-amount register of the 0x19 family can only
+# be R0-R7 (bit 27 of the word is the N modifier).
+[fields.rshift3]
+kind = "register"
+desc = "Shift-amount register, R0-R7 only (register-shift family)"
+slices = [{ instr = "26:24", value = "2:0" }]
+
+# 3-bit register address: E_ANDOR's OR-source register. Width follows the
+# sv_tb decode (advisory: extract_src3 masks [26:24]); both headers emit the
+# argument unmasked, so a 4-bit [27:24] field is possible — width is on the
+# adjudication list for the EZH creator.
+[fields.or_reg3]
+kind = "register"
+desc = "OR-source register, R0-R7 only per sv_tb decode (E_ANDOR)"
+slices = [{ instr = "26:24", value = "2:0" }]
+
+# ---------------------------------------------------------------------------
+# Memory families (0x01 LDR, 0x02 STR, 0x1d register-offset)
+# ---------------------------------------------------------------------------
+
+[fields.offset8s]
+kind = "imm"
+signed = true
+desc = "8-bit signed byte offset (LDR/STR families)"
+slices = [{ instr = "31:24", value = "7:0" }]
+
+[fields.word]
+kind = "flag"
+desc = "Access size: 1 = 32-bit word, 0 = byte (B mnemonic suffix)"
+slices = [{ instr = "18:18", value = "0:0" }]
+
+[fields.wb_ld]
+kind = "flag"
+desc = "Address writeback, load family (PRE/POST addressing)"
+slices = [{ instr = "20:20", value = "0:0" }]
+
+[fields.wb_st]
+kind = "flag"
+desc = "Address writeback, store family (PRE/POST addressing)"
+slices = [{ instr = "10:10", value = "0:0" }]
+
+[fields.post]
+kind = "flag"
+desc = "Post-increment addressing (with writeback set): 0 = pre, 1 = post"
+slices = [{ instr = "19:19", value = "0:0" }]
+
+[fields.roffset]
+kind = "register"
+desc = "Offset register (register-offset load/store, opcode 0x1d)"
+slices = [{ instr = "27:24", value = "3:0" }]
+
+# ---------------------------------------------------------------------------
+# Flip-shift family (0x11)
+# ---------------------------------------------------------------------------
+
+[fields.fbit]
+kind = "flag"
+desc = "Flip kind: 0 = FEND (endian/byte flip), 1 = FBIT (bit reverse)"
+slices = [{ instr = "18:18", value = "0:0" }]
+
+[fields.asr_sel]
+kind = "flag"
+desc = "Shift kind after flip: 0 = LSR, 1 = ASR"
+slices = [{ instr = "19:19", value = "0:0" }]
+
+# ---------------------------------------------------------------------------
+# Control / system opcodes
+# ---------------------------------------------------------------------------
+
+# GOSUB overlays every word with [1:0] == 0b11; the word-aligned target byte
+# address occupies the remaining bits directly.
+[fields.gosub_addr]
+kind = "imm"
+signed = false
+desc = "GOSUB target byte address, word aligned; bits [31:2] of the address"
+constraint = "addr % 4 == 0"
+slices = [{ instr = "31:2", value = "31:2" }]
+
+# GOTO immediate target: word-aligned 21-bit byte address. Address bits [1:0]
+# are zero, so (addr & 0x1FFFFF) << 9 never disturbs the form flag (bit 9) or
+# the link flag (bit 10); the live bits are addr [20:2] -> instr [29:11].
+[fields.goto_addr21]
+kind = "imm"
+signed = false
+desc = "GOTO target byte address (21-bit absolute, word aligned)"
+constraint = "addr % 4 == 0"
+slices = [{ instr = "29:11", value = "20:2" }]
+
+[fields.link]
+kind = "flag"
+desc = "Link (L suffix): save return address to RA before branching"
+slices = [{ instr = "10:10", value = "0:0" }]
+
+[fields.gpo_and8]
+kind = "imm"
+signed = false
+desc = "AND mask byte applied to GPO (MODIFY_GPO_BYTE)"
+slices = [{ instr = "15:8", value = "7:0" }]
+
+[fields.gpo_or8]
+kind = "imm"
+signed = false
+desc = "OR mask byte applied to GPO (MODIFY_GPO_BYTE)"
+slices = [{ instr = "23:16", value = "7:0" }]
+
+[fields.gpo_xor8]
+kind = "imm"
+signed = false
+desc = "XOR mask byte applied to GPO (MODIFY_GPO_BYTE)"
+slices = [{ instr = "31:24", value = "7:0" }]
+
+[fields.x24]
+kind = "imm"
+signed = false
+desc = "24-bit value driven onto the interrupt trigger outputs"
+slices = [{ instr = "31:8", value = "23:0" }]
+
+[fields.val16imm]
+kind = "imm"
+signed = false
+desc = "16-bit immediate heart-rhythm period"
+slices = [{ instr = "31:16", value = "15:0" }]
+
+[fields.r16bit]
+kind = "register"
+desc = "Register holding the heart-rhythm period"
+slices = [{ instr = "17:14", value = "3:0" }]
+
+[fields.on1imm]
+kind = "imm"
+signed = false
+desc = "Beat sync enable (single bit)"
+slices = [{ instr = "31:31", value = "0:0" }]
+
+[fields.lv]
+kind = "flag"
+desc = "Latch vectors (LV modifier, VECTORED_HOLD family)"
+slices = [{ instr = "19:19", value = "0:0" }]
+
+[fields.nra]
+kind = "flag"
+desc = "No return address capture (NRA modifier, VECTORED_HOLD family)"
+slices = [{ instr = "18:18", value = "0:0" }]
+
+[fields.vectors8]
+kind = "imm"
+signed = false
+desc = "Vector count/mask byte (ACC_VECTORED_HOLD)"
+slices = [{ instr = "31:24", value = "7:0" }]
+
+# Replicated field: the same 4-bit table register value is emitted into BOTH
+# instruction ranges (bunny_build E_VECTORED_HOLD emits (table<<10)+(table<<20)).
+[fields.table_reg]
+kind = "register"
+desc = "Vector table register, replicated in two positions (VECTORED_HOLD family)"
+slices = [
+  { instr = "13:10", value = "3:0" },
+  { instr = "23:20", value = "3:0" },
+]

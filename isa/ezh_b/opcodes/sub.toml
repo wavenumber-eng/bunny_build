@@ -1,0 +1,68 @@
+# E_SUB — opcode 0x08: sub family (ALU matrix).
+
+[opcode]
+name = "SUB"
+value = 0x08
+family = "alu"
+mnemonics_base = ["E_SUB"]
+
+[semantics]
+prose = """
+Subtracts the (optionally shifted/flipped) second source from the first, writing a destination register. The second source
+operand can be barrel-shifted (LSL/ASR/LSR/ROR by a 5-bit immediate) and
+optionally flipped (F modifier) before the operation. The N modifier inverts
+the ALU result. The IMM form replaces the second source with a 12-bit signed
+immediate (no shift fusion).
+"""
+restrictions = [
+  "IMM form has no shift fusion (immediate occupies the shift bits)",
+]
+
+[timing]
+cycles = "1"
+
+[[provenance]]
+source = "bunny_build"
+detail = "E_SUB* encoder formulas (family matrix extracted by isa/tools/extract_header.py)"
+
+[[provenance]]
+source = "an14650"
+detail = "section 5, E_SUB instruction group"
+
+# ---------------------------------------------------------------------------
+# Form 1: register-register with optional immediate-shift fusion.
+# Plain E_SUB[N][S] is LSL with shift5 = 0; E_SUB[N]_F[S] is FLSL with shift5 = 0.
+# ---------------------------------------------------------------------------
+
+[[forms]]
+name = "reg"
+syntax = "E_[COND_]SUB[N]_[F]{LSL|ASR|LSR|ROR}[S] ([cond,] dest, src1, src2 [, shift5])"
+mnemonic = { pattern = "E_[COND_]SUB[N]_[F]{LSL|ASR|LSR|ROR}[S]", binds = ["cond", "n_alu", "f_alu", "shift_type_alu", "s"] }
+fixed = [
+  { bits = "4:0", value = 0x08 },
+  { bits = "18:18", value = 0 },   # 0 = register form (1 selects immediate form)
+]
+operands = ["dest", "src1", "src2", "shift5"]
+modifiers = ["cond", "s", "n_alu", "f_alu", "shift_type_alu"]
+notes = "Mnemonics without a shift suffix are the LSL encoding with shift5 = 0."
+
+[forms.encoding_reference]
+bunny_build = "E_SUB(dest,src1,src2) = 0x8 + (src1<<14) + (dest<<10) + (src2<<20) + (EU<<5)"
+
+# ---------------------------------------------------------------------------
+# Form 2: register + 12-bit signed immediate.
+# ---------------------------------------------------------------------------
+
+[[forms]]
+name = "imm"
+syntax = "E_[COND_]SUB[N]_IMM[S] ([cond,] dest, src1, imm12s)"
+mnemonic = { pattern = "E_[COND_]SUB[N]_IMM[S]", binds = ["cond", "n_alu", "s"] }
+fixed = [
+  { bits = "4:0", value = 0x08 },
+  { bits = "18:18", value = 1 },   # immediate form select
+]
+operands = ["dest", "src1", "imm12s"]
+modifiers = ["cond", "s", "n_alu"]
+
+[forms.encoding_reference]
+bunny_build = "E_SUB_IMM(dest,src1,imm) = 0x8 + (src1<<14) + (dest<<10) + ((imm&0xfff)<<20) + (1<<18) + (EU<<5)"

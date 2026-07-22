@@ -1,0 +1,58 @@
+# BITOP — opcode 0x18: bit test / set / clear / toggle.
+
+[opcode]
+name = "BITOP"
+value = 0x18
+family = "alu"
+mnemonics_base = ["E_BTST", "E_BSET", "E_BCLR", "E_BTOG"]
+
+[semantics]
+prose = """
+Tests, sets, clears, or toggles a single bit of a register. The bit number
+comes from a register (REG form) or a 5-bit immediate (IMM form). The result
+is written to the destination register; BTST is typically used with S to set
+flags on the tested bit.
+"""
+restrictions = []
+
+[timing]
+cycles = "1"
+
+[[provenance]]
+source = "bunny_build"
+detail = "E_BTST*/E_BSET*/E_BCLR*/E_BTOG* encoder formulas"
+
+[[provenance]]
+source = "an14650"
+detail = "section 5, bit operation instruction group"
+
+# Bit 18 = 1 selects the register-bit-number form (inverted vs the ALU family).
+
+[[forms]]
+name = "reg"
+syntax = "E_[COND_]{BCLR|BTST|BSET|BTOG}[S] ([cond,] dest, rdata, rbit)"
+mnemonic = { pattern = "E_[COND_]{BCLR|BTST|BSET|BTOG}[S]", binds = ["cond", "bitop_sel", "s"] }
+fixed = [
+  { bits = "4:0", value = 0x18 },
+  { bits = "18:18", value = 1 },   # 1 = bit number from register
+]
+operands = ["dest", "src1", "src2"]
+modifiers = ["cond", "s", "bitop_sel"]
+notes = "bitop_sel values used: 1=BCLR 5=BTST 6=BSET 7=BTOG. rdata rides in src1, rbit in src2."
+
+[forms.encoding_reference]
+bunny_build = "E_BSET(dest,rdata,rbit) = 0x18 + (rdata<<14) + (dest<<10) + (rbit<<20) + (1<<18) + (6<<29) + (EU<<5)"
+
+[[forms]]
+name = "imm"
+syntax = "E_[COND_]{BCLR|BTST|BSET|BTOG}_IMM[S] ([cond,] dest, rdata, bit5)"
+mnemonic = { pattern = "E_[COND_]{BCLR|BTST|BSET|BTOG}_IMM[S]", binds = ["cond", "bitop_sel", "s"] }
+fixed = [
+  { bits = "4:0", value = 0x18 },
+  { bits = "18:18", value = 0 },   # 0 = immediate bit number
+]
+operands = ["dest", "src1", "bit5"]
+modifiers = ["cond", "s", "bitop_sel"]
+
+[forms.encoding_reference]
+bunny_build = "E_BSET_IMM(dest,rdata,bit5) = 0x18 + (rdata<<14) + (dest<<10) + (bit5<<24) + (6<<29) + (EU<<5)"

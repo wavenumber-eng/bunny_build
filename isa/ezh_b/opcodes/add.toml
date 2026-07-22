@@ -1,0 +1,72 @@
+# E_ADD — opcode 0x06: add family (ALU matrix).
+#
+# All seven ALU opcodes (0x06 ADD, 0x08 SUB, 0x09 ADC, 0x0a SBC, 0x0c OR,
+# 0x0d AND, 0x0e XOR) share this exact structure; only the opcode value and
+# operation differ.
+
+[opcode]
+name = "ADD"
+value = 0x06
+family = "alu"
+mnemonics_base = ["E_ADD"]
+
+[semantics]
+prose = """
+Adds two source registers into a destination register. The second source
+operand can be barrel-shifted (LSL/ASR/LSR/ROR by a 5-bit immediate) and
+optionally flipped (F modifier) before the operation. The N modifier inverts
+the ALU result. The IMM form replaces the second source with a 12-bit signed
+immediate (no shift fusion).
+"""
+restrictions = [
+  "IMM form has no shift fusion (immediate occupies the shift bits)",
+]
+
+[timing]
+cycles = "1"
+
+[[provenance]]
+source = "bunny_build"
+detail = "E_ADD* encoder formulas (family matrix extracted by isa/tools/extract_header.py)"
+
+[[provenance]]
+source = "an14650"
+detail = "section 5, E_ADD instruction group"
+
+# ---------------------------------------------------------------------------
+# Form 1: register-register with optional immediate-shift fusion.
+# Plain E_ADD[N][S] is LSL with shift5 = 0; E_ADD[N]_F[S] is FLSL with shift5 = 0.
+# ---------------------------------------------------------------------------
+
+[[forms]]
+name = "reg"
+syntax = "E_[COND_]ADD[N]_[F]{LSL|ASR|LSR|ROR}[S] ([cond,] dest, src1, src2 [, shift5])"
+mnemonic = { pattern = "E_[COND_]ADD[N]_[F]{LSL|ASR|LSR|ROR}[S]", binds = ["cond", "n_alu", "f_alu", "shift_type_alu", "s"] }
+fixed = [
+  { bits = "4:0", value = 0x06 },
+  { bits = "18:18", value = 0 },   # 0 = register form (1 selects immediate form)
+]
+operands = ["dest", "src1", "src2", "shift5"]
+modifiers = ["cond", "s", "n_alu", "f_alu", "shift_type_alu"]
+notes = "Mnemonics without a shift suffix are the LSL encoding with shift5 = 0."
+
+[forms.encoding_reference]
+bunny_build = "E_ADD(dest,src1,src2) = 0x6 + (src1<<14) + (dest<<10) + (src2<<20) + (EU<<5)"
+
+# ---------------------------------------------------------------------------
+# Form 2: register + 12-bit signed immediate.
+# ---------------------------------------------------------------------------
+
+[[forms]]
+name = "imm"
+syntax = "E_[COND_]ADD[N]_IMM[S] ([cond,] dest, src1, imm12s)"
+mnemonic = { pattern = "E_[COND_]ADD[N]_IMM[S]", binds = ["cond", "n_alu", "s"] }
+fixed = [
+  { bits = "4:0", value = 0x06 },
+  { bits = "18:18", value = 1 },   # immediate form select
+]
+operands = ["dest", "src1", "imm12s"]
+modifiers = ["cond", "s", "n_alu"]
+
+[forms.encoding_reference]
+bunny_build = "E_ADD_IMM(dest,src1,imm) = 0x6 + (src1<<14) + (dest<<10) + ((imm&0xfff)<<20) + (1<<18) + (EU<<5)"

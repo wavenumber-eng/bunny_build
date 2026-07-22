@@ -1,0 +1,52 @@
+# E_MODIFY_GPO_BYTE — opcode 0x1e: read-modify-write the low GPO byte.
+#
+# NOTE: the header encoder carries a pass-1 runtime warning ("DOUBLE CHECK
+# ENCODING OF E_MODIFY_GPO_BYTE") — adjudicate with the EZH creator.
+
+[opcode]
+name = "MODIFY_GPO_BYTE"
+value = 0x1e
+family = "io"
+mnemonics_base = ["E_MODIFY_GPO_BYTE"]
+
+[semantics]
+prose = """
+Atomically modifies the low byte of the general-purpose outputs by applying an
+AND mask, an OR mask, and an XOR mask in one instruction. Only GPO[7:0] is
+affected: the upper 24 bits pass through unchanged (sv_tb applies the AND mask
+one-extended and the OR/XOR masks zero-extended).
+"""
+restrictions = [
+  "No conditional variant: the AND mask byte occupies the cond field bits",
+  "Encoding flagged 'DOUBLE CHECK' by the original header author; unverified against hardware",
+]
+
+[timing]
+cycles = "1"
+
+[[provenance]]
+source = "bunny_build"
+detail = "E_MODIFY_GPO_BYTE encoder formula (carries a runtime DOUBLE CHECK warning)"
+
+[[provenance]]
+source = "an14650"
+detail = "section 5.14, E_MODIFY_GPO_BYTE; section 5 summary table row 14: 'Clearing and toggling GPO bottom byte', single cycle"
+
+[[provenance]]
+source = "fsl_header"
+detail = "E_MODIFY_GPO_BYTE macro line 3327 references ordmask/xordmask but declares ormask/xormask and cannot compile; intended encoding verified"
+
+[[provenance]]
+source = "sv_tb"
+detail = "ADVISORY: e_gpo_mod decodes AND [15:8], OR [23:16], XOR [31:24], applied to GPO's low byte only; corroborates the repaired fsl macro"
+
+[[forms]]
+name = "default"
+syntax = "E_MODIFY_GPO_BYTE (andmask, ormask, xormask)"
+mnemonic = { pattern = "E_MODIFY_GPO_BYTE", binds = [] }
+fixed = [{ bits = "4:0", value = 0x1e }]
+operands = ["gpo_and8", "gpo_or8", "gpo_xor8"]
+modifiers = []
+
+[forms.encoding_reference]
+bunny_build = "E_MODIFY_GPO_BYTE(a,o,x) = 0x1E + (a<<8) + (o<<16) + (x<<24)"

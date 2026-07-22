@@ -1,0 +1,58 @@
+# E_GOTO — opcode 0x15: branch, absolute immediate or register target.
+
+[opcode]
+name = "GOTO"
+value = 0x15
+family = "control"
+mnemonics_base = ["E_GOTO", "E_GOTOL", "E_GOTO_REG", "E_GOTO_REGL"]
+
+[semantics]
+prose = """
+Branches to an absolute word-aligned target: a 21-bit immediate address (label
+form, bit 9 set) or an address held in a register (bit 9 clear). The L
+variants link, saving the return address to RA before branching.
+"""
+restrictions = [
+  "Immediate target must be word aligned (encoding relies on address bits [1:0] being zero)",
+  "Immediate target is limited to the low 2MB (21-bit absolute address)",
+]
+
+[timing]
+cycles = "tbd"
+
+[[provenance]]
+source = "bunny_build"
+detail = "E_GOTO*/E_GOTO_REG* two-pass label functions in src/bunny_build__instr.c"
+
+[[provenance]]
+source = "an14650"
+detail = "section 5, E_GOTO instruction group"
+
+[[forms]]
+name = "imm"
+syntax = "E_[COND_]GOTO[L] ([cond,] label)"
+mnemonic = { pattern = "E_[COND_]GOTO[L]", binds = ["cond", "link"] }
+fixed = [
+  { bits = "4:0", value = 0x15 },
+  { bits = "9:9", value = 1 },     # 1 = immediate (label) target
+]
+operands = ["goto_addr21"]
+modifiers = ["cond", "link"]
+
+[forms.encoding_reference]
+bunny_build = "E_GOTO(label) = 0x15 + (1<<9) + ((addr & 0x1FFFFF) << 9)"
+
+[[forms]]
+name = "reg"
+syntax = "E_[COND_]GOTO_REG[L] ([cond,] raddr)"
+mnemonic = { pattern = "E_[COND_]GOTO_REG[L]", binds = ["cond", "link"] }
+fixed = [
+  { bits = "4:0", value = 0x15 },
+  { bits = "9:9", value = 0 },     # 0 = register target
+]
+operands = ["src1"]
+modifiers = ["cond", "link"]
+notes = "Target address register rides in src1 [17:14]."
+
+[forms.encoding_reference]
+bunny_build = "E_GOTO_REG(raddr) = 0x15 + (raddr<<14)"

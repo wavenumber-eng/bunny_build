@@ -1,0 +1,46 @@
+# E_PER_WRITE — opcode 0x05: single-cycle peripheral register write.
+# Showcase for a split address field: the 20-bit address is scattered across
+# two instruction bit ranges.
+
+[opcode]
+name = "PER_WRITE"
+value = 0x05
+family = "peripheral-access"
+mnemonics_base = ["E_PER_WRITE"]
+
+[semantics]
+prose = """
+Writes a source register to a peripheral register through the dedicated
+peripheral port. The 20-bit word-aligned byte address selects a location within
+the 1MB peripheral window.
+"""
+restrictions = [
+  "Address must be word aligned",
+  "Address is an offset within the peripheral window, not a full AHB address",
+]
+
+[timing]
+cycles = "1+"
+notes = "Single cycle or more depending on peripheral bus response"
+
+[[provenance]]
+source = "fsl_header"
+detail = "E_PER_WRITE macro encoding (split address)"
+
+[[provenance]]
+source = "an14650"
+detail = "section 5.28 E_PER_READ and E_PER_WRITE"
+
+[[forms]]
+name = "default"
+syntax = "E_[COND_]PER_WRITE ([cond,] src, addr20)"
+mnemonic = { pattern = "E_[COND_]PER_WRITE", binds = ["cond"] }
+fixed = [
+  { bits = "4:0", value = 0x05 },
+]
+operands = ["src2", "per_addr20_w"]
+modifiers = ["cond"]
+notes = "Source register rides in bits [23:20] (src2 position)."
+
+[forms.encoding_reference]
+bunny_build = "E_PER_WRITE(src,addr20) = 0x5 + (src<<20) + ((addr20&0xff000)<<12) + ((addr20&0xffc)<<8) + (EU<<5)"

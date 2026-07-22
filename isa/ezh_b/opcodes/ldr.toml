@@ -1,0 +1,62 @@
+# E_LDR — opcode 0x01: load register from memory (immediate offset).
+
+[opcode]
+name = "LDR"
+value = 0x01
+family = "memory"
+mnemonics_base = ["E_LDR", "E_LDRB", "E_POP", "E_POPB"]
+
+[semantics]
+prose = """
+Loads a word or byte from memory at source register plus a signed 8-bit byte
+offset. PRE/POST variants write the updated address back to the source
+register (pre-index: address updated before access; post-index: after). Byte
+loads can sign-extend (LDRBS). POP variants are stack aliases using SP with a
+baked -1 offset and writeback.
+"""
+restrictions = [
+  "Signed access (bit 21) applies to byte loads; word loads ignore it",
+]
+
+[timing]
+cycles = "tbd"
+
+[[provenance]]
+source = "bunny_build"
+detail = "E_LDR*/E_POP* encoder formulas"
+
+[[provenance]]
+source = "an14650"
+detail = "section 5, E_LDR instruction group"
+
+[[forms]]
+name = "default"
+syntax = "E_[COND_]{LDRB|LDR}[S][_PRE|_POST] ([cond,] dest, source, offset8s)"
+mnemonic = { pattern = "E_[COND_]{LDRB|LDR}[S][_PRE][_POST]", binds = ["cond", "word", "sgn", "wb_ld", "post"] }
+fixed = [{ bits = "4:0", value = 0x01 }]
+operands = ["dest", "src1", "offset8s"]
+modifiers = ["cond", "word", "sgn", "wb_ld", "post"]
+notes = "S suffix on this family means SIGNED (bit 21), not set-flags. _PRE = wb only; _POST = wb + post. Bit 9 unused."
+
+[forms.encoding_reference]
+bunny_build = "E_LDRB(dest,src,off8) = 0x1 + (dest<<10) + (src<<14) + (off8<<24) + (EU<<5)"
+
+# Stack aliases: baked operands on the default form.
+
+[[aliases]]
+name = "POP"
+form = "default"
+operands = ["dest"]
+preset = { src1 = 0xc, offset8s = -1, word = 1, wb_ld = 1 }
+
+[[aliases]]
+name = "POPB"
+form = "default"
+operands = ["dest"]
+preset = { src1 = 0xc, offset8s = -1, word = 0, wb_ld = 1 }
+
+[[aliases]]
+name = "POPBS"
+form = "default"
+operands = ["dest"]
+preset = { src1 = 0xc, offset8s = -1, word = 0, wb_ld = 1, sgn = 1 }

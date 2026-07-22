@@ -1,0 +1,58 @@
+# MEM_REG — opcode 0x1d: load/store with register offset.
+
+[opcode]
+name = "MEM_REG"
+value = 0x1d
+family = "memory"
+mnemonics_base = ["E_LDR_REG", "E_LDR_REGB", "E_STR_REG", "E_STR_REGB"]
+
+[semantics]
+prose = """
+Loads or stores a word or byte at base register plus an offset register
+(register-offset addressing). Byte loads can sign-extend (E_LDR_REGBS).
+Bit 30 selects the direction (0 = load, 1 = store).
+"""
+restrictions = [
+  "Signed access (bit 21) exists only on byte loads",
+]
+
+[timing]
+cycles = "tbd"
+
+[[provenance]]
+source = "bunny_build"
+detail = "E_LDR_REG*/E_STR_REG* encoder formulas"
+
+[[provenance]]
+source = "an14650"
+detail = "section 5, register-offset load/store group"
+
+[[forms]]
+name = "load"
+syntax = "E_[COND_]LDR_REG[B][S] ([cond,] dest, source, roffset)"
+mnemonic = { pattern = "E_[COND_]{LDR_REGB|LDR_REG}[S]", binds = ["cond", "word", "sgn"] }
+fixed = [
+  { bits = "4:0", value = 0x1d },
+  { bits = "30:30", value = 0 },   # 0 = load
+]
+operands = ["dest", "src1", "roffset"]
+modifiers = ["cond", "word", "sgn"]
+notes = "S suffix means SIGNED (bit 21), as in the LDR family. Base register in src1 [17:14], offset register in roffset [27:24]."
+
+[forms.encoding_reference]
+bunny_build = "E_LDR_REGB(dest,src,roff) = 0x1D + (dest<<10) + (src<<14) + (roff<<24) + (EU<<5)"
+
+[[forms]]
+name = "store"
+syntax = "E_[COND_]STR_REG[B] ([cond,] raddr, rdata, roffset)"
+mnemonic = { pattern = "E_[COND_]{STR_REGB|STR_REG}", binds = ["cond", "word"] }
+fixed = [
+  { bits = "4:0", value = 0x1d },
+  { bits = "30:30", value = 1 },   # 1 = store
+]
+operands = ["src1", "src2", "roffset"]
+modifiers = ["cond", "word"]
+notes = "Address register in src1 [17:14], data register in src2 [23:20]."
+
+[forms.encoding_reference]
+bunny_build = "E_STR_REGB(raddr,rdata,roff) = 0x1D + (raddr<<14) + (rdata<<20) + (roff<<24) + (1<<30) + (EU<<5)"

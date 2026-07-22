@@ -1,0 +1,51 @@
+# E_STR — opcode 0x02: store register to memory (immediate offset).
+
+[opcode]
+name = "STR"
+value = 0x02
+family = "memory"
+mnemonics_base = ["E_STR", "E_STRB", "E_PUSH", "E_PUSHB"]
+
+[semantics]
+prose = """
+Stores a word or byte to memory at address register plus a signed 8-bit byte
+offset. PRE/POST variants write the updated address back to the address
+register. PUSH variants are stack aliases using SP with a baked +1 offset,
+writeback, and post-increment.
+"""
+restrictions = []
+
+[timing]
+cycles = "tbd"
+
+[[provenance]]
+source = "bunny_build"
+detail = "E_STR*/E_PUSH* encoder formulas"
+
+[[provenance]]
+source = "an14650"
+detail = "section 5, E_STR instruction group"
+
+[[forms]]
+name = "default"
+syntax = "E_[COND_]{STRB|STR}[_PRE|_POST] ([cond,] raddr, rdata, offset8s)"
+mnemonic = { pattern = "E_[COND_]{STRB|STR}[_PRE][_POST]", binds = ["cond", "word", "wb_st", "post"] }
+fixed = [{ bits = "4:0", value = 0x02 }]
+operands = ["src1", "src2", "offset8s"]
+modifiers = ["cond", "word", "wb_st", "post"]
+notes = "Address register rides in src1 [17:14], data register in src2 [23:20]. Writeback is bit 10 (the unused dest slot), unlike the load family's bit 20."
+
+[forms.encoding_reference]
+bunny_build = "E_STRB(raddr,rdata,off8) = 0x2 + (raddr<<14) + (rdata<<20) + (off8<<24) + (EU<<5)"
+
+[[aliases]]
+name = "PUSH"
+form = "default"
+operands = ["src2"]
+preset = { src1 = 0xc, offset8s = 1, word = 1, wb_st = 1, post = 1 }
+
+[[aliases]]
+name = "PUSHB"
+form = "default"
+operands = ["src2"]
+preset = { src1 = 0xc, offset8s = 1, word = 0, wb_st = 1, post = 1 }

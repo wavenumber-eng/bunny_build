@@ -1,0 +1,90 @@
+# HOLD — opcode 0x1c: halt / wait-for-event, plain and vectored.
+
+[opcode]
+name = "HOLD"
+value = 0x1c
+family = "control"
+mnemonics_base = ["E_HOLD", "E_VECTORED_HOLD", "E_ACC_VECTORED_HOLD"]
+
+[semantics]
+prose = """
+Halts execution until an event occurs. Plain HOLD parks the program counter.
+VECTORED_HOLD resumes execution by dispatching through a vector table selected
+by a register; the LV (large vector) modifier selects 16-byte vector-table
+entries instead of 4-byte, and NRA suppresses the return-address capture into
+RA. ACC variants carry a per-vector acceleration mask byte in [31:24] (bit
+24+n accelerates vector n).
+"""
+restrictions = []
+
+[timing]
+cycles = "tbd"
+
+[[provenance]]
+source = "bunny_build"
+detail = "E_HOLD/E_VECTORED_HOLD*/E_ACC_VECTORED_HOLD* encoder formulas"
+
+[[provenance]]
+source = "an14650"
+detail = "section 5.16, E_HOLD instruction group"
+
+[[provenance]]
+source = "fsl_header"
+detail = "all four COND_*_NRA macros (lines 3277-3296) have a space before the parameter list and can never expand; intended encodings verified. Header comments name the LV variants 'Large Vector Versions'"
+
+[[provenance]]
+source = "sv_tb"
+detail = "ADVISORY: e_boolean decodes plain-HOLD via bit 15, NRA bit 18 (RA write to reg 15 executes only when clear), LV bit 19 (16- vs 4-byte table stride), ACC bit 9, acceleration bits [31:24]; reads the table register ONLY from [23:20] - the [13:10] replica is never consumed (decode significance of the replica is on the adjudication list)"
+
+# ---------------------------------------------------------------------------
+# Plain HOLD: dest slot fixed to PC, bit 15 set.
+# ---------------------------------------------------------------------------
+
+[[forms]]
+name = "plain"
+syntax = "E_[COND_]HOLD ([cond])"
+mnemonic = { pattern = "E_[COND_]HOLD", binds = ["cond"] }
+fixed = [
+  { bits = "4:0", value = 0x1c },
+  { bits = "13:10", value = 0xd },  # PC in the dest slot
+  { bits = "15:15", value = 1 },
+]
+operands = []
+modifiers = ["cond"]
+
+[forms.encoding_reference]
+bunny_build = "E_HOLD() = 0x1C + (PC<<10) + (1<<15) + (EU<<5)"
+
+# ---------------------------------------------------------------------------
+# Vectored: table register replicated into [13:10] and [23:20].
+# Bit 9 = 0: no vector byte.  Bit 9 = 1 (ACC form): vectors byte in [31:24].
+# ---------------------------------------------------------------------------
+
+[[forms]]
+name = "vectored"
+syntax = "E_[COND_]VECTORED_HOLD[_LV][_NRA] ([cond,] table)"
+mnemonic = { pattern = "E_[COND_]VECTORED_HOLD[_NRA][_LV]", binds = ["cond", "nra", "lv"] }
+fixed = [
+  { bits = "4:0", value = 0x1c },
+  { bits = "9:9", value = 0 },
+]
+operands = ["table_reg"]
+modifiers = ["cond", "nra", "lv"]
+notes = "The table register value is emitted into BOTH [13:10] and [23:20] (replicated slice field)."
+
+[forms.encoding_reference]
+bunny_build = "E_VECTORED_HOLD(table) = 0x1C + (table<<10) + (table<<20) + (EU<<5)"
+
+[[forms]]
+name = "acc_vectored"
+syntax = "E_[COND_]ACC_VECTORED_HOLD[_LV][_NRA] ([cond,] table, vectors)"
+mnemonic = { pattern = "E_[COND_]ACC_VECTORED_HOLD[_NRA][_LV]", binds = ["cond", "nra", "lv"] }
+fixed = [
+  { bits = "4:0", value = 0x1c },
+  { bits = "9:9", value = 1 },
+]
+operands = ["table_reg", "vectors8"]
+modifiers = ["cond", "nra", "lv"]
+
+[forms.encoding_reference]
+bunny_build = "E_ACC_VECTORED_HOLD(table,vec) = 0x1C + (table<<10) + (table<<20) + (1<<9) + (vec<<24) + (EU<<5)"

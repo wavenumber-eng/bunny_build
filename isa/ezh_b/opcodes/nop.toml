@@ -1,0 +1,109 @@
+# NOP — opcode 0x12: no-operation and the beat/timing sub-op family.
+#
+# Bits [8:5] (the cond slot elsewhere) are a sub-op selector here; none of
+# these instructions supports conditional execution:
+#   0 = NOP, 1 = HEART_RYTHM (bit 9: 0 = immediate, 1 = register),
+#   2 = SYNCH_ALL_TO_BEAT, 3 = WAIT_FOR_BEAT
+
+[opcode]
+name = "NOP"
+value = 0x12
+family = "control"
+mnemonics_base = ["E_NOP", "E_HEART_RYTHM", "E_HEART_RYTHM_IMM", "E_SYNCH_ALL_TO_BEAT", "E_WAIT_FOR_BEAT"]
+
+[semantics]
+prose = """
+NOP does nothing for one cycle. The beat sub-ops drive the shared heartbeat
+timing mechanism: HEART_RYTHM sets the beat period from an immediate or a
+register, SYNCH_ALL_TO_BEAT aligns execution to the beat, and WAIT_FOR_BEAT
+stalls until the next beat.
+"""
+restrictions = [
+  "No conditional variants: bits [8:5] are the sub-op selector, not a cond field",
+]
+
+[timing]
+cycles = "1"
+
+[[provenance]]
+source = "fsl_header"
+detail = "E_NOP = 0x12 (bare word)"
+
+[[provenance]]
+source = "bunny_build"
+detail = "E_HEART_RYTHM*/E_SYNCH_ALL_TO_BEAT/E_WAIT_FOR_BEAT encoder formulas"
+
+[[provenance]]
+source = "an14650"
+detail = "section 5.17 E_NOP; beat instruction group"
+
+[[forms]]
+name = "nop"
+syntax = "E_NOP"
+mnemonic = { pattern = "E_NOP", binds = [] }
+# Per isa-adr-0001 decode-mask convention: opcode plus the sub-op selector are
+# fixed; the remaining bits are reserved-zero (canonical word 0x00000012).
+fixed = [
+  { bits = "4:0", value = 0x12 },
+  { bits = "8:5", value = 0 },
+]
+operands = []
+modifiers = []
+
+[[forms]]
+name = "heart_imm"
+syntax = "E_HEART_RYTHM_IMM (val16imm)"
+mnemonic = { pattern = "E_HEART_RYTHM_IMM", binds = [] }
+fixed = [
+  { bits = "4:0", value = 0x12 },
+  { bits = "8:5", value = 1 },
+  { bits = "9:9", value = 0 },
+]
+operands = ["val16imm"]
+modifiers = []
+
+[forms.encoding_reference]
+bunny_build = "E_HEART_RYTHM_IMM(v16) = 0x32 + (v16<<16)"
+
+[[forms]]
+name = "heart_reg"
+syntax = "E_HEART_RYTHM (r16bit)"
+mnemonic = { pattern = "E_HEART_RYTHM", binds = [] }
+fixed = [
+  { bits = "4:0", value = 0x12 },
+  { bits = "8:5", value = 1 },
+  { bits = "9:9", value = 1 },
+]
+operands = ["r16bit"]
+modifiers = []
+
+[forms.encoding_reference]
+bunny_build = "E_HEART_RYTHM(r) = 0x32 + (r<<14) + (1<<9)"
+
+[[forms]]
+name = "synch"
+syntax = "E_SYNCH_ALL_TO_BEAT (on1imm)"
+mnemonic = { pattern = "E_SYNCH_ALL_TO_BEAT", binds = [] }
+fixed = [
+  { bits = "4:0", value = 0x12 },
+  { bits = "8:5", value = 2 },
+]
+operands = ["on1imm"]
+modifiers = []
+
+[forms.encoding_reference]
+bunny_build = "E_SYNCH_ALL_TO_BEAT(on) = 0x52 + (on<<31)"
+
+[[forms]]
+name = "wait"
+syntax = "E_WAIT_FOR_BEAT"
+mnemonic = { pattern = "E_WAIT_FOR_BEAT", binds = [] }
+fixed = [
+  { bits = "4:0", value = 0x12 },
+  { bits = "8:5", value = 3 },
+]
+operands = []
+modifiers = []
+
+[forms.encoding_reference]
+bunny_build = "E_WAIT_FOR_BEAT() = 0x72"
