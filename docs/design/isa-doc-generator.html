@@ -133,17 +133,45 @@ rendering layer as well as the authoring layer.</p>
 
 <h2>Styling</h2>
 
-<p>Single hand-written stylesheet, inlined at build time. Token-based custom
-properties with light and dark themes
-(<code>prefers-color-scheme</code> plus <code>data-theme</code> override);
-SVG diagram cells styled through CSS classes so diagrams follow the theme.
-Encoding columns use tabular numerals; wide tables scroll inside their own
-container.</p>
+<p><strong>Direction (Eli, 2026-07-22):</strong> the
+<a href="https://github.com/wavenumber-eng/supply-chain-monkey">supply-chain-monkey</a>
+status page (<code>src/py/scm/server/templates/status.html</code>, deployed
+at <code>scm.wavenumber.net/v1/</code>) copied verbatim where applicable:
+amber phosphor-glow terminal aesthetic, monospace throughout, flat
+collapsible panels (<code>[-]</code>/<code>[+]</code> headers), status rows,
+bordered result tables, the glow via
+<code>text-shadow: 0 0 10px var(--amber-glow)</code>. The monkey ASCII art
+is replaced by the bunny from this repository's README.</p>
 
-<div class="tbd"><strong>Open:</strong> visual direction (palette,
-typography, identity) is pending direction from Eli. The spike's steel-blue
-placeholder styling stands in until then; the token layer is the seam where
-the real direction drops in.</div>
+<ul>
+<li><strong>Tokens:</strong> the SCM palette verbatim as CSS custom
+properties (<code>--bg-dark #1a1a1a</code>, <code>--bg-panel #242424</code>,
+<code>--bg-input #2d2d2d</code>, <code>--border #3d3d3d</code>,
+<code>--amber #ffb000</code>, <code>--amber-dim #cc8800</code>,
+<code>--text #e0e0e0</code>, <code>--text-dim #808080</code>,
+<code>--green #00ff00</code>, <code>--red #ff4444</code>), plus bitfield
+cell tint tokens for the SVG diagrams.</li>
+<li><strong>Themes:</strong> dark is the identity and the default. Light
+mode is a manual option (<code>data-theme="light"</code> on the root,
+toggled from the footer, persisted in <code>localStorage</code>) with a
+warm-paper rendering of the same amber identity. No
+<code>prefers-color-scheme</code> auto-switch — deliberate.</li>
+<li><strong>Type:</strong> monospace only, via a <code>--font-mono</code>
+token. The footer carries a font cycler (Consolas / Cascadia Code /
+JetBrains Mono / IBM Plex Mono / Courier) for trying options; the final
+stack gets pinned once chosen. Local system fonts only — no font CDNs, and
+the GitHub Pages target keeps the no-external-asset rule.</li>
+<li><strong>Diagrams:</strong> SVG cells styled through CSS classes over the
+tokens so they follow the theme; fixed-bit values render in
+<code>--green</code>, reserved-zero cells dimmed.</li>
+</ul>
+
+<h2>Hosting</h2>
+
+<p>Long term the generated <code>docs/html/</code> tree is published with
+GitHub Pages (custom domain planned). The self-contained/no-CDN constraint
+means the committed tree is the deployable artifact as-is; Pages just serves
+it. Publishing workflow lands with <code>build-static-html</code>.</p>
 
 <h2>Dependencies</h2>
 

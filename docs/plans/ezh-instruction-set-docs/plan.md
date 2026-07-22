@@ -42,7 +42,7 @@ depends_on = ["inventory-sources"]
 [[steps]]
 id = "choose-doc-toolchain"
 title = "Decide doc generator consuming the ISA db; static HTML output (ADR)"
-status = "pending"
+status = "done"
 depends_on = ["isa-schema"]
 
 [[steps]]

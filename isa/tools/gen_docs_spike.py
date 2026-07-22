@@ -1,4 +1,4 @@
-"""Doc-generator spike for ADR isa-adr-0002 (proposed).
+"""Doc-generator spike for ADR isa-adr-0002 (accepted).
 
 Usage:  uv run python isa/tools/gen_docs_spike.py OUTDIR [--single FILE]
 
@@ -8,6 +8,14 @@ inline SVG derived from the slice data and mnemonic lists from the verified
 pattern expansion.  The real generator (build-static-html step) replaces the
 f-string templating here with Jinja2 and adds the Markdown prose chapters and
 the --check reproducibility mode; page structure and the SVG walk carry over.
+
+Styling (direction from Eli, 2026-07-22): the supply-chain-monkey status page
+(src/py/scm/server/templates/status.html in wavenumber-eng/supply-chain-monkey)
+copied verbatim where applicable - amber phosphor-glow terminal, monospace,
+flat collapsible panels - with the monkey ASCII art replaced by the bunny from
+this repo's README.  Tweaks per direction: token-based CSS variables, a light
+theme as a manual option (dark is the identity and the default), and a footer
+font cycler for trying monospace options.
 
 --single additionally writes everything as one self-contained page (used for
 review previews).  Output is deterministic; nothing is written inside the
@@ -24,53 +32,220 @@ from expand_mnemonics import expand, expected_base  # noqa: E402
 from validate import load, parse_range  # noqa: E402
 from verify_encodings import form_mask_match  # noqa: E402
 
+BUNNY_ART = r"""
+     / \
+    / _ \
+   | / \ |
+   ||   || _______
+   ||   || |\     \
+   ||   || ||\     \
+   ||   || || \    |
+   ||   || ||  \__/
+   ||   || ||   ||
+    \\_/ \_/ \_//
+   /   _     _   \
+  /               \
+  |    O     O    |
+  |   \  ___  /   |
+ /     \ \_/ /     \
+/  -----  |  --\    \
+|     \__/|\__/ \   |
+\       |_|_|       /
+ \_____       _____/
+       \     /
+       |     |
+"""
+
+# supply-chain-monkey status.html styling, copied verbatim where applicable;
+# additions: light-theme token block, --font-mono variable, SVG cell classes.
 CSS = """
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
 :root {
-  --bg: #ffffff; --ink: #1c1e21; --muted: #5c6670; --accent: #26547c;
-  --line: #c9cfd6; --surface: #eef2f7; --warn-bg: #fff6e5; --warn-edge: #e8a13d;
-  --f0: #cfe3f5; --f1: #d9f0d4; --f2: #f5e3cf; --f3: #e8d4f0; --f4: #f0d4d8;
-  --f5: #d4f0ec; --rsvd: #f3f3f3; --cell-ink: #1c1e21;
+    --bg-dark: #1a1a1a;
+    --bg-panel: #242424;
+    --bg-input: #2d2d2d;
+    --border: #3d3d3d;
+    --amber: #ffb000;
+    --amber-dim: #cc8800;
+    --amber-glow: rgba(255, 176, 0, 0.3);
+    --text: #e0e0e0;
+    --text-dim: #808080;
+    --green: #00ff00;
+    --red: #ff4444;
+    --font-mono: 'Consolas', 'Monaco', 'Courier New', monospace;
+    --f0: rgba(255, 176, 0, 0.18);
+    --f1: rgba(0, 255, 0, 0.10);
+    --f2: rgba(0, 200, 255, 0.12);
+    --f3: rgba(255, 80, 255, 0.12);
+    --f4: rgba(255, 96, 96, 0.14);
+    --f5: rgba(150, 150, 255, 0.14);
+    --rsvd: rgba(255, 255, 255, 0.03);
 }
-@media (prefers-color-scheme: dark) { :root {
-  --bg: #14171a; --ink: #dfe3e8; --muted: #98a2ad; --accent: #7fb0d8;
-  --line: #3a434c; --surface: #1e242b; --warn-bg: #2b2314; --warn-edge: #b98a2e;
-  --f0: #24405c; --f1: #2b4a28; --f2: #55402a; --f3: #43305c; --f4: #542e35;
-  --f5: #1e4a44; --rsvd: #20252b; --cell-ink: #dfe3e8;
-} }
 :root[data-theme="light"] {
-  --bg: #ffffff; --ink: #1c1e21; --muted: #5c6670; --accent: #26547c;
-  --line: #c9cfd6; --surface: #eef2f7; --warn-bg: #fff6e5; --warn-edge: #e8a13d;
-  --f0: #cfe3f5; --f1: #d9f0d4; --f2: #f5e3cf; --f3: #e8d4f0; --f4: #f0d4d8;
-  --f5: #d4f0ec; --rsvd: #f3f3f3; --cell-ink: #1c1e21;
+    --bg-dark: #f4f1e8;
+    --bg-panel: #ece9df;
+    --bg-input: #e2ded2;
+    --border: #c6c0af;
+    --amber: #8a5800;
+    --amber-dim: #a87d1a;
+    --amber-glow: rgba(138, 88, 0, 0.25);
+    --text: #2b2721;
+    --text-dim: #7d766a;
+    --green: #0a7a0a;
+    --red: #c02020;
+    --f0: rgba(138, 88, 0, 0.16);
+    --f1: rgba(10, 122, 10, 0.12);
+    --f2: rgba(0, 110, 140, 0.12);
+    --f3: rgba(140, 40, 140, 0.10);
+    --f4: rgba(180, 40, 40, 0.10);
+    --f5: rgba(60, 60, 180, 0.10);
+    --rsvd: rgba(0, 0, 0, 0.04);
 }
-:root[data-theme="dark"] {
-  --bg: #14171a; --ink: #dfe3e8; --muted: #98a2ad; --accent: #7fb0d8;
-  --line: #3a434c; --surface: #1e242b; --warn-bg: #2b2314; --warn-edge: #b98a2e;
-  --f0: #24405c; --f1: #2b4a28; --f2: #55402a; --f3: #43305c; --f4: #542e35;
-  --f5: #1e4a44; --rsvd: #20252b; --cell-ink: #dfe3e8;
+
+body {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    background: var(--bg-dark);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.4;
 }
-body { font-family: system-ui, sans-serif; margin: 2rem auto; max-width: 60rem;
-       line-height: 1.5; color: var(--ink); background: var(--bg); padding: 0 1rem; }
-h1 { border-bottom: 2px solid var(--accent); padding-bottom: .3rem; }
-h2 { color: var(--accent); margin-top: 2rem; }
-code, td.enc { font-family: ui-monospace, Consolas, monospace; }
-td.enc, .idx td { font-variant-numeric: tabular-nums; }
+
+.container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+
+.panel { background: var(--bg-panel); border: 1px solid var(--border); margin-bottom: 10px; }
+
+.panel-header {
+    background: var(--bg-input);
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--border);
+    color: var(--amber);
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.panel-header::after { content: '[-]'; color: var(--text-dim); }
+.panel.collapsed .panel-header { border-bottom: none; }
+.panel.collapsed .panel-header::after { content: '[+]'; }
+.panel.collapsed .panel-content { display: none; }
+.panel-content { padding: 12px; }
+
+.bunny-container {
+    padding: 10px;
+    color: var(--amber);
+    text-shadow: 0 0 10px var(--amber-glow);
+    text-align: center;
+}
+.bunny-art {
+    font-family: var(--font-mono);
+    font-size: 8px;
+    line-height: 1.1;
+    display: inline-block;
+    text-align: left;
+    white-space: pre;
+}
+.title { color: var(--amber); font-size: 14px; margin-top: 6px; letter-spacing: 2px; }
+.subtitle { color: var(--text-dim); font-size: 11px; margin-top: 2px; letter-spacing: 1px; }
+
+.status-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--border);
+}
+.status-row:last-child { border-bottom: none; }
+.status-label { color: var(--text-dim); min-width: 120px; }
+.status-value { color: var(--amber); text-align: right; }
+.status-value.ok { color: var(--green); }
+.status-value.error { color: var(--red); }
+
+.footer { color: var(--text-dim); font-size: 11px; text-align: center; margin-top: 16px; }
+.footer button {
+    background: none; border: 1px solid var(--border); color: var(--text-dim);
+    font-family: var(--font-mono); font-size: 11px; padding: 2px 8px;
+    cursor: pointer; margin: 0 3px;
+}
+.footer button:hover { color: var(--amber); border-color: var(--amber); }
+
+.results-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.results-table th {
+    background: var(--bg-input);
+    color: var(--amber);
+    padding: 4px 8px;
+    text-align: left;
+    border: 1px solid var(--border);
+    font-weight: normal;
+    white-space: nowrap;
+}
+.results-table td {
+    padding: 4px 8px;
+    border: 1px solid var(--border);
+    vertical-align: top;
+    font-variant-numeric: tabular-nums;
+}
+.results-table .enc { color: var(--text); }
+.results-table .mn { color: var(--amber); }
 .tblwrap { overflow-x: auto; }
-table { border-collapse: collapse; margin: .8rem 0; }
-th, td { border: 1px solid var(--line); padding: .25rem .6rem; text-align: left; }
-th { background: var(--surface); }
-.restr { background: var(--warn-bg); border-left: 4px solid var(--warn-edge);
-         padding: .5rem .8rem; }
-.prov { color: var(--muted); font-size: .85rem; }
-svg { display: block; margin: .8rem 0; max-width: 100%; }
-svg rect { stroke: var(--line); }
-svg text { fill: var(--cell-ink); }
-svg text.bit { fill: var(--muted); }
-.fx { fill: var(--bg); } .rz { fill: var(--rsvd); }
+
+.restr { color: var(--amber-dim); padding: 4px 0; }
+.restr li { margin-left: 1.4em; }
+.prov { color: var(--text-dim); font-size: 11px; }
+.prose { padding: 4px 0; }
+
+a { color: var(--amber); text-decoration: none; }
+a:hover { color: var(--text); text-decoration: underline; }
+
+svg { display: block; margin: 8px 0; max-width: 100%; }
+svg rect { stroke: var(--border); }
+svg text { fill: var(--text); }
+svg text.bit { fill: var(--text-dim); }
+svg text.vfx { fill: var(--green); }
+svg text.vrz { fill: var(--text-dim); }
+.fx { fill: var(--bg-input); } .rz { fill: var(--rsvd); }
 .f0 { fill: var(--f0); } .f1 { fill: var(--f1); } .f2 { fill: var(--f2); }
 .f3 { fill: var(--f3); } .f4 { fill: var(--f4); } .f5 { fill: var(--f5); }
-a { color: var(--accent); }
-.idx td { padding: .15rem .6rem; }
+"""
+
+# Theme toggle (light mode is an option; dark is the default identity), font
+# cycler for trying monospace options, and SCM's collapsible panels.
+SCRIPT = """
+document.querySelectorAll('.panel-header').forEach(h => {
+    h.addEventListener('click', () => h.parentElement.classList.toggle('collapsed'));
+});
+const FONTS = [
+    ["consolas", "'Consolas', 'Monaco', 'Courier New', monospace"],
+    ["cascadia", "'Cascadia Code', 'Cascadia Mono', Consolas, monospace"],
+    ["jetbrains", "'JetBrains Mono', Consolas, monospace"],
+    ["ibm plex", "'IBM Plex Mono', Consolas, monospace"],
+    ["courier", "'Courier New', Courier, monospace"],
+];
+const root = document.documentElement;
+function applyPrefs() {
+    const t = localStorage.getItem('ezh_theme');
+    if (t) root.setAttribute('data-theme', t);
+    const f = parseInt(localStorage.getItem('ezh_font') || '0', 10);
+    root.style.setProperty('--font-mono', FONTS[f % FONTS.length][1]);
+    const tb = document.getElementById('theme-btn');
+    const fb = document.getElementById('font-btn');
+    if (tb) tb.textContent = 'theme: ' + (root.getAttribute('data-theme') || 'dark');
+    if (fb) fb.textContent = 'font: ' + FONTS[f % FONTS.length][0];
+}
+const themeBtn = document.getElementById('theme-btn');
+if (themeBtn) themeBtn.addEventListener('click', () => {
+    const cur = root.getAttribute('data-theme') || 'dark';
+    localStorage.setItem('ezh_theme', cur === 'dark' ? 'light' : 'dark');
+    applyPrefs();
+});
+const fontBtn = document.getElementById('font-btn');
+if (fontBtn) fontBtn.addEventListener('click', () => {
+    const f = parseInt(localStorage.getItem('ezh_font') || '0', 10);
+    localStorage.setItem('ezh_font', String((f + 1) % FONTS.length));
+    applyPrefs();
+});
+applyPrefs();
 """
 
 N_FIELD_COLORS = 6
@@ -95,34 +270,35 @@ def bitfield_svg(form: dict, fields: dict) -> str:
     while b >= 0:
         kind, label = owner[b]
         lo = b
-        while lo > 0 and owner[lo - 1] == (kind, label) and not (kind == "fixed"):
-            lo -= 1
         if kind == "fixed":  # merge fixed run, rebuild its binary value
-            lo = b
             while lo > 0 and owner[lo - 1][0] == "fixed":
                 lo -= 1
             label = "".join(owner[i][1] for i in range(b, lo - 1, -1))
+        else:
+            while lo > 0 and owner[lo - 1] == (kind, label):
+                lo -= 1
         segs.append((b, lo, kind, label))
         b = lo - 1
 
     W, H, TICK = 26, 34, 12
     parts = [
         f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {32 * W} {H + TICK + 14}" '
-        f'font-family="ui-monospace, Consolas, monospace" font-size="11">'
+        f'font-family="Consolas, monospace" font-size="11">'
     ]
     color_of: dict[str, str] = {}
     for hi, lo, kind, label in segs:
         x, w = (31 - hi) * W, (hi - lo + 1) * W
         if kind == "field":
-            cls = color_of.setdefault(label, f"f{len(color_of) % N_FIELD_COLORS}")
+            cls, tcls = color_of.setdefault(label, f"f{len(color_of) % N_FIELD_COLORS}"), ""
         else:
-            cls = "rz" if kind == "rsvd" else "fx"
+            cls, tcls = ("rz", "vrz") if kind == "rsvd" else ("fx", "vfx")
         parts.append(f'<rect x="{x}" y="{TICK}" width="{w}" height="{H}" class="{cls}"/>')
         text = label if kind != "rsvd" else "0"
         size = 11 if len(text) * 7 <= w else max(7, int(w / len(text) * 1.6))
+        tattr = f' class="{tcls}"' if tcls else ""
         parts.append(
             f'<text x="{x + w / 2}" y="{TICK + H / 2 + 4}" text-anchor="middle" '
-            f'font-size="{size}">{html.escape(text)}</text>'
+            f'font-size="{size}"{tattr}>{html.escape(text)}</text>'
         )
         parts.append(f'<text x="{x + 2}" y="{TICK - 2}" font-size="9" class="bit">{hi}</text>')
         if lo != hi:
@@ -143,62 +319,97 @@ def mnemonic_rows(op: dict, form: dict, fields: dict) -> list[tuple[str, int]]:
     return sorted(rows)
 
 
-def render_opcode(name: str, op: dict, fields: dict, arch: dict, standalone: bool) -> str:
+def panel(header: str, content: str, collapsed: bool = False) -> str:
+    cls = "panel collapsed" if collapsed else "panel"
+    return (
+        f'<div class="{cls}"><div class="panel-header">{html.escape(header)}</div>'
+        f'<div class="panel-content">{content}</div></div>'
+    )
+
+
+def bunny_header(subtitle: str) -> str:
+    return (
+        '<div class="panel"><div class="bunny-container">'
+        f'<pre class="bunny-art">{html.escape(BUNNY_ART)}</pre>'
+        '<div class="title">BUNNY_BUILD // EZH ARCHITECTURE B</div>'
+        f'<div class="subtitle">{html.escape(subtitle)}</div>'
+        "</div></div>"
+    )
+
+
+def render_opcode(name: str, op: dict, fields: dict, arch: dict) -> str:
     o = op["opcode"]
     out = []
-    if standalone:
-        out.append(f"<h1>{html.escape(o['name'])} — opcode 0x{o['value']:02x}</h1>")
-    else:
-        out.append(f"<h2 id='{name}'>{html.escape(o['name'])} — opcode 0x{o['value']:02x}</h2>")
     sem = op.get("semantics", {})
+    body = ""
     if sem.get("prose"):
-        out.append(f"<p>{html.escape(sem['prose'].strip())}</p>")
-    if sem.get("restrictions"):
-        items = "".join(f"<li>{html.escape(r)}</li>" for r in sem["restrictions"])
-        out.append(f"<div class='restr'><strong>Restrictions</strong><ul>{items}</ul></div>")
+        body += f"<div class='prose'>{html.escape(sem['prose'].strip())}</div>"
     t = op.get("timing", {})
     if t:
-        cyc = html.escape(str(t.get("cycles", "?")))
         note = f" — {html.escape(t['notes'])}" if t.get("notes") else ""
-        out.append(f"<p><strong>Timing:</strong> {cyc} cycle(s){note}</p>")
+        body += (
+            "<div class='status-row'><span class='status-label'>timing</span>"
+            f"<span class='status-value'>{html.escape(str(t.get('cycles', '?')))}"
+            f" cycle(s)</span></div><div class='prov'>{note[3:] if note else ''}</div>"
+        )
+    if sem.get("restrictions"):
+        items = "".join(f"<li>{html.escape(r)}</li>" for r in sem["restrictions"])
+        body += f"<div class='restr'>restrictions:<ul>{items}</ul></div>"
+    out.append(panel(f"{o['name']} — OPCODE 0x{o['value']:02X}", body))
+
     for form in op.get("forms", []):
         mask, match = form_mask_match(form)
-        out.append(f"<h3>form <code>{html.escape(form['name'])}</code></h3>")
-        out.append(f"<p><code>{html.escape(form.get('syntax', ''))}</code><br>"
-                   f"<span class='prov'>decode mask 0x{mask:08x}, match 0x{match:08x}</span></p>")
-        out.append(bitfield_svg(form, fields))
+        fbody = (
+            f"<div class='prose'><code>{html.escape(form.get('syntax', ''))}</code></div>"
+            f"<div class='prov'>decode mask 0x{mask:08x} · match 0x{match:08x}</div>"
+        )
+        fbody += bitfield_svg(form, fields)
         if form.get("notes"):
-            out.append(f"<p class='prov'>{html.escape(form['notes'])}</p>")
+            fbody += f"<div class='prov'>{html.escape(form['notes'])}</div>"
+        out.append(panel(f"FORM: {form['name'].upper()}", fbody))
+
         rows = mnemonic_rows(op, form, fields)
         if rows:
             tr = "".join(
-                f"<tr><td><code>{html.escape(n)}</code></td>"
+                f"<tr><td class='mn'>{html.escape(n)}</td>"
                 f"<td class='enc'>0x{b:08x}</td></tr>"
                 for n, b in rows
             )
-            out.append(
-                "<details><summary>"
-                f"{len(rows)} mnemonic(s), canonical base words</summary>"
-                "<div class='tblwrap'><table><tr><th>mnemonic</th><th>base word</th>"
-                f"</tr>{tr}</table></div></details>"
+            table = (
+                "<div class='tblwrap'><table class='results-table'>"
+                f"<tr><th>mnemonic</th><th>base word</th></tr>{tr}</table></div>"
             )
+            out.append(panel(f"MNEMONICS: {form['name'].upper()} ({len(rows)})", table,
+                             collapsed=True))
+
     pub = {s for s, meta in arch["sources"].items() if meta.get("public")}
     cites = [p for p in op.get("provenance", []) if p["source"] in pub]
     if cites:
         items = "".join(
-            f"<li>{html.escape(arch['sources'][p['source']]['title'])}: "
-            f"{html.escape(p['detail'])}</li>"
+            "<div class='status-row'>"
+            f"<span class='status-label'>{html.escape(arch['sources'][p['source']]['title'])}"
+            f"</span><span class='prov'>{html.escape(p['detail'])}</span></div>"
             for p in cites
         )
-        out.append(f"<p class='prov'>Public sources:</p><ul class='prov'>{items}</ul>")
+        out.append(panel("PUBLIC SOURCES", items))
     return "\n".join(out)
+
+
+FOOTER = (
+    '<div class="footer">generated from the machine-readable ISA database · '
+    'bunny_build · <button id="theme-btn">theme: dark</button>'
+    '<button id="font-btn">font: consolas</button></div>'
+)
 
 
 def page(title: str, body: str) -> str:
     return (
-        "<!doctype html><html><head><meta charset='utf-8'>"
-        f"<title>{html.escape(title)}</title><style>{CSS}</style></head>"
-        f"<body>{body}</body></html>"
+        "<!DOCTYPE html>\n<html>\n<head>\n"
+        '<meta charset="UTF-8">\n'
+        '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n'
+        f"<title>{html.escape(title)}</title>\n<style>{CSS}</style>\n</head>\n<body>"
+        f'<div class="container">{body}{FOOTER}</div>'
+        f"<script>{SCRIPT}</script></body>\n</html>\n"
     )
 
 
@@ -216,34 +427,41 @@ def main() -> int:
 
     idx_rows = []
     for name, op in ordered:
-        body = render_opcode(name, op, fields, arch, standalone=True)
+        body = bunny_header("instruction set reference") + render_opcode(name, op, fields, arch)
+        body += "<div class='prose'><a href='index.html'>&lt; index</a></div>"
         (outdir / f"{name}.html").write_text(
-            page(f"EZH {op['opcode']['name']}", body + "<p><a href='index.html'>index</a></p>"),
-            encoding="utf-8",
+            page(f"EZH {op['opcode']['name']}", body), encoding="utf-8"
         )
         n_mnem = sum(len(mnemonic_rows(op, f, fields)) for f in op.get("forms", []))
         idx_rows.append(
-            f"<tr><td><a href='{name}.html'><code>{html.escape(op['opcode']['name'])}"
-            f"</code></a></td><td class='enc'>0x{op['opcode']['value']:02x}</td>"
-            f"<td>{n_mnem}</td></tr>"
+            f"<tr><td class='mn'><a href='{name}.html'>{html.escape(op['opcode']['name'])}"
+            f"</a></td><td class='enc'>0x{op['opcode']['value']:02x}</td>"
+            f"<td class='enc'>{n_mnem}</td></tr>"
         )
-    index_body = (
-        "<h1>EZH Architecture B — instruction set</h1>"
-        "<p>Generated from the machine-readable ISA database "
-        "(spike preview, ADR isa-adr-0002 proposed).</p>"
-        "<table class='idx'><tr><th>opcode</th><th>value</th><th>mnemonics</th></tr>"
+    idx_table = (
+        "<div class='tblwrap'><table class='results-table'>"
+        "<tr><th>opcode</th><th>value</th><th>mnemonics</th></tr>"
         + "".join(idx_rows)
-        + "</table>"
+        + "</table></div>"
     )
-    (outdir / "index.html").write_text(page("EZH instruction set", index_body), encoding="utf-8")
+    index_body = bunny_header("instruction set reference") + panel(
+        "INSTRUCTION SET", idx_table
+    )
+    (outdir / "index.html").write_text(page("EZH instruction set", index_body),
+                                       encoding="utf-8")
     print(f"{len(ordered)} opcode pages + index -> {outdir}")
 
     if single:
-        parts = [index_body.replace(".html'", "'").replace("<a href='", "<a href='#")]
+        parts = [bunny_header("instruction set reference — single-page preview")]
+        parts.append(panel("INSTRUCTION SET", idx_table.replace(".html'", "'")
+                           .replace("<a href='", "<a href='#")))
         for name, op in ordered:
-            parts.append(render_opcode(name, op, fields, arch, standalone=False))
-        single.write_text(page("EZH instruction set (single-page preview)",
-                               "\n".join(parts)), encoding="utf-8")
+            parts.append(f"<a id='{name}'></a>")
+            parts.append(render_opcode(name, op, fields, arch))
+        single.write_text(
+            page("EZH instruction set (single-page preview)", "\n".join(parts)),
+            encoding="utf-8",
+        )
         print(f"single-page preview -> {single}")
     return 0
 
