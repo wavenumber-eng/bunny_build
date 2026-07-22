@@ -8,13 +8,13 @@ mnemonics_base = ["E_GOTO", "E_GOTOL", "E_GOTO_REG", "E_GOTO_REGL"]
 
 [semantics]
 prose = """
-Branches to an absolute word-aligned target: a 21-bit immediate address (label
-form, bit 9 set) or an address held in a register (bit 9 clear). The L
-variants link, saving the return address to RA before branching.
+Branches to a word-aligned target: a 21-bit immediate address (label form,
+bit 9 set) or an address held in a register (bit 9 clear). The L variants
+link, saving the return address to RA before branching.
 """
 restrictions = [
   "Immediate target must be word aligned (encoding relies on address bits [1:0] being zero)",
-  "Immediate target is limited to the low 2MB (21-bit absolute address)",
+  "Immediate target reaches only the current 2MB window: per AN14650 5.22 the top 9 address bits remain those of PC at execution time. bunny_build encodes the low 21 bits of an absolute address ('& 0x1FFFFF'), which is equivalent only while code executes below 0x200000 - window semantics vs absolute assumption is an open adjudication item (affects assembler correctness, not just docs)",
 ]
 
 [timing]
@@ -23,11 +23,11 @@ notes = "Single cycle for a scheduled branch (the next two opcodes are not flush
 
 [[provenance]]
 source = "bunny_build"
-detail = "E_GOTO*/E_GOTO_REG* two-pass label functions in src/bunny_build__instr.c"
+detail = "E_GOTO*/E_GOTO_REG* two-pass label functions in src/bunny_build__instr.c; treats the 21-bit immediate as an absolute low-2MB address"
 
 [[provenance]]
 source = "an14650"
-detail = "section 5, E_GOTO instruction group"
+detail = "section 5.22, E_GOTO: 21-bit immediate keeps the top 9 address bits of PC (2MB window); scheduled vs ordinary branch timing and conditions"
 
 [[forms]]
 name = "imm"

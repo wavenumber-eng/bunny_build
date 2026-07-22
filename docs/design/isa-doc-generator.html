@@ -191,6 +191,10 @@ stdlib.</p>
 <li>Client-side mnemonic filter on the index (small inline script over the
 name table; exact-name lookup is the common case given 1502 mnemonics).</li>
 <li>Full-text search — revisit when prose volume warrants it.</li>
+<li>Per-form machine-readable timing — the db carries cycles per opcode file
+(matching AN14650's granularity), with multi-form distinctions (NOP vs
+WAIT_FOR_BEAT, GOTO scheduled-vs-ordinary) in prose notes. Adequate for
+docs; the simulator will eventually want structured per-form cycles.</li>
 <li>Simulator page (parked <code>ezh-browser-simulator</code> plan) — embeds
 later as one more static page plus a WASM asset; no toolchain
 interaction.</li>

@@ -30,7 +30,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from expand_mnemonics import expand, expected_base  # noqa: E402
 from validate import load, parse_range  # noqa: E402
-from verify_encodings import form_mask_match  # noqa: E402
+from verify_encodings import encode, form_mask_match  # noqa: E402
 
 BUNNY_ART = r"""
      / \
@@ -319,6 +319,25 @@ def mnemonic_rows(op: dict, form: dict, fields: dict) -> list[tuple[str, int]]:
     return sorted(rows)
 
 
+def alias_rows(op: dict, fields: dict) -> list[tuple[str, int, str]]:
+    """Alias mnemonics: form match word + baked presets (same math the
+    1502/1502 expansion check uses)."""
+    rows: list[tuple[str, int, str]] = []
+    for alias in op.get("aliases", []):
+        form = next(f for f in op["forms"] if f["name"] == alias["form"])
+        _, match = form_mask_match(form)
+        word = match
+        for key, val in alias.get("preset", {}).items():
+            word |= encode(fields[key], val)
+        preset = ", ".join(f"{k}={v:#x}" if isinstance(v, int) and v >= 0 else f"{k}={v}"
+                           for k, v in alias.get("preset", {}).items())
+        note = f"{alias['form']} form with {preset}"
+        rows.append((f"E_{alias['name']}", word, note))
+        if "cond" in form.get("modifiers", []):
+            rows.append((f"E_COND_{alias['name']}", word, note + " (+ cond argument)"))
+    return sorted(rows)
+
+
 def panel(header: str, content: str, collapsed: bool = False) -> str:
     cls = "panel collapsed" if collapsed else "panel"
     return (
@@ -382,6 +401,19 @@ def render_opcode(name: str, op: dict, fields: dict, arch: dict) -> str:
             out.append(panel(f"MNEMONICS: {form['name'].upper()} ({len(rows)})", table,
                              collapsed=True))
 
+    arows = alias_rows(op, fields)
+    if arows:
+        tr = "".join(
+            f"<tr><td class='mn'>{html.escape(n)}</td><td class='enc'>0x{b:08x}</td>"
+            f"<td class='prov'>{html.escape(note)}</td></tr>"
+            for n, b, note in arows
+        )
+        table = (
+            "<div class='tblwrap'><table class='results-table'>"
+            f"<tr><th>alias</th><th>base word</th><th>expansion</th></tr>{tr}</table></div>"
+        )
+        out.append(panel(f"ALIASES ({len(arows)})", table))
+
     pub = {s for s, meta in arch["sources"].items() if meta.get("public")}
     cites = [p for p in op.get("provenance", []) if p["source"] in pub]
     if cites:
@@ -426,6 +458,7 @@ def main() -> int:
     ordered = sorted(opcodes.items(), key=lambda kv: kv[1]["opcode"]["value"])
 
     idx_rows = []
+    total_mnem = 0
     for name, op in ordered:
         body = bunny_header("instruction set reference") + render_opcode(name, op, fields, arch)
         body += "<div class='prose'><a href='index.html'>&lt; index</a></div>"
@@ -433,6 +466,8 @@ def main() -> int:
             page(f"EZH {op['opcode']['name']}", body), encoding="utf-8"
         )
         n_mnem = sum(len(mnemonic_rows(op, f, fields)) for f in op.get("forms", []))
+        n_mnem += len(alias_rows(op, fields))
+        total_mnem += n_mnem
         idx_rows.append(
             f"<tr><td class='mn'><a href='{name}.html'>{html.escape(op['opcode']['name'])}"
             f"</a></td><td class='enc'>0x{op['opcode']['value']:02x}</td>"
@@ -450,6 +485,7 @@ def main() -> int:
     (outdir / "index.html").write_text(page("EZH instruction set", index_body),
                                        encoding="utf-8")
     print(f"{len(ordered)} opcode pages + index -> {outdir}")
+    print(f"{total_mnem} mnemonics rendered (expand_mnemonics.py guarantees 1502 vs fsl)")
 
     if single:
         parts = [bunny_header("instruction set reference — single-page preview")]
