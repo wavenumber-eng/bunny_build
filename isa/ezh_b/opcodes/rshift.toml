@@ -20,6 +20,12 @@ this family shifts by the lower 8 bits of a register.) Amounts of 32 and
 above are spec-silent; the sv_tb (advisory) applies rotate amounts modulo 32
 and saturates shifts - the value shifts fully out, with the carry capturing
 the last bit at exactly 32 and clearing beyond 32. On the adjudication list.
+With SPO/SNE and an LSL by 1, the carry is automatically shifted into the
+LSB - the tailchaining idiom for chaining shift work across registers.
+SPO/SNE cancel only the fused ALU stage here (see the shift family for
+the full algorithmic-flags story). (sv_tb advisory: a fused ADC/SBC with
+a nonzero shift amount takes its carry-in from the shift stage, not the
+CA flag.)
 """
 restrictions = [
   "S with destination PC does not set flags (schedules branch instead)",
@@ -48,7 +54,7 @@ detail = "ADVISORY: shift_by_32_or_more logic - rotate uses amount mod 32; shift
 
 [[forms]]
 name = "default"
-syntax = "E_[COND_]R{LSL|ASR|LSR|ROR}[N][_op][S] / E_[COND_]op[N]_R{LSL|ASR|LSR|ROR}[S]"
+syntax = "E_[COND_]R{LSL|ASR|LSR|ROR}[N][_op][S] / E_[COND_]op[N]_R{LSL|ASR|LSR|ROR}[S] ([cond,] dest, roperand, r2shift, rshift)"
 mnemonics = [
   { pattern = "E_[COND_]{RLSL=0|RASR=1|RLSR=2|RROR=3}[N][S]", binds = ["cond", "shift_type", "n_rshift", "s"] },
   { pattern = "E_[COND_]{RLSL=0|RASR=1|RLSR=2|RROR=3}_{AND=1|OR=2|XOR=3|ADD=4|SUB=5|ADC=6|SBC=7}[N][S]", binds = ["cond", "shift_type", "fuse_op", "n_rshift", "s"], when = { order_rshift = 0 } },

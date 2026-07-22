@@ -12,8 +12,10 @@ Moves data into a register: MOV copies a source register, MVN copies its
 bitwise inverse (the N modifier), LOAD_IMM loads an 11-bit signed immediate,
 and LOAD_SIMM additionally shifts that immediate left by 0-31 bit positions
 before loading - the idiom for building constants and masks without a memory
-access. MOVS (S) is the canonical way to test a register value. Writing PC
-as the destination schedules a branch.
+access. MOVS (S) is the canonical way to test a register value. Writing PC as the
+destination branches - ordinary unless S is set, which schedules the branch
+(and sets no flags).
+S sets the flags but never the carry: C retains its previous value.
 """
 restrictions = [
   "No support for SPO/SNE condition flags",
@@ -29,7 +31,7 @@ detail = "E_MOV / E_MVN / E_LOAD_IMM / E_LOAD_SIMM macro encodings"
 
 [[provenance]]
 source = "spec_b_06"
-detail = "section 5, E_MOV: purpose, options, restrictions"
+detail = "instruction set chapter, E_MOV purpose/options/restrictions (synthesized, not copied)"
 
 [[provenance]]
 source = "an14650"
@@ -59,7 +61,7 @@ bunny_build = "E_MOV(dest,src) = 0x0 + (src<<14) + (dest<<10) + (EU<<5)"
 
 [[forms]]
 name = "imm"
-syntax = "E_[COND_]LOAD_{IMM|SIMM}[N][S] ([cond,] dest, imm11s [, shift5])"
+syntax = "E_[COND_]LOAD_{IMM|SIMM}[N][S] ([cond,] dest, imm11s [, shift5_simm])"
 mnemonics = [
   { pattern = "E_[COND_]LOAD_IMM[N][S]", binds = ["cond", "n", "s"] },
   { pattern = "E_[COND_]LOAD_SIMM[N][S]", binds = ["cond", "n", "s"] },

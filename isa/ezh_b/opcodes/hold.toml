@@ -41,7 +41,7 @@ detail = "E_HOLD/E_VECTORED_HOLD*/E_ACC_VECTORED_HOLD* encoder formulas"
 
 [[provenance]]
 source = "an14650"
-detail = "section 5.16: hold until Boolean pattern, vectored dispatch, NRA/LV/ACC options, Rptable+4 first-vector rule; Table 12: single cycle"
+detail = "section 5.16: hold until Boolean pattern, vectored dispatch, NRA/LV/ACC options, table-register+4 first-vector rule; Table 12: single cycle"
 
 [[provenance]]
 source = "fsl_header"
@@ -51,14 +51,13 @@ detail = "all four COND_*_NRA macros (lines 3277-3296) have a space before the p
 source = "sv_tb"
 detail = "ADVISORY: e_boolean decodes plain-HOLD via bit 15, NRA bit 18 (RA write to reg 15 executes only when clear), LV bit 19 (16- vs 4-byte table stride), ACC bit 9, acceleration bits [31:24]; reads the table register ONLY from [23:20] - the [13:10] replica is never consumed (decode significance of the replica is on the adjudication list)"
 
-# ---------------------------------------------------------------------------
-# Plain HOLD: dest slot fixed to PC, bit 15 set.
-# ---------------------------------------------------------------------------
-
 [[provenance]]
 source = "spec_b_06"
 detail = "instruction set chapter, E_HOLD purpose/options/restrictions (synthesized, not copied)"
 
+# ---------------------------------------------------------------------------
+# Plain HOLD: dest slot fixed to PC, bit 15 set.
+# ---------------------------------------------------------------------------
 [[forms]]
 name = "plain"
 syntax = "E_[COND_]HOLD ([cond])"

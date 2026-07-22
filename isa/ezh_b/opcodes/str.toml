@@ -15,12 +15,15 @@ write the offset pointer update back before or after the access. Stores
 share E_LDR's submit-and-continue performance. The PUSH aliases are presets
 of this form - the stack grows upward, so PUSH post-increments SP by one
 word.
+(sv_tb advisory: byte stores drive the byte on all four AHB byte lanes.)
 """
 restrictions = [
   "Post-increment of PC is not allowed",
-  "A post-updated pointer register cannot also be the transfer register; the post-update is ignored",
+  "AN14650 5.25 carries a pointer/post-update cancellation phrased for reads (a 5.24 copy-paste smell); sv_tb shows no such cancellation for stores - data is latched before the pointer update. Adjudication item",
   "No support for SPO/SNE condition flags",
   "Cannot set flags (no S variant)",
+  "PUSH/POP: byte and word stacking must not be mixed across non-word-aligned boundaries - SP bits [1:0] are ignored in word-access address calculation (AN14650 5.29)",
+  "Word accesses truncate the address to word alignment (bits [1:0] ignored)",
 ]
 
 [timing]

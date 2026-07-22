@@ -81,7 +81,7 @@ desc = "Stack pointer"
 [registers.PC]
 value = 0xd
 class = "control"
-desc = "Program counter; writing PC schedules a branch"
+desc = "Program counter; writing PC branches - ordinary unless the op sets flags (S), which requests a scheduled branch instead of setting flags"
 
 [registers.GPI]
 value = 0xe
@@ -120,7 +120,7 @@ desc = "Negative"
 
 [conditions.AZ]
 value = 0x5
-desc = "ALU zero"
+desc = "Above zero (ARM GT)"
 
 [conditions.ZB]
 value = 0x6
@@ -136,17 +136,17 @@ desc = "Carry not set"
 
 [conditions.CZ]
 value = 0x9
-desc = "Carry or zero"
+desc = "Carry set and zero (spec table wording)"
 
 [conditions.SPO]
 value = 0xa
 alias = ["UNS"]
-desc = "Signed positive / unsigned variant (alias UNS)"
+desc = "Algorithmic shift-only-when-positive: cancels the fused ALU stage when the algorithmic-positive flag is set (the shift still executes; N inversion is not cancelled); latches only from ops conditioned on it. As a GOTO condition, UNS = unconditionally scheduled branch"
 
 [conditions.SNE]
 value = 0xb
 alias = ["NZS"]
-desc = "Signed negative variant (alias NZS)"
+desc = "Algorithmic shift-only-when-negative: cancels the fused ALU stage when the algorithmic-negative flag is set (the shift still executes; N inversion is not cancelled); latches only from ops conditioned on it. As a GOTO condition, NZS = scheduled branch iff NZ is set"
 
 [conditions.NBS]
 value = 0xc
@@ -228,3 +228,19 @@ note = "Validated by MCX camera byte-for-byte test"
 title = "ezh_tb_package.sv"
 public = false
 note = "Experimental testbench; ADVISORY ONLY, never authoritative"
+
+# ---------------------------------------------------------------------------
+# Glossary: architecture terms used across the opcode pages.
+# ---------------------------------------------------------------------------
+
+[glossary.scheduled_branch]
+desc = "A branch that lets the two already-prefetched opcodes execute instead of flushing them, costing one cycle instead of three. Requested by S+PC-destination ALU ops, by GOTO under UNS/NZS, and used by accelerated vectored holds."
+
+[glossary.unflushed_opcodes]
+desc = "The two instructions the pipeline has already fetched when a branch executes (PC runs two instructions ahead). An ordinary branch flushes them; a scheduled branch executes them."
+
+[glossary.dfetch]
+desc = "The data-fetch unit: queues one data-bus transaction so execution continues past a load/store; execution stalls only when an instruction consumes a register whose data has not returned."
+
+[glossary.execution_supervisor]
+desc = "The zero-overhead loop engine configured by E_TIGHT_LOOP: tracks loop end address and iteration count, repeating the block with no branch instructions."

@@ -4,7 +4,7 @@
 name = "LDR"
 value = 0x01
 family = "memory"
-mnemonics_base = ["E_LDR", "E_LDRB", "E_POP", "E_POPB"]
+mnemonics_base = ["E_LDR", "E_LDRB", "E_POP", "E_POPB", "E_POPBS"]
 
 [semantics]
 prose = """
@@ -20,11 +20,13 @@ upward, so POP pre-decrements SP by one word.
 """
 restrictions = [
   "Post-increment of PC is not allowed",
-  "A pointer register cannot take a post-update and also be the read destination; the post-update is ignored",
+  "A pointer register that is also the read destination gets no address update - PRE or POST, the update is ignored (sv_tb advisory: writeback is also silently ignored when the pointer is PC)",
   "No support for SPO/SNE condition flags",
-  "Reads using CFS as the pointer see the bottom 8 bits of CFS as 0x00",
+  "Reads using CFS as the pointer see the bottom 8 bits of CFS as 0x00 (AN14650; sv_tb instead returns the live BS-input byte - adjudication item)",
   "CFS cannot be the destination of a byte read",
   "S on byte loads means signed access (bit 21), not set-flags; loads never set flags",
+  "PUSH/POP: byte and word stacking must not be mixed across non-word-aligned boundaries - SP bits [1:0] are ignored in word-access address calculation (AN14650 5.29)",
+  "Word accesses truncate the address to word alignment (bits [1:0] ignored)",
 ]
 
 [timing]
@@ -41,11 +43,11 @@ detail = "sections 5.24 and 5.29: purpose, byte/sign options, scaled imm offset,
 
 [[provenance]]
 source = "spec_b_06"
-detail = "instruction set chapter, E_LDR purpose/options/restrictions (synthesized, not copied)"
+detail = "instruction set chapter, E_LDR purpose/options/restrictions (synthesized, not copied). Note: the spec DFETCH chapter and its own E_LDR section disagree on write-stall behavior - flagged for adjudication, no side picked"
 
 [[forms]]
 name = "default"
-syntax = "E_[COND_]{LDRB|LDR}[S][_PRE|_POST] ([cond,] dest, source, offset8s)"
+syntax = "E_[COND_]{LDRB[S]|LDR}[_PRE|_POST] ([cond,] dest, source, offset8s)"
 mnemonics = [
   { pattern = "E_[COND_]{LDRB=0|LDR=1}", binds = ["cond", "word"] },
   { pattern = "E_[COND_]LDRBS", binds = ["cond"], when = { sgn = 1 } },

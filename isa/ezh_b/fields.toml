@@ -19,7 +19,7 @@ slices = [{ instr = "8:5", value = "3:0" }]
 
 [fields.s]
 kind = "flag"
-desc = "Set flags (S suffix, ALU/MOV families)"
+desc = "Set flags (S suffix, ALU/MOV families). Only ADD/SUB/ADC/SBC and shift/rotate stages can change C; logical ops and MOV retain the previous carry even with S"
 slices = [{ instr = "9:9", value = "0:0" }]
 
 # The LDRB/LDR_REG load families spell their S suffix as SIGNED access, and it
@@ -84,7 +84,7 @@ slices = [
 [fields.per_addr20_w]
 kind = "imm"
 signed = false
-desc = "Peripheral byte address within the 1MB window above 0x4000_0000, word aligned (PER_WRITE split encoding; 18 offset bits encoded)"
+desc = "Peripheral byte offset from 0x4000_0000 within the 1MB window, word aligned (PER_WRITE split encoding; 18 offset bits encoded)"
 constraint = "addr % 4 == 0"
 slices = [
   { instr = "31:24", value = "19:12" },
@@ -95,7 +95,7 @@ slices = [
 [fields.per_addr20_r]
 kind = "imm"
 signed = false
-desc = "Peripheral byte address within the 1MB window above 0x4000_0000, word aligned (PER_READ; 18 offset bits encoded)"
+desc = "Peripheral byte offset from 0x4000_0000 within the 1MB window, word aligned (PER_READ; 18 offset bits encoded)"
 constraint = "addr % 4 == 0"
 slices = [{ instr = "31:14", value = "19:2" }]
 
@@ -174,7 +174,7 @@ slices = [{ instr = "26:24", value = "2:0" }]
 [fields.offset8s]
 kind = "imm"
 signed = true
-desc = "8-bit signed byte offset (LDR/STR families)"
+desc = "8-bit signed offset, scaled by access size: word-granular for word access, byte-granular for byte access (LDR/STR families)"
 slices = [{ instr = "31:24", value = "7:0" }]
 
 [fields.word]
@@ -230,14 +230,17 @@ constraint = "addr % 4 == 0"
 slices = [{ instr = "31:2", value = "31:2" }]
 
 # GOTO immediate target: word-aligned 21-bit byte address. Address bits [1:0]
-# are zero, so (addr & 0x1FFFFF) << 9 never disturbs the form flag (bit 9) or
-# the link flag (bit 10); the live bits are addr [20:2] -> instr [29:11].
+# The architectural immediate is 21 WORD bits in instr [31:11] (sv_tb:
+# dest = (PC & 0xff800000) | (inst[31:11] << 2)) - a 23-bit / 8MB window with
+# the top 9 address bits preserved from PC. bunny_build's encoder masks the
+# byte address with 0x1FFFFF and so populates only instr [29:11] (the low 2MB
+# of that window) - recorded as an assembler improvement opportunity.
 [fields.goto_addr21]
 kind = "imm"
 signed = false
-desc = "GOTO target byte address (21-bit absolute, word aligned)"
+desc = "GOTO target byte offset within the current 8MB window (21 word bits; top 9 address bits preserved from PC), word aligned"
 constraint = "addr % 4 == 0"
-slices = [{ instr = "29:11", value = "20:2" }]
+slices = [{ instr = "31:11", value = "22:2" }]
 
 [fields.link]
 kind = "flag"
@@ -287,7 +290,7 @@ slices = [{ instr = "31:31", value = "0:0" }]
 
 [fields.lv]
 kind = "flag"
-desc = "Latch vectors (LV modifier, VECTORED_HOLD family)"
+desc = "Large vector table entries: 4 words per entry instead of 1 (LV modifier, VECTORED_HOLD family)"
 slices = [{ instr = "19:19", value = "0:0" }]
 
 [fields.nra]
@@ -298,7 +301,7 @@ slices = [{ instr = "18:18", value = "0:0" }]
 [fields.vectors8]
 kind = "imm"
 signed = false
-desc = "Vector count/mask byte (ACC_VECTORED_HOLD)"
+desc = "Per-vector acceleration mask byte: bit n accelerates vector n (ACC_VECTORED_HOLD)"
 slices = [{ instr = "31:24", value = "7:0" }]
 
 # Replicated field: the same 4-bit table register value is emitted into BOTH

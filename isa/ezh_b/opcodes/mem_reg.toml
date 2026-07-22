@@ -17,9 +17,11 @@ and DFETCH lands read data in the background.
 """
 restrictions = [
   "No support for SPO/SNE condition flags",
-  "Reads using CFS as the pointer see the bottom 8 bits of CFS as 0x00",
+  "Reads using CFS as the pointer see the bottom 8 bits of CFS as 0x00 (AN14650; sv_tb instead returns the live BS-input byte - adjudication item)",
   "CFS cannot be the destination of a byte read",
   "S on byte loads means signed access (bit 21), not set-flags; no flag setting in this family",
+  "Offset semantics under adjudication: AN14650 5.26 says the offset size is one byte, sv_tb adds the full 32-bit offset-register value - and reads the offset register through a 3-bit extractor while the encoders carry 4 bits [27:24]",
+  "Word accesses truncate the address to word alignment (bits [1:0] ignored)",
 ]
 
 [timing]
@@ -40,7 +42,7 @@ detail = "instruction set chapter, E_MEM_REG purpose/options/restrictions (synth
 
 [[forms]]
 name = "load"
-syntax = "E_[COND_]LDR_REG[B][S] ([cond,] dest, source, roffset)"
+syntax = "E_[COND_]{LDR_REGB[S]|LDR_REG} ([cond,] dest, source, roffset)"
 mnemonics = [
   { pattern = "E_[COND_]{LDR_REGB=0|LDR_REG=1}", binds = ["cond", "word"] },
   { pattern = "E_[COND_]LDR_REGBS", binds = ["cond"], when = { sgn = 1 } },

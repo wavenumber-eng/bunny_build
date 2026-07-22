@@ -10,9 +10,12 @@ mnemonics_base = ["E_FEND_LSR", "E_FEND_ASR", "E_FBIT_LSR", "E_FBIT_ASR"]
 prose = """
 Flips the operand's byte order (FEND) or bit order (FBIT), right-shifts the
 flipped value (LSR or ASR by a 0-31 immediate), then optionally applies a
-fused ALU operation against Roperand. Bit-order flip converts LSB-first
+fused ALU operation with the flipped-and-shifted value as the LEFT operand
+(dest = shifted OP Roperand - the order matters for SUB/SBC). Bit-order flip converts LSB-first
 serial data to MSB-first and back; byte-order flip converts endianness -
 with the shift and ALU stage this normalizes protocol data in one cycle.
+SPO/SNE cancel only the fused ALU stage here (see the shift family for
+the full algorithmic-flags story).
 """
 restrictions = [
   "S with destination PC does not set flags (schedules branch instead)",
@@ -28,7 +31,7 @@ detail = "E_FEND_*/E_FBIT_* encoder formulas"
 
 [[provenance]]
 source = "an14650"
-detail = "section 5.11: preswap endianness/bitwise + right shift + ALU operation; Table 12: single cycle"
+detail = "section 5.11: preswap endianness/bitwise + right shift + ALU operation; Table 12: single cycle. Its options bullet erroneously lists LSL/ROR - the intro, Table 32, and Table 12 are right-shift-only (AN14650 defect #4)"
 
 [[provenance]]
 source = "spec_b_06"

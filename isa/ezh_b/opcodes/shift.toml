@@ -9,11 +9,19 @@ mnemonics_base = ["E_LSL", "E_LSR", "E_ASR", "E_ROR"]
 [semantics]
 prose = """
 Pre-shifts or pre-rotates a register, then optionally feeds the shifted
-value through an ALU operation: dest = Roperand OP (R2shift shifted by a
-0-31 immediate), with OP one of ADD/ADC/SUB/SBC/AND/OR/XOR - or a plain
+value through an ALU operation: dest = (R2shift shifted by a 0-31
+immediate) OP Roperand, with OP one of ADD/ADC/SUB/SBC/AND/OR/XOR - the
+shifted value is the LEFT operand, which matters for SUB/SBC - or a plain
 shift when no operation is fused. The mnemonic spells execution order:
 E_LSL_ADD shifts first, then adds. Together with the SPO/SNE conditions this
 family implements the algorithmic shift-and-accumulate idiom.
+The algorithmic conditions in full: SPO/SNE cancel only the fused ALU
+stage - the shift and the writeback still execute, and an N inversion is
+NOT cancelled; the algorithmic flags themselves latch only from an opcode
+that was conditioned on SPO/SNE. This is the binary-multiply idiom: shift
+every iteration, operate only when the MSB says so. (sv_tb advisory: a
+fused ADC/SBC with a nonzero shift amount takes its carry-in from the
+shift stage, not the CA flag.)
 """
 restrictions = [
   "S with destination PC does not set flags (schedules branch instead)",

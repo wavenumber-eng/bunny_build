@@ -8,18 +8,20 @@ mnemonics_base = ["E_GOTO", "E_GOTOL", "E_GOTO_REG", "E_GOTO_REGL"]
 
 [semantics]
 prose = """
-Branches to a word-aligned target: a 21-bit immediate (label form, bit 9
-set) reaching the current 2MB window, or a full 32-bit address from a
-register (bit 9 clear). The L variants back up a return address to RA: for a
-scheduled branch RA holds PC - 4 (the address after the two unflushed
-opcodes); for an ordinary branch, PC + 4. SPO/UNS conditions always schedule
-the branch (the next two opcodes still execute); SNE/NZS schedule it when NZ
-is set. An ordinary branch flushes the two prefetched opcodes and costs
-three cycles; a scheduled branch costs one.
+Branches to a word-aligned target: a 21-bit word immediate (label form, bit
+9 set) reaching the current 8MB window - the top 9 address bits are
+preserved from PC - or a full 32-bit address from a register (bit 9 clear).
+The L variants back up a return address to RA, stated referent-free: after a
+scheduled branch RA = the GOTO's address + 12 (the word after the two
+unflushed slots); after an ordinary branch RA = the GOTO's address + 4 (the
+next word). SPO/UNS conditions always schedule the branch (the next two
+opcodes still execute); SNE/NZS schedule it when NZ is set. An ordinary
+branch flushes the two prefetched opcodes and costs three cycles; a
+scheduled branch costs one.
 """
 restrictions = [
   "Immediate target must be word aligned (encoding relies on address bits [1:0] being zero)",
-  "Immediate target reaches only the current 2MB window: per AN14650 5.22 the top 9 address bits remain those of PC at execution time. bunny_build encodes the low 21 bits of an absolute address ('& 0x1FFFFF'), which is equivalent only while code executes below 0x200000 - window semantics vs absolute assumption is an open adjudication item (affects assembler correctness, not just docs)",
+  "Immediate target reaches the current 8MB window: the 21-bit word immediate fills target bits [22:2] and the top 9 address bits are preserved from PC (AN14650 5.22; sv_tb computes (PC & 0xff800000) | (inst[31:11] << 2)). bunny_build masks the byte address with 0x1FFFFF and populates only instr [29:11] - the low 2MB of the window; widening it is a recorded assembler improvement opportunity",
   "Cannot set flags (no S variant)",
 ]
 
@@ -33,11 +35,15 @@ detail = "E_GOTO*/E_GOTO_REG* two-pass label functions in src/bunny_build__instr
 
 [[provenance]]
 source = "an14650"
-detail = "section 5.22: 21-bit window immediate / 32-bit register target, RA backup rules (scheduled PC-4, ordinary PC+4), SPO/UNS and SNE/NZS scheduled-branch conditions, 1-vs-3-cycle performance"
+detail = "section 5.22: 21-bit window immediate / 32-bit register target, SPO/UNS and SNE/NZS scheduled-branch conditions, 1-vs-3-cycle performance. Its RA PC-4/PC+4 spellings are internally swapped against its own descriptive sentence (defect candidate #5; sv_tb agrees with the description: scheduled -> GOTO+12, ordinary -> GOTO+4)"
 
 [[provenance]]
 source = "spec_b_06"
 detail = "instruction set chapter, E_GOTO purpose/options/restrictions (synthesized, not copied)"
+
+[[provenance]]
+source = "sv_tb"
+detail = "ADVISORY: immediate branch computes (PC & 0xff800000) | (inst[31:11] << 2); RA writes: ordinary -> GOTO+4, scheduled -> GOTO+12"
 
 [[forms]]
 name = "imm"
