@@ -84,7 +84,7 @@ slices = [
 [fields.per_addr20_w]
 kind = "imm"
 signed = false
-desc = "Peripheral byte address within 22-bit / 4MB region above 0x4000_0000, word aligned (PER_WRITE split encoding)"
+desc = "Peripheral byte address within the 1MB window above 0x4000_0000, word aligned (PER_WRITE split encoding; 18 offset bits encoded)"
 constraint = "addr % 4 == 0"
 slices = [
   { instr = "31:24", value = "19:12" },
@@ -95,7 +95,7 @@ slices = [
 [fields.per_addr20_r]
 kind = "imm"
 signed = false
-desc = "Peripheral byte address within 22-bit / 4MB region above 0x4000_0000, word aligned (PER_READ)"
+desc = "Peripheral byte address within the 1MB window above 0x4000_0000, word aligned (PER_READ; 18 offset bits encoded)"
 constraint = "addr % 4 == 0"
 slices = [{ instr = "31:14", value = "19:2" }]
 

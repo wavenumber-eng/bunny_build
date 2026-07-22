@@ -9,10 +9,11 @@ mnemonics_base = ["E_BTST", "E_BSET", "E_BCLR", "E_BTOG"]
 [semantics]
 prose = """
 Tests or modifies a single bit of Rdata, selected by a register or a 5-bit
-immediate: BTST tests it (used with S to set flags on the tested bit), BSET
-sets it, BCLR clears it, BTOG toggles it; the modified word is written to
-the destination register. The register-select form lets a loop walk a bit
-index.
+immediate: BSET sets it, BCLR clears it, BTOG toggles it, and BTST isolates
+it - the destination receives Rdata AND (1 << bit), so unlike ARM's TST the
+destination IS written (use GPI as the discard destination). Pair BTST with
+S to set flags on the tested bit. The register-select form lets a loop walk
+a bit index.
 """
 restrictions = [
   "No support for SPO/SNE condition flags",

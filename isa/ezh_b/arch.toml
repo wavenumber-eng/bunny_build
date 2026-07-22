@@ -66,12 +66,12 @@ desc = "General purpose output direction/enable"
 [registers.CFS]
 value = 0xa
 class = "control"
-desc = "Conditional flag selection"
+desc = "Boolean detector bit-slice config source: 8x3-bit slice source selects plus 8 slice-input bits"
 
 [registers.CFM]
 value = 0xb
 class = "control"
-desc = "Conditional flag mask (boolean pattern detection)"
+desc = "Boolean detector bit-slice config mux: 8x3-bit slice mux selects plus 8 enable-OR bits"
 
 [registers.SP]
 value = 0xc
@@ -86,7 +86,7 @@ desc = "Program counter; writing PC schedules a branch"
 [registers.GPI]
 value = 0xe
 class = "io"
-desc = "General purpose inputs (read only)"
+desc = "General purpose inputs; also the discard destination when a result should not be stored (the CMP/TST idiom: S-variant op with dest = GPI)"
 
 [registers.RA]
 value = 0xf

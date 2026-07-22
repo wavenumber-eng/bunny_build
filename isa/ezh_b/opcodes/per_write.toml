@@ -11,11 +11,13 @@ mnemonics_base = ["E_PER_WRITE"]
 [semantics]
 prose = """
 Writes a source register to a peripheral register with pure immediate
-addressing. The 20-bit immediate is a
-word-aligned byte offset from 0x4000_0000 (bits [1:0] forced to zero),
-reaching a 22-bit / 4MB region of the Cortex-M peripheral space - no
-register needs to be spent on peripheral addressing. Performance matches
-E_LDR: submitted in one cycle, data lands via DFETCH.
+addressing: the immediate is a word-aligned byte offset from 0x4000_0000
+(bits [1:0] forced to zero; 18 offset bits are encoded), reaching the 1MB
+peripheral window - no register needs to be spent on peripheral addressing.
+Performance matches E_LDR (AN14650 section 5.28). (Note: AN14650 5.28 says
+the offset "covers a 22-bit offset region" - arithmetically impossible for
+the encoded field; the SV address computation, both headers, and real
+camera code agree on 1MB.)
 """
 restrictions = [
   "Address must be word aligned",
@@ -33,7 +35,7 @@ detail = "E_PER_WRITE macro encoding (split address)"
 
 [[provenance]]
 source = "an14650"
-detail = "section 5.28: peripheral write, 20-bit imm word offset from 0x40000000 covering a 22-bit region, performance same as E_LDR"
+detail = "section 5.28: peripheral write, immediate offset from 0x40000000, performance same as E_LDR. Its 22-bit-region note contradicts the 18-bit encoded field (AN14650 defect #3, recorded in prose)"
 
 [[provenance]]
 source = "spec_b_06"
