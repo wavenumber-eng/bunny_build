@@ -2,7 +2,7 @@
 type = "adr"
 id = "isa-adr-0002"
 domain = "isa"
-status = "proposed"
+status = "accepted"
 title = "Custom static HTML doc generator driven by the ISA database"
 created = "2026-07-22"
 +++

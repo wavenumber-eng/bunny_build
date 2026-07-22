@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Design: ISA documentation generator</title>
+<style>
+body { font-family: system-ui, sans-serif; max-width: 60rem; margin: 2rem auto;
+       padding: 0 1rem; line-height: 1.55; color: #1c1e21; }
+h1 { border-bottom: 2px solid #26547c; padding-bottom: .3rem; }
+h2 { color: #26547c; margin-top: 2rem; }
+code, pre { font-family: ui-monospace, Consolas, monospace; background: #f4f6f8;
+            padding: .1rem .3rem; border-radius: 3px; }
+pre { padding: .7rem 1rem; overflow-x: auto; }
+table { border-collapse: collapse; }
+th, td { border: 1px solid #ccc; padding: .3rem .7rem; text-align: left; }
+th { background: #eef2f7; }
+.tbd { background: #fff6e5; border-left: 4px solid #e8a13d; padding: .5rem .8rem; }
+</style>
+</head>
+<body>
+
+<h1>Design: ISA documentation generator</h1>
+
+<p><strong>Status:</strong> design accepted (ADR
+<code>isa-adr-0002</code>); implementation lands in the
+<code>build-static-html</code> plan step.
+<strong>Decision record:</strong>
+<code>docs/isa/adr/isa-adr-0002-custom-static-html-doc-generator-driven-by-the-isa-database.md</code>.
+<strong>Working spike:</strong> <code>isa/tools/gen_docs_spike.py</code>
+(stdlib-only; superseded by the generator described here).</p>
+
+<h2>Purpose and scope</h2>
+
+<p>Render the machine-readable ISA database (<code>isa/</code>, ADR
+<code>isa-adr-0001</code>) plus narrative Markdown chapters into the static
+HTML documentation set that ships in this repository. The generator is ISA-db
+consumer #1: everything bit-accurate on a page (encodings, field layouts,
+modifier matrices, mnemonic lists, timing) comes from the database, which is
+itself mechanically verified against the original fsl header and the
+bunny_build encoders. Nothing bit-accurate is ever hand-written in a page.</p>
+
+<h2>Inputs and outputs</h2>
+
+<table>
+<tr><th>Input</th><th>Role</th></tr>
+<tr><td><code>isa/ezh_b/arch.toml</code>, <code>fields.toml</code>,
+<code>opcodes/*.toml</code></td><td>All reference content: forms, fixed bits,
+operand/modifier fields, mnemonic patterns, timing, restrictions,
+provenance.</td></tr>
+<tr><td><code>docs_src/*.md</code> (name TBD at implementation)</td>
+<td>Prose chapters: architecture overview, programming pattern library.</td></tr>
+<tr><td><code>docs_src/templates/*.html.j2</code></td><td>Jinja2 page
+templates.</td></tr>
+<tr><td><code>docs_src/style.css</code></td><td>Single stylesheet, inlined
+into every page at build time (self-contained output).</td></tr>
+</table>
+
+<p><strong>Output:</strong> <code>docs/html/</code> — an index page, one page
+per base opcode, and one page per prose chapter. Fully self-contained: no CDN
+fonts, scripts, or images; diagrams are inline SVG. Output is deterministic
+(stable ordering, no timestamps) and committed to the repository.</p>
+
+<h2>Regeneration and drift check</h2>
+
+<pre>uv run python isa/tools/gen_docs.py          # regenerate docs/html/
+uv run python isa/tools/gen_docs.py --check  # fail if committed output is stale</pre>
+
+<p><code>--check</code> regenerates to a temporary directory and diffs
+against the committed tree; any difference is a failure. It joins the
+existing verifier suite (<code>validate.py</code>,
+<code>verify_encodings.py</code>, <code>verify_fsl.py</code>,
+<code>expand_mnemonics.py</code>) so documentation drift fails CI exactly the
+way encoding drift does. Generated output is only ever committed together
+with a passing check.</p>
+
+<h2>Architecture</h2>
+
+<pre>isa/*.toml ──▶ data layer ──▶ page model ──▶ Jinja2 templates ──▶ docs/html/
+               (validate.load + derivations)         ▲
+docs_src/*.md ──▶ markdown + cross-link resolution ──┘</pre>
+
+<ul>
+<li><strong>Data layer</strong> — reuses the verifier modules rather than
+reimplementing them: <code>validate.load()</code> for parsing,
+<code>verify_encodings.form_mask_match()</code> for decode mask/match,
+<code>expand_mnemonics.expand()</code> for the name lists (the same code
+whose output is verified 1502/1502 against the fsl header). Derives the
+bitfield segment model per form: per-bit ownership (fixed / field /
+reserved-zero), merged into contiguous same-owner runs.</li>
+<li><strong>Page model</strong> — plain dicts handed to templates; no logic
+in templates beyond iteration and formatting.</li>
+<li><strong>Templates</strong> — Jinja2 (<code>jinja2</code> dev
+dependency), one template per page kind plus a shared layout.</li>
+<li><strong>Prose chapters</strong> — Markdown rendered with
+<code>python-markdown</code>; <code>[[E_NAME]]</code> tokens resolve against
+the expanded mnemonic set to opcode-page links, unresolved names are build
+errors.</li>
+</ul>
+
+<h2>Opcode page structure</h2>
+
+<ol>
+<li>Opcode name, 5-bit value, family.</li>
+<li>Semantics prose and restrictions (from the db, synthesized text only).</li>
+<li>Timing: cycles plus qualifying note.</li>
+<li>Per form: syntax line; derived decode mask/match; bitfield diagram;
+form notes; expanded mnemonic table (name, canonical base word) —
+including alias mnemonics (<code>E_POP</code>/<code>E_PUSH</code>
+families) on their base form's page, presented as presets of that form.</li>
+<li>Public-source citations only (see Provenance).</li>
+</ol>
+
+<h2>Bitfield diagrams</h2>
+
+<p>Inline SVG generated from the slice data — the third emitter alongside the
+C and Verilog demos in <code>validate.py</code>. Algorithm (proved in the
+spike): classify each of the 32 bits as fixed (with its bit value), owned by
+an operand/modifier field, or reserved-zero; merge adjacent same-owner bits
+into segments; render one labeled cell per segment with bit indices at the
+segment boundaries. Fixed segments show their binary value; reserved-zero
+segments show <code>0</code>; split fields (e.g. the PER_WRITE address)
+naturally render as multiple cells carrying the same field name.</p>
+
+<h2>Provenance rendering</h2>
+
+<p>Source ids come from <code>arch.toml [sources]</code>, each flagged
+<code>public</code>. Only public sources (AN14650, bunny_build) render as
+citations, with section numbers where recorded. Non-public ids
+(<code>spec_b_06</code>, <code>fsl_header</code>, <code>sv_tb</code>) never
+appear in generated output; the prose they informed is synthesized text in
+the db. This enforces the plan's "synthesize, don't copy" rule at the
+rendering layer as well as the authoring layer.</p>
+
+<h2>Styling</h2>
+
+<p>Single hand-written stylesheet, inlined at build time. Token-based custom
+properties with light and dark themes
+(<code>prefers-color-scheme</code> plus <code>data-theme</code> override);
+SVG diagram cells styled through CSS classes so diagrams follow the theme.
+Encoding columns use tabular numerals; wide tables scroll inside their own
+container.</p>
+
+<div class="tbd"><strong>Open:</strong> visual direction (palette,
+typography, identity) is pending direction from Eli. The spike's steel-blue
+placeholder styling stands in until then; the token layer is the seam where
+the real direction drops in.</div>
+
+<h2>Dependencies</h2>
+
+<table>
+<tr><th>Package</th><th>Why</th></tr>
+<tr><td><code>jinja2</code></td><td>Page templates (pure Python).</td></tr>
+<tr><td><code>markdown</code></td><td>Prose chapters (pure Python).</td></tr>
+</table>
+
+<p>Both enter the <code>uv</code> dev dependency group; the generator is
+tooling, not a library dependency of bunny_build itself. Everything else is
+stdlib.</p>
+
+<h2>Deferred</h2>
+
+<ul>
+<li>Client-side mnemonic filter on the index (small inline script over the
+name table; exact-name lookup is the common case given 1502 mnemonics).</li>
+<li>Full-text search — revisit when prose volume warrants it.</li>
+<li>Simulator page (parked <code>ezh-browser-simulator</code> plan) — embeds
+later as one more static page plus a WASM asset; no toolchain
+interaction.</li>
+</ul>
+
+</body>
+</html>
