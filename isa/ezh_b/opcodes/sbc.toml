@@ -14,7 +14,11 @@ The result then passes through the optional post-stages in mnemonic-spelling
 order: N inverts it, F flips its byte order, and a fused LSL/LSR/ASR/ROR
 shifts or rotates it by a 0-31 immediate; flags (S) update last. The IMM form
 uses a 12-bit signed immediate with N and S only (the immediate occupies the
-shift bits). Writing PC as the destination schedules a branch.
+shift bits). Writing PC as the destination branches - an ordinary
+branch unless S is set, which makes it a scheduled branch (and sets no
+flags).
+SPO/SNE conditions are legal with this family - the algorithmic
+shift+ALU idiom (see the shift family for their full semantics).
 """
 restrictions = [
   "S with destination PC does not set flags (schedules branch instead)",

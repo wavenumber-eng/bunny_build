@@ -14,6 +14,7 @@ it - the destination receives Rdata AND (1 << bit), so unlike ARM's TST the
 destination IS written (use GPI as the discard destination). Pair BTST with
 S to set flags on the tested bit. The register-select form lets a loop walk
 a bit index.
+S never changes the carry flag here (C retains its previous value).
 """
 restrictions = [
   "No support for SPO/SNE condition flags",

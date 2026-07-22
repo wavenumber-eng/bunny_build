@@ -8,9 +8,8 @@ mnemonics_base = ["E_TIGHT_LOOP"]
 
 [semantics]
 prose = """
-Configures the Execution Supervisor for zero-overhead looping: Rend points
-at the address of the instruction immediately after the last opcode of the
-loop body, and Rcount gives how many times the block repeats after its first
+Configures the Execution Supervisor for zero-overhead looping: Rend points one
+word past the loop body's final opcode, and Rcount gives how many times the block repeats after its first
 pass - the body runs Rcount + 1 times in total. The instruction immediately
 following E_TIGHT_LOOP executes once only; the instruction after that is the
 first instruction of the repeated block. Iteration tracking and the branch
