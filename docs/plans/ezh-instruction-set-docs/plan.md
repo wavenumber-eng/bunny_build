@@ -36,7 +36,7 @@ depends_on = ["populate-isa-db"]
 [[steps]]
 id = "architecture-overview"
 title = "Write architecture overview from spec §4 + AN14650 §2-4: buses, pipeline, registers, flags, boolean detection, heartbeat, supervisor"
-status = "pending"
+status = "active"
 depends_on = ["inventory-sources"]
 
 [[steps]]
@@ -83,12 +83,12 @@ status = "pending"
 [[exit_criteria]]
 id = "isa-db-authoritative"
 title = "Machine-readable ISA db exists and mechanically round-trips against the original fsl header and bunny_build encoders"
-status = "pending"
+status = "done"
 
 [[exit_criteria]]
 id = "instruction-set-complete"
 title = "Every Arch B base opcode and modifier documented with operands, behavior, restrictions, and bit-level encoding"
-status = "pending"
+status = "done"
 
 [[exit_criteria]]
 id = "static-html-published"
