@@ -397,14 +397,38 @@ def bitfield_svg(form: dict, fields: dict, op_key: str = "") -> str:
             f'data-tip="{tip}"/>'
         )
         text = label if kind != "rsvd" else "0"
-        size = 11 if len(text) * 7 <= w else max(7, int(w / len(text) * 1.6))
+        # Fit: horizontal first, rotate vertical for narrow cells with long
+        # names, ellipsize as a last resort (the tooltip has the full name).
+        CW = 0.62  # monospace glyph width as a fraction of font size
+        mode, size = "h", 11
+        for s in (11, 10, 9, 8):
+            if len(text) * s * CW <= w - 4:
+                mode, size = "h", s
+                break
+        else:
+            for s in (9, 8, 7):
+                if len(text) * s * CW <= H - 4:
+                    mode, size = "v", s
+                    break
+            else:
+                maxc = max(2, int((H - 4) / (8 * CW)) - 1)
+                text, mode, size = text[:maxc] + "…", "v", 8
         tattr = f' class="{tcls}"' if tcls else ""
         caption = "opcode" if kind == "fixed" and lo == 0 else ""
-        ty = TICK + 13 if caption else TICK + H / 2 + 4
-        parts.append(
-            f'<text x="{x + w / 2}" y="{ty}" text-anchor="middle" '
-            f'font-size="{size}"{tattr}>{html.escape(text)}</text>'
-        )
+        cx = x + w / 2
+        if mode == "v":
+            cy = TICK + H / 2
+            parts.append(
+                f'<text x="{cx}" y="{cy + size * 0.35}" text-anchor="middle" '
+                f'transform="rotate(-90 {cx} {cy})" '
+                f'font-size="{size}"{tattr}>{html.escape(text)}</text>'
+            )
+        else:
+            ty = TICK + 13 if caption else TICK + H / 2 + 4
+            parts.append(
+                f'<text x="{cx}" y="{ty}" text-anchor="middle" '
+                f'font-size="{size}"{tattr}>{html.escape(text)}</text>'
+            )
         if caption:
             parts.append(
                 f'<text x="{x + w / 2}" y="{TICK + H - 6}" text-anchor="middle" '
