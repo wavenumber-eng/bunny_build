@@ -27,9 +27,9 @@ import tomllib
 from pathlib import Path
 
 # Bracket groups in a mnemonic pattern (notation v2, see isa/README.md):
-# [X] optional token; {A|B=n|...} alternation with optional explicit values
-# and empty alternatives permitted.
-MNEM_GROUP = re.compile(r"\[[A-Z0-9_]+\]|\{[A-Z0-9_]*(?:=\d+)?(?:\|[A-Z0-9_]*(?:=\d+)?)+\}")
+# [X] optional token; {A|B=n|...} alternation with optional explicit values,
+# empty alternatives, and single-alternative positional pins ({F=1}).
+MNEM_GROUP = re.compile(r"\[[A-Z0-9_]+\]|\{[A-Z0-9_]*(?:=\d+)?(?:\|[A-Z0-9_]*(?:=\d+)?)*\}")
 
 ROOT = Path(__file__).resolve().parent.parent
 EZH = ROOT / "ezh_b"
@@ -186,6 +186,10 @@ def main() -> int:
                     if w not in form_fields:
                         print(f"ERROR {fq}: mnemonic when-field {w!r} is not an operand/modifier of this form")
                         errors += 1
+            # Description coverage: a blank description cell is never silent.
+            if mnems and not form.get("brief") and any(not m.get("brief") for m in mnems):
+                print(f"ERROR {fq}: no form-level brief and not every mnemonic entry carries one (description would render blank)")
+                errors += 1
             low_mask = mask & 0x1F
             if low_mask == 0:
                 print(f"ERROR {fq}: no fixed bits in [4:0] — opcode not encoded")
@@ -217,6 +221,9 @@ def main() -> int:
                 print(f"ERROR {opname}: alias {al.get('name')!r} references unknown form {al.get('form')!r}")
                 errors += 1
                 continue
+            if not al.get("brief"):
+                print(f"ERROR {opname}: alias {al.get('name')!r} has no brief (description would render blank)")
+                errors += 1
             form_fields = form.get("operands", []) + form.get("modifiers", [])
             for key in list(al.get("preset", {})) + al.get("operands", []):
                 if key not in form_fields:

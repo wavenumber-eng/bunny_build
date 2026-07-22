@@ -26,6 +26,7 @@ cycles = "1"
 
 [[forms]]
 name = "default"
+brief = "Applies the AND, OR, and XOR mask bytes to GPO[7:0]; the upper 24 bits pass through unchanged"
 syntax = "E_MODIFY_GPO_BYTE (andmask, ormask, xormask)"
 mnemonic = { pattern = "E_MODIFY_GPO_BYTE", binds = [] }
 fixed = [{ bits = "4:0", value = 0x1e }]
