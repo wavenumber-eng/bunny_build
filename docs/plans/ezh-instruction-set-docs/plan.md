@@ -35,13 +35,31 @@ depends_on = ["populate-isa-db"]
 
 [[steps]]
 id = "architecture-overview"
-title = "Write architecture overview from spec §4 + AN14650 §2-4: buses, pipeline, registers, flags, boolean detection, heartbeat, supervisor"
+title = "Write architecture overview from spec + AN14650 + decks (lean on all three, cover everything): buses, pipeline incl. the runs-two-ahead nuances, registers, flags, boolean detection, heartbeat, supervisor, and ALL ARM/EZH interrupt mechanisms"
 status = "active"
 depends_on = ["inventory-sources"]
 
 [[steps]]
+id = "assembler-guide"
+title = "Assembler guide chapter: two-pass model, labels, directives (E_DCD/E_DCD_VAL/E_LABEL), pseudo-instructions (E_LOAD_32IMM and the important E__END park pattern), on-target assembly thesis, Keil-era migration"
+status = "pending"
+depends_on = ["inventory-sources"]
+
+[[steps]]
+id = "sample-mining"
+title = "Mine ALL old code samples for patterns and idioms: flat-samples (bist, display controller, FlexIO camera/8080/MIP, QSPI), LPC55 (hello_pdm PDM decimator, PWM/ADC/CRC trio, TFT driving, keyscan), MCX, RT500, kl28z - catalog E__END-style helpers, debug recipes, DSP tricks"
+status = "pending"
+depends_on = ["inventory-sources"]
+
+[[steps]]
 id = "pattern-library"
-title = "Document programming patterns: run-and-stop, multi-app dispatch, pseudo-instructions, continuous DMA/IRQ capture"
+title = "Cookbook chapter: run-and-stop, multi-app dispatch, vector-table idioms, continuous DMA/IRQ capture, debug recipes and DSP patterns from the mined samples"
+status = "pending"
+depends_on = ["inventory-sources", "sample-mining"]
+
+[[steps]]
+id = "platform-guide"
+title = "Platform/chip guide: dedicated section for every part with EZH/SmartDMA (LPC5410x, LPC54114/51U68, LPC55(S)xx, RT500, MCXN9xx, and the newer MCXA266/A3x) - base addresses, pin mux, IRQ numbers, INPUTMUX trigger maps; fetch authoritative per-chip data via nxp-monke"
 status = "pending"
 depends_on = ["inventory-sources"]
 
@@ -55,7 +73,7 @@ depends_on = ["isa-schema"]
 id = "build-static-html"
 title = "Produce the generated static HTML doc set kept in bunny_build"
 status = "pending"
-depends_on = ["verify-encodings", "instruction-prose", "architecture-overview", "pattern-library", "choose-doc-toolchain"]
+depends_on = ["verify-encodings", "instruction-prose", "architecture-overview", "assembler-guide", "pattern-library", "choose-doc-toolchain"]
 
 [[steps]]
 id = "design-doc-intent-audit"
@@ -163,15 +181,41 @@ two training decks, **AN14650 = public SmartDMA Cookbook Rev 1.0 (May 2025)** �
 citation-safe public source covering architecture, registers, and all 29 instruction
 groups (§5). Old code samples: archive only, not a focus.
 
+## Documentation organization (decided 2026-07-22)
+
+Seven top-level sections, per-chapter pages with a shared header bar, all
+rendered through the generator (design doc): (1) Home, (2) Architecture
+(= architecture-overview step; must cover EVERYTHING - all ARM/EZH interrupt
+mechanisms and the runs-two-ahead pipeline nuances explicitly, leaning on
+spec + AN + both decks), (3) Instruction reference (generated, done),
+(4) Assembler guide (= assembler-guide step: the directives/pseudo-instruction
+layers incl. E__END, and the on-target assembly thesis), (5) Cookbook
+(= pattern-library step, fed by sample-mining), (6) Platform guide
+(= platform-guide step: per-chip base addresses/pin mux/IRQs via nxp-monke),
+(7) Simulator (parked plan, slots in later). Sections 2-3 are machine-truth
+(spec+AN grounded); 4-6 are bunny_build's programming world. The training
+decks are NXP-internal: inform, never copy.
+
 Pattern sources for `pattern-library`:
 
 - bunny_build `test/` — simple GPIO/goto samples
 - `ezh` repo flat-samples — run-one-command-and-stop style patterns
-- gibbon-d `ezh_app.cpp` (D:\prj\teenage_engineering\...) — multi-app RAM pool with
-  offset dispatch, shared idle epilogue (CFM+HOLD), ARM2EZH parameter block, and
-  `E_LOAD_32IMM` C-macro pseudo-instruction built on bunny_build
+- gibbon-d `ezh_app.cpp` (teenage engineering, D:\prj\teenage_engineering\
+  lpc55_gibbon-d\gibbon-d-test-fw-west\app\src) — multi-app RAM pool with
+  offset dispatch, shared idle epilogue (CFM+HOLD), ARM2EZH parameter block,
+  `E_LOAD_32IMM`/`E__END` pseudo-instructions built on bunny_build, and the
+  standout SPI PSRAM fetch pattern: EZH performing small memory operations
+  through a command structure (ezh__execute_command dispatch, cmd+addr SPI
+  transactions via FIFO writes, GOSUB subroutines, heartbeat pacing)
 - avc (D:\prj\wavenumber\avc) — OV5640 continuous camera capture, DMA w/ IRQ,
   NXP smartdma blob drivers coexisting with vendored bunny_build
+- old-repo samples (C:\eli\ezh) — richer than "archive only" for patterns
+  (mined by `sample-mining`): LPC55/hello_pdm = PDM-to-PCM decimator
+  (4th-order CIC comb interleaved at 1/OSR, circular buffer via SP bit-clear,
+  breakpoint-vector-as-seamless-loop trick), PWM/ADC/CRC trio, TFT driving,
+  keyscan, QuadSPI, flat-samples (bist, display controller, FlexIO
+  camera/8080/MIP), MCX 4-bit counter; debug recipes (register-dump via
+  stores + breakpoint routine) from the decks
 
 ## Downstream tracks (explicitly out of this plan; parked as their own plans)
 

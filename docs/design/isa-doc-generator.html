@@ -186,6 +186,21 @@ GitHub Pages (custom domain planned). The self-contained/no-CDN constraint
 means the committed tree is the deployable artifact as-is; Pages just serves
 it. Publishing workflow lands with <code>build-static-html</code>.</p>
 
+<h2>Site organization (decided 2026-07-22)</h2>
+
+<p>Seven top-level sections, each its own page, sharing a header bar (the
+bunny identity plus section navigation) and the token stylesheet; search
+spans all of them. (1) Home; (2) Architecture — exhaustive: all ARM/EZH
+interrupt mechanisms, the runs-two-ahead pipeline nuances, boolean
+detection, heartbeat, EZHB control block; (3) Instruction reference — the
+generated expandable page; (4) Assembler guide — directives and
+pseudo-instruction layers (E_DCD/E_DCD_VAL/E_LABEL, E_LOAD_32IMM, the
+E__END park pattern), the on-target assembly thesis; (5) Cookbook —
+patterns from the mined sample corpus; (6) Platform guide — per-chip base
+addresses, pin mux, IRQ numbers, INPUTMUX maps (data via nxp-monke);
+(7) Simulator placeholder. Sections 2-3 are machine-truth; 4-6 are the
+bunny_build programming world.</p>
+
 <h2>Search</h2>
 
 <p>Client-side, fully static, precomputed by the generator at build time —
