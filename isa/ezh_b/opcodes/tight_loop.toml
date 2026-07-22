@@ -8,10 +8,19 @@ mnemonics_base = ["E_TIGHT_LOOP"]
 
 [semantics]
 prose = """
-Hardware loop: repeats the instruction block up to the end-address register
-while the count register decrements to zero, without branch overhead.
+Configures the Execution Supervisor for zero-overhead looping: Rend points
+at the address of the instruction immediately after the last opcode of the
+loop body, and Rcount gives how many times the block repeats after its first
+pass - the body runs Rcount + 1 times in total. The instruction immediately
+following E_TIGHT_LOOP executes once only; the instruction after that is the
+first instruction of the repeated block. Iteration tracking and the branch
+back cost no instruction cycles.
 """
-restrictions = []
+restrictions = [
+  "The instruction immediately following E_TIGHT_LOOP executes only once; the repeated block starts at the instruction after it",
+  "To repeat a single instruction, set Rend to 3 words past the E_TIGHT_LOOP address",
+  "Cannot set flags (no S variant)",
+]
 
 [timing]
 cycles = "1"

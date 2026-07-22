@@ -8,11 +8,16 @@ mnemonics_base = ["E_INT_TRIGGER"]
 
 [semantics]
 prose = """
-Drives a 24-bit value onto the EZH interrupt/trigger output lines, signalling
-the host CPU or other peripherals.
+Fires a single-cycle pulse on the EZH interrupt outputs: the 24-bit
+immediate mask selects which of the 24 individual interrupt channels pulse,
+and the common interrupt output always fires regardless of the mask - the
+mechanism for signalling the host CPU (frame complete, buffer ready) without
+touching a bus.
 """
 restrictions = [
-  "No conditional variant: the 24-bit value occupies the cond field bits",
+  "The common interrupt output triggers regardless of the channel mask",
+  "No conditional variant: the 24-bit mask occupies the cond field bits",
+  "Cannot set flags (no S variant)",
 ]
 
 [timing]

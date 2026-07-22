@@ -84,7 +84,7 @@ slices = [
 [fields.per_addr20_w]
 kind = "imm"
 signed = false
-desc = "Peripheral byte address within 1MB window, word aligned (PER_WRITE split encoding)"
+desc = "Peripheral byte address within 22-bit / 4MB region above 0x4000_0000, word aligned (PER_WRITE split encoding)"
 constraint = "addr % 4 == 0"
 slices = [
   { instr = "31:24", value = "19:12" },
@@ -95,7 +95,7 @@ slices = [
 [fields.per_addr20_r]
 kind = "imm"
 signed = false
-desc = "Peripheral byte address within 1MB window, word aligned (PER_READ)"
+desc = "Peripheral byte address within 22-bit / 4MB region above 0x4000_0000, word aligned (PER_READ)"
 constraint = "addr % 4 == 0"
 slices = [{ instr = "31:14", value = "19:2" }]
 
@@ -123,7 +123,7 @@ slices = [{ instr = "28:24", value = "4:0" }]
 
 [fields.f_alu]
 kind = "flag"
-desc = "F modifier: flip (endian) of shifted operand, ALU family"
+desc = "F modifier: byte-order flip of the ALU result (post-stage, ALU family)"
 slices = [{ instr = "31:31", value = "0:0" }]
 
 [fields.shift_type_alu]

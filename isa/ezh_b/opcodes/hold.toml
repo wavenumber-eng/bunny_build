@@ -8,14 +8,28 @@ mnemonics_base = ["E_HOLD", "E_VECTORED_HOLD", "E_ACC_VECTORED_HOLD"]
 
 [semantics]
 prose = """
-Halts execution until an event occurs. Plain HOLD parks the program counter.
-VECTORED_HOLD resumes execution by dispatching through a vector table selected
-by a register; the LV (large vector) modifier selects 16-byte vector-table
-entries instead of 4-byte, and NRA suppresses the return-address capture into
-RA. ACC variants carry a per-vector acceleration mask byte in [31:24] (bit
-24+n accelerates vector n).
+Halts execution until the Boolean pattern detector fires. Plain HOLD parks
+at the opcode until the bit-slice detector (configured through CFS/CFM)
+evaluates true, then falls through. VECTORED_HOLD monitors several ORed
+conditions at once and dispatches through a vector table when any fires:
+slice 0 has the highest priority, and an ANDed slice group dispatches on its
+last slice. The first table entry lives at the table register value + 4
+(PC works as the base when the table follows two unflushed opcodes); entries
+are one word each, or four words with LV (large vector) - room for a
+scheduled branch, its two unflushed opcodes, and one more instruction. By
+default the resume address is backed up to RA so the handler can return; NRA
+suppresses that. ACC variants carry a per-vector acceleration mask in
+[31:24] (bit 24+n accelerates vector n): for an accelerated vector the two
+already-prefetched opcodes are not flushed, so handler work starts during
+the dispatch. The minimum monitor-to-handler-to-monitor round trip is 4
+cycles.
 """
-restrictions = []
+restrictions = [
+  "SPO/SNE conditions cause an unpredictable result",
+  "Cannot set flags (no S variant; ACC rides the flag bit)",
+  "Pattern detection stalls until any outstanding reads into CFS/CFM have returned",
+  "Conditional on BS: the BS flag is not guaranteed to match the HOLD's own detector evaluation unless the detector inputs are stable",
+]
 
 [timing]
 cycles = "1"
