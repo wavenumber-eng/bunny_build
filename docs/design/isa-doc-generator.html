@@ -173,6 +173,40 @@ GitHub Pages (custom domain planned). The self-contained/no-CDN constraint
 means the committed tree is the deployable artifact as-is; Pages just serves
 it. Publishing workflow lands with <code>build-static-html</code>.</p>
 
+<h2>Search</h2>
+
+<p>Client-side, fully static, precomputed by the generator at build time —
+no backend at any point (GitHub Pages stays plain hosting). The generator
+already holds everything searchable in structured form; it emits one
+deterministic index asset and a small hand-written lookup script (SCM-styled
+search panel on every page, <code>/</code> focuses it). Three tiers, all
+precomputed in Python:</p>
+
+<ol>
+<li><strong>Exact/prefix mnemonic lookup</strong> — a
+<code>name &rarr; page#anchor</code> map over all 1502 expanded mnemonics
+(plus register, condition, and field names). Typing
+<code>E_COND_LDRB</code> lands on the ldr page instantly. Supersedes the
+index-filter promise in ADR isa-adr-0002.</li>
+<li><strong>Fuzzy matching</strong> — trigram &rarr; posting-list index
+built at generation time; the client intersects query trigrams and scores
+the candidate set (prefix &gt; substring &gt; trigram overlap), so
+<code>vectred hold</code> still finds the hold page.</li>
+<li><strong>Full text</strong> — an inverted token index over prose,
+restrictions, and (later) architecture chapters, weighted
+title &gt; mnemonic &gt; restriction &gt; body.</li>
+</ol>
+
+<p><strong>Constraints:</strong> the index ships as a JS file
+(<code>&lt;script src="search_index.js"&gt;</code> defining a global), not
+JSON via <code>fetch()</code> — <code>fetch</code> is blocked on
+<code>file://</code>, and the docs must work opened straight from disk.
+Output is deterministic (sorted keys, no timestamps) so <code>--check</code>
+covers the index like every page. Expected size for this corpus is tens to
+low-hundreds of KB. No search library: third-party engines solve
+large-unstructured-corpus problems; this corpus is small and its structure
+is ours.</p>
+
 <h2>Dependencies</h2>
 
 <table>
