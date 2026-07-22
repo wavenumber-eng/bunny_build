@@ -8,12 +8,18 @@ mnemonics_base = ["E_RLSL", "E_RLSR", "E_RASR", "E_RROR"]
 
 [semantics]
 prose = """
-Shifts a register by an amount taken from another register (R prefix:
-RLSL/RLSR/RASR/RROR), optionally fused with an ALU operation. The order
-modifier selects the pipeline direction: shift-then-op (e.g. E_RLSL_ADD) or
-op-then-shift (e.g. E_ADD_RLSL). The N modifier inverts the result.
+Shifts by a register-supplied amount: the bottom byte of the shift register
+(0-255) drives an RLSL/RLSR/RASR/RROR of R2shift, optionally fused with an
+ALU operation against Roperand in either order - shift-then-operate
+(E_RLSL_ADD) or operate-then-shift (E_ADD_RLSL); the mnemonic spells the
+execution order, and N inverts the ALU result. This is the variable-shift
+workhorse for bit-packing loops whose field widths are computed at run time.
+(Note: AN14650 5.12's description sentence says "byte or bit order flipping"
+- a copy-paste from 5.11; its own options list and both other sources agree
+this family shifts by the lower 8 bits of a register.)
 """
 restrictions = [
+  "S with destination PC does not set flags (schedules branch instead)",
   "Shift-amount register is a 3-bit field: R0-R7 only (bit 27 is the N modifier)",
 ]
 
@@ -26,7 +32,11 @@ detail = "E_R*/E_*_R* register-shift encoder formulas"
 
 [[provenance]]
 source = "an14650"
-detail = "section 5, register-shift instruction group"
+detail = "section 5.12: shift by lower 8 bits of a register + optional ALU op + optional inversion (description sentence there is a 5.11 copy-paste error); Table 12: single cycle"
+
+[[provenance]]
+source = "spec_b_06"
+detail = "instruction set chapter, E_RSHIFT purpose/options/restrictions (synthesized, not copied)"
 
 [[forms]]
 name = "default"

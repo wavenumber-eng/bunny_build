@@ -8,15 +8,20 @@ mnemonics_base = ["E_GOSUB"]
 
 [semantics]
 prose = """
-Calls a subroutine: any instruction word whose bits [1:0] are 0b11 is a GOSUB;
-the remaining bits hold the word-aligned target byte address directly. The
-return address is written to RA. Because GOSUB overlays the whole encoding
-space, decoders must match it before any other opcode (most-specific-first by
-mask popcount does this naturally - GOSUB has the smallest mask).
+Calls a subroutine at an absolute 30-bit word address - any word in the
+4GB space: any instruction word whose bits [1:0] are 0b11 is a GOSUB, and
+the remaining 30 bits are the word address directly. RA is always
+overwritten with the return address, so nested calls must stack RA
+explicitly (the stack grows upward); return by branching through RA.
+Because GOSUB overlays the whole encoding space, decoders must match it
+before any other opcode (most-specific-first by mask popcount does this
+naturally - GOSUB has the smallest mask).
 """
 restrictions = [
   "Target address must be word aligned (bits [1:0] of the address are implied 0b00, replaced by the 0b11 tag)",
   "No conditional variant: the cond field bits belong to the target address",
+  "RA is always overwritten; preserve it manually for nesting",
+  "Cannot set flags (no S variant)",
 ]
 
 [timing]
@@ -29,7 +34,11 @@ detail = "E_GOSUB label prototype; two-pass assembler emits 0x03 + target addres
 
 [[provenance]]
 source = "an14650"
-detail = "section 5, E_GOSUB"
+detail = "section 5.23: branch to immediate 30-bit word address, RA always updated for stacking/returning; Table 12: three cycles"
+
+[[provenance]]
+source = "spec_b_06"
+detail = "instruction set chapter, E_GOSUB purpose/options/restrictions (synthesized, not copied)"
 
 [[forms]]
 name = "default"

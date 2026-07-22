@@ -13,13 +13,17 @@ mnemonics_base = ["E_NOP", "E_HEART_RYTHM", "E_HEART_RYTHM_IMM", "E_SYNCH_ALL_TO
 
 [semantics]
 prose = """
-NOP does nothing for one cycle. The beat sub-ops drive the shared heartbeat
-timing mechanism: HEART_RYTHM sets the beat period from an immediate or a
-register, SYNCH_ALL_TO_BEAT aligns execution to the beat, and WAIT_FOR_BEAT
-stalls until the next beat.
+Opcode 0x12 is a small control family selected by a sub-op field. NOP does
+nothing for one cycle. HEART_RYTHM loads the 16-bit heartbeat counter (from
+an immediate or a register) - the timebase for deterministic-interval
+execution. SYNCH_ALL_TO_BEAT switches the synchronize-all-instructions-to-
+beat feature on or off with a 1-bit immediate. WAIT_FOR_BEAT halts until the
+next heartbeat, the idiom for aligning work (serial sampling, for example)
+to fixed intervals; load the counter with HEART_RYTHM first.
 """
 restrictions = [
   "No conditional variants: bits [8:5] are the sub-op selector, not a cond field",
+  "Cannot set flags (no S variants)",
 ]
 
 [timing]
@@ -36,7 +40,11 @@ detail = "E_HEART_RYTHM*/E_SYNCH_ALL_TO_BEAT/E_WAIT_FOR_BEAT encoder formulas"
 
 [[provenance]]
 source = "an14650"
-detail = "section 5.17 E_NOP; beat instruction group"
+detail = "sections 5.17-5.20: NOP, HEART_RYTHM (imm16 or register), SYNCH_ALL_TO_BEAT (bool), WAIT_FOR_BEAT (halts until next beat; initialize the heartbeat first); Table 12 rows 17-20"
+
+[[provenance]]
+source = "spec_b_06"
+detail = "instruction set chapter, E_NOP purpose/options/restrictions (synthesized, not copied)"
 
 [[forms]]
 name = "nop"

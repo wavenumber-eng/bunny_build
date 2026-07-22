@@ -8,12 +8,18 @@ mnemonics_base = ["E_LDR_REG", "E_LDR_REGB", "E_STR_REG", "E_STR_REGB"]
 
 [semantics]
 prose = """
-Loads or stores a word or byte at base register plus an offset register
-(register-offset addressing). Byte loads can sign-extend (E_LDR_REGBS).
-Bit 30 selects the direction (0 = load, 1 = store).
+Register-plus-register addressed memory access: LDR_REG reads and STR_REG
+writes at Raddr + Roffset (bit 30 selects the direction), for walking
+buffers whose stride lives in a register. Loads come in word, byte (B), and
+sign-extended byte (BS) forms; stores in word and byte. Performance matches
+the immediate-offset E_LDR and E_STR: the access is submitted in one cycle
+and DFETCH lands read data in the background.
 """
 restrictions = [
-  "Signed access (bit 21) exists only on byte loads",
+  "No support for SPO/SNE condition flags",
+  "Reads using CFS as the pointer see the bottom 8 bits of CFS as 0x00",
+  "CFS cannot be the destination of a byte read",
+  "S on byte loads means signed access (bit 21), not set-flags; no flag setting in this family",
 ]
 
 [timing]
@@ -26,7 +32,11 @@ detail = "E_LDR_REG*/E_STR_REG* encoder formulas"
 
 [[provenance]]
 source = "an14650"
-detail = "section 5, register-offset load/store group"
+detail = "sections 5.26-5.27: register+register addressing, byte/sign options, CFS restrictions, performance same as E_LDR"
+
+[[provenance]]
+source = "spec_b_06"
+detail = "instruction set chapter, E_MEM_REG purpose/options/restrictions (synthesized, not copied)"
 
 [[forms]]
 name = "load"

@@ -205,7 +205,7 @@ desc = "Event input"
 # ---------------------------------------------------------------------------
 
 [sources.spec_b_06]
-title = "EZHandler Arch B PreRel0.6 (Adam Fuks)"
+title = "EZHandler Arch B PreRel0.6 (EZH creator)"
 public = false
 note = "NXP confidential; informs, never copied"
 
@@ -215,7 +215,7 @@ public = true
 note = "Public NXP application note; citable"
 
 [sources.fsl_header]
-title = "fsl_ezh_armclang.h (hand-created by Adam Fuks)"
+title = "fsl_ezh_armclang.h (hand-created by the EZH creator)"
 public = false
 note = "Best available encoding reference; NXP confidential banner"
 

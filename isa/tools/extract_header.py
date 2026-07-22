@@ -29,7 +29,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 HEADER = ROOT.parent / "include" / "bunny_build__instr.h"
 
-# Body = optional pass-1 warning printf (Adam's "DOUBLE CHECK ENCODING" notes),
+# Body = optional pass-1 warning printf (the header author's "DOUBLE CHECK ENCODING" notes),
 # then exactly one add_instruction call.
 FUNC = re.compile(
     r"static inline void\s+(E_\w+)\s*\(([^)]*)\)\s*\{\s*"

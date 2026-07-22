@@ -8,13 +8,16 @@ mnemonics_base = ["E_SBC"]
 
 [semantics]
 prose = """
-Subtracts the second source and the inverted carry (borrow) from the first, writing a destination register. The second source
-operand can be barrel-shifted (LSL/ASR/LSR/ROR by a 5-bit immediate) and
-optionally flipped (F modifier) before the operation. The N modifier inverts
-the ALU result. The IMM form replaces the second source with a 12-bit signed
-immediate (no shift fusion).
+Subtracts, then subtracts the carry flag (dest = src1 - src2 - C) -
+the building block for multi-word arithmetic.
+The result then passes through the optional post-stages in mnemonic-spelling
+order: N inverts it, F flips its byte order, and a fused LSL/LSR/ASR/ROR
+shifts or rotates it by a 0-31 immediate; flags (S) update last. The IMM form
+uses a 12-bit signed immediate with N and S only (the immediate occupies the
+shift bits). Writing PC as the destination schedules a branch.
 """
 restrictions = [
+  "S with destination PC does not set flags (schedules branch instead)",
   "IMM form has no shift fusion (immediate occupies the shift bits)",
 ]
 
@@ -27,12 +30,16 @@ detail = "E_SBC* encoder formulas (family matrix extracted by isa/tools/extract_
 
 [[provenance]]
 source = "an14650"
-detail = "section 5, E_SBC instruction group"
+detail = "section 5.5: purpose, options (invertible data, result byte-order flip, postshift 0-31), imm12s, PC restriction; Table 12: single cycle"
 
 # ---------------------------------------------------------------------------
 # Form 1: register-register with optional immediate-shift fusion.
 # Plain E_SBC[N][S] is LSL with shift5 = 0; E_SBC[N]_F[S] is FLSL with shift5 = 0.
 # ---------------------------------------------------------------------------
+
+[[provenance]]
+source = "spec_b_06"
+detail = "instruction set chapter, E_SBC purpose/options/restrictions (synthesized, not copied)"
 
 [[forms]]
 name = "reg"

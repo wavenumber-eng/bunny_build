@@ -2,7 +2,7 @@
 
 Usage:  uv run python isa/tools/verify_fsl.py [--header PATH] [--verbose]
 
-The fsl header (`fsl_ezh_armclang.h`, hand-created by Adam Fuks) is authority
+The fsl header (`fsl_ezh_armclang.h`, hand-created by the EZH creator) is authority
 #1 for encodings.  This tool closes the verify-encodings loop:
 
   1. constants: every register / condition / bit-slice value in arch.toml must
@@ -19,7 +19,7 @@ The fsl header (`fsl_ezh_armclang.h`, hand-created by Adam Fuks) is authority
      argument — a phantom modifier/operand in the db cannot pass silently;
   5. adjudication report: known-defective macros (uncompilable as written) and
      name-set asymmetries between the two headers, printed for review with
-     Adam — informational, not failures, since the db already records them.
+     the EZH creator — informational, not failures, since the db already records them.
 
 Exit code 1 on any constant mismatch, structural mismatch, ambiguous match,
 cross-diff disagreement, dead form, phantom modifier, or phantom operand.

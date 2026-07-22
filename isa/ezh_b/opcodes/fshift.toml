@@ -8,11 +8,14 @@ mnemonics_base = ["E_FEND_LSR", "E_FEND_ASR", "E_FBIT_LSR", "E_FBIT_ASR"]
 
 [semantics]
 prose = """
-Flips a register value - FEND reverses byte order (endian flip), FBIT reverses
-bit order - then shifts it right (LSR or ASR) by a 5-bit immediate, optionally
-fusing the result into an ALU operation with a second register operand.
+Flips the operand's byte order (FEND) or bit order (FBIT), right-shifts the
+flipped value (LSR or ASR by a 0-31 immediate), then optionally applies a
+fused ALU operation against Roperand. Bit-order flip converts LSB-first
+serial data to MSB-first and back; byte-order flip converts endianness -
+with the shift and ALU stage this normalizes protocol data in one cycle.
 """
 restrictions = [
+  "S with destination PC does not set flags (schedules branch instead)",
   "Only right shifts (LSR/ASR) exist in this family",
 ]
 
@@ -25,7 +28,11 @@ detail = "E_FEND_*/E_FBIT_* encoder formulas"
 
 [[provenance]]
 source = "an14650"
-detail = "section 5, flip/shift instruction group"
+detail = "section 5.11: preswap endianness/bitwise + right shift + ALU operation; Table 12: single cycle"
+
+[[provenance]]
+source = "spec_b_06"
+detail = "instruction set chapter, E_FSHIFT purpose/options/restrictions (synthesized, not copied)"
 
 [[forms]]
 name = "default"

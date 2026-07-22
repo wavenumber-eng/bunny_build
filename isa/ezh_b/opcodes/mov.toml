@@ -8,11 +8,12 @@ mnemonics_base = ["E_MOV", "E_MVN", "E_LOAD_IMM", "E_LOAD_SIMM"]
 
 [semantics]
 prose = """
-Moves data register-to-register, or loads an immediate into a register. The N
-modifier inverts the value (MVN). Immediates are 11-bit signed and may be left
-shifted 0-31 positions (LOAD_SIMM) before load. Writing PC as destination
-schedules a branch; with S set on a PC write, flags are NOT set - the branch is
-considered scheduled instead.
+Moves data into a register: MOV copies a source register, MVN copies its
+bitwise inverse (the N modifier), LOAD_IMM loads an 11-bit signed immediate,
+and LOAD_SIMM additionally shifts that immediate left by 0-31 bit positions
+before loading - the idiom for building constants and masks without a memory
+access. MOVS (S) is the canonical way to test a register value. Writing PC
+as the destination schedules a branch.
 """
 restrictions = [
   "No support for SPO/SNE condition flags",
@@ -32,7 +33,7 @@ detail = "section 5, E_MOV: purpose, options, restrictions"
 
 [[provenance]]
 source = "an14650"
-detail = "section 5.1 E_MOV"
+detail = "section 5.1: purpose, options (reg-to-reg, imm-to-reg, 11-bit signed imm shiftable left 0-31), restrictions; Table 12: single cycle"
 
 # ---------------------------------------------------------------------------
 # Form 1: register to register.  E_[COND_]MOV[N][S] (cond,) dest, src

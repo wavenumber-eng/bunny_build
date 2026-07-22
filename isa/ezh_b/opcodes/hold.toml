@@ -8,14 +8,28 @@ mnemonics_base = ["E_HOLD", "E_VECTORED_HOLD", "E_ACC_VECTORED_HOLD"]
 
 [semantics]
 prose = """
-Halts execution until an event occurs. Plain HOLD parks the program counter.
-VECTORED_HOLD resumes execution by dispatching through a vector table selected
-by a register; the LV (large vector) modifier selects 16-byte vector-table
-entries instead of 4-byte, and NRA suppresses the return-address capture into
-RA. ACC variants carry a per-vector acceleration mask byte in [31:24] (bit
-24+n accelerates vector n).
+Halts execution until the Boolean pattern detector fires. Plain HOLD parks
+at the opcode until the bit-slice detector (configured through CFS/CFM)
+evaluates true, then falls through. VECTORED_HOLD monitors several ORed
+conditions at once and dispatches through a vector table when any fires:
+slice 0 has the highest priority, and an ANDed slice group dispatches on its
+last slice. The first table entry lives at the table register value + 4
+(PC works as the base when the table follows two unflushed opcodes); entries
+are one word each, or four words with LV (large vector) - room for a
+scheduled branch, its two unflushed opcodes, and one more instruction. By
+default the resume address is backed up to RA so the handler can return; NRA
+suppresses that. ACC variants carry a per-vector acceleration mask in
+[31:24] (bit 24+n accelerates vector n): for an accelerated vector the two
+already-prefetched opcodes are not flushed, so handler work starts during
+the dispatch. The minimum monitor-to-handler-to-monitor round trip is 4
+cycles.
 """
-restrictions = []
+restrictions = [
+  "SPO/SNE conditions cause an unpredictable result",
+  "Cannot set flags (no S variant; ACC rides the flag bit)",
+  "Pattern detection stalls until any outstanding reads into CFS/CFM have returned",
+  "Conditional on BS: the BS flag is not guaranteed to match the HOLD's own detector evaluation unless the detector inputs are stable",
+]
 
 [timing]
 cycles = "1"
@@ -27,7 +41,7 @@ detail = "E_HOLD/E_VECTORED_HOLD*/E_ACC_VECTORED_HOLD* encoder formulas"
 
 [[provenance]]
 source = "an14650"
-detail = "section 5.16, E_HOLD instruction group"
+detail = "section 5.16: hold until Boolean pattern, vectored dispatch, NRA/LV/ACC options, Rptable+4 first-vector rule; Table 12: single cycle"
 
 [[provenance]]
 source = "fsl_header"
@@ -40,6 +54,10 @@ detail = "ADVISORY: e_boolean decodes plain-HOLD via bit 15, NRA bit 18 (RA writ
 # ---------------------------------------------------------------------------
 # Plain HOLD: dest slot fixed to PC, bit 15 set.
 # ---------------------------------------------------------------------------
+
+[[provenance]]
+source = "spec_b_06"
+detail = "instruction set chapter, E_HOLD purpose/options/restrictions (synthesized, not copied)"
 
 [[forms]]
 name = "plain"

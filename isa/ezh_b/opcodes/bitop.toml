@@ -8,12 +8,16 @@ mnemonics_base = ["E_BTST", "E_BSET", "E_BCLR", "E_BTOG"]
 
 [semantics]
 prose = """
-Tests, sets, clears, or toggles a single bit of a register. The bit number
-comes from a register (REG form) or a 5-bit immediate (IMM form). The result
-is written to the destination register; BTST is typically used with S to set
-flags on the tested bit.
+Tests or modifies a single bit of Rdata, selected by a register or a 5-bit
+immediate: BTST tests it (used with S to set flags on the tested bit), BSET
+sets it, BCLR clears it, BTOG toggles it; the modified word is written to
+the destination register. The register-select form lets a loop walk a bit
+index.
 """
-restrictions = []
+restrictions = [
+  "No support for SPO/SNE condition flags",
+  "S with destination PC does not set flags (schedules branch instead)",
+]
 
 [timing]
 cycles = "1"
@@ -24,9 +28,13 @@ detail = "E_BTST*/E_BSET*/E_BCLR*/E_BTOG* encoder formulas"
 
 [[provenance]]
 source = "an14650"
-detail = "section 5, bit operation instruction group"
+detail = "section 5.13: bit manipulation and testing, bit select by register or imm5, restrictions; Table 12: single cycle"
 
 # Bit 18 = 1 selects the register-bit-number form (inverted vs the ALU family).
+
+[[provenance]]
+source = "spec_b_06"
+detail = "instruction set chapter, E_BITOP purpose/options/restrictions (synthesized, not copied)"
 
 [[forms]]
 name = "reg"

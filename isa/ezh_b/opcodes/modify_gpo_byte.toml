@@ -40,6 +40,10 @@ detail = "E_MODIFY_GPO_BYTE macro line 3327 references ordmask/xordmask but decl
 source = "sv_tb"
 detail = "ADVISORY: e_gpo_mod decodes AND [15:8], OR [23:16], XOR [31:24], applied to GPO's low byte only; corroborates the repaired fsl macro"
 
+[[provenance]]
+source = "spec_b_06"
+detail = "instruction set chapter, E_MODIFY_GPO_BYTE purpose/options/restrictions (synthesized, not copied)"
+
 [[forms]]
 name = "default"
 syntax = "E_MODIFY_GPO_BYTE (andmask, ormask, xormask)"

@@ -8,14 +8,23 @@ mnemonics_base = ["E_LDR", "E_LDRB", "E_POP", "E_POPB"]
 
 [semantics]
 prose = """
-Loads a word or byte from memory at source register plus a signed 8-bit byte
-offset. PRE/POST variants write the updated address back to the source
-register (pre-index: address updated before access; post-index: after). Byte
-loads can sign-extend (LDRBS). POP variants are stack aliases using SP with a
-baked -1 offset and writeback.
+Reads memory over the AHB data bus into a register, addressed by a pointer
+register plus an 8-bit signed immediate offset - word-scaled for word reads,
+byte-scaled for byte reads. B reads a byte (zero-extended), BS a byte with
+sign extension. PRE/POST variants write the offset pointer update back to
+the pointer register before or after the access. The read is submitted and
+execution continues: the DFETCH unit lands the data in the background, so a
+load costs one cycle unless the destination register is consumed before the
+data returns. The POP aliases are presets of this form - the stack grows
+upward, so POP pre-decrements SP by one word.
 """
 restrictions = [
-  "Signed access (bit 21) applies to byte loads; word loads ignore it",
+  "Post-increment of PC is not allowed",
+  "A pointer register cannot take a post-update and also be the read destination; the post-update is ignored",
+  "No support for SPO/SNE condition flags",
+  "Reads using CFS as the pointer see the bottom 8 bits of CFS as 0x00",
+  "CFS cannot be the destination of a byte read",
+  "S on byte loads means signed access (bit 21), not set-flags; loads never set flags",
 ]
 
 [timing]
@@ -28,7 +37,11 @@ detail = "E_LDR*/E_POP* encoder formulas"
 
 [[provenance]]
 source = "an14650"
-detail = "section 5, E_LDR instruction group"
+detail = "sections 5.24 and 5.29: purpose, byte/sign options, scaled imm offset, PRE/POST, pointer/CFS restrictions, DFETCH latency model; PUSH/POP stack semantics (upward-growing stack)"
+
+[[provenance]]
+source = "spec_b_06"
+detail = "instruction set chapter, E_LDR purpose/options/restrictions (synthesized, not copied)"
 
 [[forms]]
 name = "default"

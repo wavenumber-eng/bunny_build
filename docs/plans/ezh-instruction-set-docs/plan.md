@@ -28,6 +28,12 @@ status = "done"
 depends_on = ["populate-isa-db"]
 
 [[steps]]
+id = "instruction-prose"
+title = "Meticulous per-instruction prose pass: extract AN14650 §5 and Arch B spec descriptions (use, modes, intent) for every instruction; synthesize accurate semantics prose into the ISA db; Eli reviews, then re-inspects rendered HTML"
+status = "active"
+depends_on = ["populate-isa-db"]
+
+[[steps]]
 id = "architecture-overview"
 title = "Write architecture overview from spec §4 + AN14650 §2-4: buses, pipeline, registers, flags, boolean detection, heartbeat, supervisor"
 status = "pending"
@@ -49,7 +55,7 @@ depends_on = ["isa-schema"]
 id = "build-static-html"
 title = "Produce the generated static HTML doc set kept in bunny_build"
 status = "pending"
-depends_on = ["verify-encodings", "architecture-overview", "pattern-library", "choose-doc-toolchain"]
+depends_on = ["verify-encodings", "instruction-prose", "architecture-overview", "pattern-library", "choose-doc-toolchain"]
 
 [[steps]]
 id = "design-doc-intent-audit"
@@ -137,7 +143,7 @@ harness, (3) assembler generation/validation for bunny_build, (4) simulator deco
 
 Authority ranking, per the EZH creator:
 
-1. **`fsl_ezh_armclang.h`** — hand-created by Adam Fuks; best available reference.
+1. **`fsl_ezh_armclang.h`** — hand-created by the EZH creator; best available reference.
 2. **bunny_build encoders** — independently validated by the camera byte-for-byte test.
 3. **`ezh_tb_package.sv`** — was an *experiment*; advisory only, never authoritative.
 
@@ -180,7 +186,7 @@ HTML, simulator, tooling.
 
 ## Tooling history (context for docs and verification)
 
-There was never real EZH tooling. The original "assembler" was Adam hacking the Keil
+There was never real EZH tooling. The original "assembler" was the creator hacking the Keil
 Arm compiler's inline assembler with C macros — single pass, so labels/branches
 relied on compiler behavior that **broke in newer Arm compiler versions** (branch to
 label stopped linking; workarounds were manual PC-distance math or literal-pool

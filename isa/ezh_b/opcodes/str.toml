@@ -8,12 +8,20 @@ mnemonics_base = ["E_STR", "E_STRB", "E_PUSH", "E_PUSHB"]
 
 [semantics]
 prose = """
-Stores a word or byte to memory at address register plus a signed 8-bit byte
-offset. PRE/POST variants write the updated address back to the address
-register. PUSH variants are stack aliases using SP with a baked +1 offset,
-writeback, and post-increment.
+Writes a register to memory over the AHB data bus, addressed by a pointer
+register plus an 8-bit signed immediate offset (word-scaled for word stores,
+byte-scaled for byte stores); B stores the bottom byte. PRE/POST variants
+write the offset pointer update back before or after the access. Stores
+share E_LDR's submit-and-continue performance. The PUSH aliases are presets
+of this form - the stack grows upward, so PUSH post-increments SP by one
+word.
 """
-restrictions = []
+restrictions = [
+  "Post-increment of PC is not allowed",
+  "A post-updated pointer register cannot also be the transfer register; the post-update is ignored",
+  "No support for SPO/SNE condition flags",
+  "Cannot set flags (no S variant)",
+]
 
 [timing]
 cycles = "1+"
@@ -25,7 +33,11 @@ detail = "E_STR*/E_PUSH* encoder formulas"
 
 [[provenance]]
 source = "an14650"
-detail = "section 5, E_STR instruction group"
+detail = "sections 5.25 and 5.29: purpose, byte option, scaled imm offset, PRE/POST, restrictions, performance same as E_LDR; PUSH/POP stack semantics"
+
+[[provenance]]
+source = "spec_b_06"
+detail = "instruction set chapter, E_STR purpose/options/restrictions (synthesized, not copied)"
 
 [[forms]]
 name = "default"

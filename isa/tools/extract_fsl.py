@@ -2,7 +2,7 @@
 
 Usage:  uv run python isa/tools/extract_fsl.py [--header PATH] [out.json]
 
-Parses every `#define E_*` macro in Adam's hand-written fsl header and recovers,
+Parses every `#define E_*` macro in the header author's hand-written fsl header and recovers,
 by the same numeric probing extract_header.py uses on the bunny_build encoders:
 
   - base:   the emitted word with every argument = 0 (cond = EU = 0)

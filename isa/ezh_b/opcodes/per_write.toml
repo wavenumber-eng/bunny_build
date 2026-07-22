@@ -10,13 +10,17 @@ mnemonics_base = ["E_PER_WRITE"]
 
 [semantics]
 prose = """
-Writes a source register to a peripheral register through the dedicated
-peripheral port. The 20-bit word-aligned byte address selects a location within
-the 1MB peripheral window.
+Writes a source register to a peripheral register with pure immediate
+addressing. The 20-bit immediate is a
+word-aligned byte offset from 0x4000_0000 (bits [1:0] forced to zero),
+reaching a 22-bit / 4MB region of the Cortex-M peripheral space - no
+register needs to be spent on peripheral addressing. Performance matches
+E_LDR: submitted in one cycle, data lands via DFETCH.
 """
 restrictions = [
   "Address must be word aligned",
-  "Address is an offset within the peripheral window, not a full AHB address",
+  "No support for SPO/SNE condition flags",
+  "Cannot set flags (no S variant)",
 ]
 
 [timing]
@@ -29,7 +33,11 @@ detail = "E_PER_WRITE macro encoding (split address)"
 
 [[provenance]]
 source = "an14650"
-detail = "section 5.28 E_PER_READ and E_PER_WRITE"
+detail = "section 5.28: peripheral write, 20-bit imm word offset from 0x40000000 covering a 22-bit region, performance same as E_LDR"
+
+[[provenance]]
+source = "spec_b_06"
+detail = "instruction set chapter, E_PER_WRITE purpose/options/restrictions (synthesized, not copied)"
 
 [[forms]]
 name = "default"

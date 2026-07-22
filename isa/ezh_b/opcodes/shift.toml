@@ -8,12 +8,16 @@ mnemonics_base = ["E_LSL", "E_LSR", "E_ASR", "E_ROR"]
 
 [semantics]
 prose = """
-Shifts a register by a 5-bit immediate amount (LSL/LSR/ASR/ROR), optionally
-fusing the shifted value into an ALU operation with a second register operand
-(shift first, then ALU op). Without fusion the shifted value is written
-directly to the destination.
+Pre-shifts or pre-rotates a register, then optionally feeds the shifted
+value through an ALU operation: dest = Roperand OP (R2shift shifted by a
+0-31 immediate), with OP one of ADD/ADC/SUB/SBC/AND/OR/XOR - or a plain
+shift when no operation is fused. The mnemonic spells execution order:
+E_LSL_ADD shifts first, then adds. Together with the SPO/SNE conditions this
+family implements the algorithmic shift-and-accumulate idiom.
 """
-restrictions = []
+restrictions = [
+  "S with destination PC does not set flags (schedules branch instead)",
+]
 
 [timing]
 cycles = "1"
@@ -24,7 +28,11 @@ detail = "E_LSL*/E_LSR*/E_ASR*/E_ROR* encoder formulas"
 
 [[provenance]]
 source = "an14650"
-detail = "section 5, shift instruction group"
+detail = "section 5.10: preshift + ALU operation, shift by imm 0-31; Table 12: single cycle"
+
+[[provenance]]
+source = "spec_b_06"
+detail = "instruction set chapter, E_SHIFT purpose/options/restrictions (synthesized, not copied)"
 
 [[forms]]
 name = "default"
