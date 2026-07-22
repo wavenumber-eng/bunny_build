@@ -30,7 +30,7 @@ depends_on = ["populate-isa-db"]
 [[steps]]
 id = "instruction-prose"
 title = "Meticulous per-instruction prose pass: extract AN14650 §5 and Arch B spec descriptions (use, modes, intent) for every instruction; synthesize accurate semantics prose into the ISA db; Eli reviews, then re-inspects rendered HTML"
-status = "active"
+status = "done"
 depends_on = ["populate-isa-db"]
 
 [[steps]]
