@@ -37,7 +37,12 @@ detail = "section 5, E_SUB instruction group"
 [[forms]]
 name = "reg"
 syntax = "E_[COND_]SUB[N]_[F]{LSL|ASR|LSR|ROR}[S] ([cond,] dest, src1, src2 [, shift5])"
-mnemonic = { pattern = "E_[COND_]SUB[N]_[F]{LSL|ASR|LSR|ROR}[S]", binds = ["cond", "n_alu", "f_alu", "shift_type_alu", "s"] }
+mnemonics = [
+  { pattern = "E_[COND_]SUB[N][S]", binds = ["cond", "n_alu", "s"] },
+  { pattern = "E_[COND_]SUB[N]_{LSL=0|ASR=1|LSR=2|ROR=3}[S]", binds = ["cond", "n_alu", "shift_type_alu", "s"] },
+  { pattern = "E_[COND_]SUB[N]_F[S]", binds = ["cond", "n_alu", "s"], when = { f_alu = 1 } },
+  { pattern = "E_[COND_]SUB[N]_F{LSL=0|ASR=1|LSR=2|ROR=3}[S]", binds = ["cond", "n_alu", "shift_type_alu", "s"], when = { f_alu = 1 } },
+]
 fixed = [
   { bits = "4:0", value = 0x08 },
   { bits = "18:18", value = 0 },   # 0 = register form (1 selects immediate form)

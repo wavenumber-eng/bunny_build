@@ -106,6 +106,30 @@ Expansion of all patterns across all forms must reproduce the historical
 mnemonic list exactly — any mismatch is a `verify-encodings` failure to
 adjudicate, not a silent rename.
 
+**Amendment 2026-07-21 (notation v2, validated against the full name list).**
+Populating the patterns against the fsl header's 1502 names showed the
+original notation could not express three real name grammars; the notation is
+extended, additively, as follows (spec in `isa/README.md`, enforced by
+`isa/tools/expand_mnemonics.py`):
+
+- Alternatives may carry explicit values (`{BCLR=1|BTST=5|BSET=6|BTOG=7}`);
+  the default remains the alternative's index. Needed where encoded selector
+  values are sparse or reordered relative to the spelling.
+- A form may declare a `mnemonics` list of patterns instead of a single
+  `mnemonic`; each entry may pin fields non-positionally with
+  `when = { field = value }`. This expresses token *reordering* driven by a
+  field (register-shift `RLSL_ADD` vs `ADD_RLSL` on the order bit) and names
+  that imply several bits at once (`_POST` sets writeback and post).
+- Names differing only by optional-argument presence over one encoding
+  (`E_ADD` vs `E_ADD_LSL`) are separate pattern entries; the operand-binding
+  sentence above is superseded (the `{IMM|SIMM}` example is now two entries).
+- Aliases expand as `E_[COND_]<name>` when their form is conditional.
+
+The reproduction requirement is strengthened: expansion must match the fsl
+name list exactly AND each expanded name's bound field values must predict
+that macro's base encoding word bit-for-bit (`expand_mnemonics.py` checks
+both; 1502/1502 verified).
+
 ## Alternatives considered
 
 - **JSON/YAML**: JSON has no comments (provenance notes matter); YAML brings

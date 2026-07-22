@@ -30,7 +30,10 @@ detail = "section 5, register-offset load/store group"
 [[forms]]
 name = "load"
 syntax = "E_[COND_]LDR_REG[B][S] ([cond,] dest, source, roffset)"
-mnemonic = { pattern = "E_[COND_]{LDR_REGB|LDR_REG}[S]", binds = ["cond", "word", "sgn"] }
+mnemonics = [
+  { pattern = "E_[COND_]{LDR_REGB=0|LDR_REG=1}", binds = ["cond", "word"] },
+  { pattern = "E_[COND_]LDR_REGBS", binds = ["cond"], when = { sgn = 1 } },
+]
 fixed = [
   { bits = "4:0", value = 0x1d },
   { bits = "30:30", value = 0 },   # 0 = load
@@ -45,7 +48,7 @@ bunny_build = "E_LDR_REGB(dest,src,roff) = 0x1D + (dest<<10) + (src<<14) + (roff
 [[forms]]
 name = "store"
 syntax = "E_[COND_]STR_REG[B] ([cond,] raddr, rdata, roffset)"
-mnemonic = { pattern = "E_[COND_]{STR_REGB|STR_REG}", binds = ["cond", "word"] }
+mnemonic = { pattern = "E_[COND_]{STR_REGB=0|STR_REG=1}", binds = ["cond", "word"] }
 fixed = [
   { bits = "4:0", value = 0x1d },
   { bits = "30:30", value = 1 },   # 1 = store

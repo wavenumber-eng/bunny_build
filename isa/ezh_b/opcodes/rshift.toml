@@ -31,7 +31,11 @@ detail = "section 5, register-shift instruction group"
 [[forms]]
 name = "default"
 syntax = "E_[COND_]R{LSL|ASR|LSR|ROR}[N][_op][S] / E_[COND_]op[N]_R{LSL|ASR|LSR|ROR}[S]"
-mnemonic = { pattern = "E_[COND_]{RLSL|RASR|RLSR|RROR}[_FUSEOP][ORDER][N][S]", binds = ["cond", "shift_type", "fuse_op", "order_rshift", "n_rshift", "s"] }
+mnemonics = [
+  { pattern = "E_[COND_]{RLSL=0|RASR=1|RLSR=2|RROR=3}[N][S]", binds = ["cond", "shift_type", "n_rshift", "s"] },
+  { pattern = "E_[COND_]{RLSL=0|RASR=1|RLSR=2|RROR=3}_{AND=1|OR=2|XOR=3|ADD=4|SUB=5|ADC=6|SBC=7}[N][S]", binds = ["cond", "shift_type", "fuse_op", "n_rshift", "s"], when = { order_rshift = 0 } },
+  { pattern = "E_[COND_]{AND=1|OR=2|XOR=3|ADD=4|SUB=5|ADC=6|SBC=7}[N]_{RLSL=0|RASR=1|RLSR=2|RROR=3}[S]", binds = ["cond", "fuse_op", "n_rshift", "shift_type", "s"], when = { order_rshift = 1 } },
+]
 fixed = [{ bits = "4:0", value = 0x19 }]
 operands = ["dest", "src1", "src2", "rshift3"]
 modifiers = ["cond", "s", "shift_type", "fuse_op", "order_rshift", "n_rshift"]

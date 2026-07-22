@@ -29,7 +29,11 @@ detail = "section 5, E_STR instruction group"
 [[forms]]
 name = "default"
 syntax = "E_[COND_]{STRB|STR}[_PRE|_POST] ([cond,] raddr, rdata, offset8s)"
-mnemonic = { pattern = "E_[COND_]{STRB|STR}[_PRE][_POST]", binds = ["cond", "word", "wb_st", "post"] }
+mnemonics = [
+  { pattern = "E_[COND_]{STRB=0|STR=1}", binds = ["cond", "word"] },
+  { pattern = "E_[COND_]{STRB=0|STR=1}_PRE", binds = ["cond", "word"], when = { wb_st = 1 } },
+  { pattern = "E_[COND_]{STRB=0|STR=1}_POST", binds = ["cond", "word"], when = { wb_st = 1, post = 1 } },
+]
 fixed = [{ bits = "4:0", value = 0x02 }]
 operands = ["src1", "src2", "offset8s"]
 modifiers = ["cond", "word", "wb_st", "post"]

@@ -31,7 +31,7 @@ detail = "section 5, bit operation instruction group"
 [[forms]]
 name = "reg"
 syntax = "E_[COND_]{BCLR|BTST|BSET|BTOG}[S] ([cond,] dest, rdata, rbit)"
-mnemonic = { pattern = "E_[COND_]{BCLR|BTST|BSET|BTOG}[S]", binds = ["cond", "bitop_sel", "s"] }
+mnemonic = { pattern = "E_[COND_]{BCLR=1|BTST=5|BSET=6|BTOG=7}[S]", binds = ["cond", "bitop_sel", "s"] }
 fixed = [
   { bits = "4:0", value = 0x18 },
   { bits = "18:18", value = 1 },   # 1 = bit number from register
@@ -46,7 +46,7 @@ bunny_build = "E_BSET(dest,rdata,rbit) = 0x18 + (rdata<<14) + (dest<<10) + (rbit
 [[forms]]
 name = "imm"
 syntax = "E_[COND_]{BCLR|BTST|BSET|BTOG}_IMM[S] ([cond,] dest, rdata, bit5)"
-mnemonic = { pattern = "E_[COND_]{BCLR|BTST|BSET|BTOG}_IMM[S]", binds = ["cond", "bitop_sel", "s"] }
+mnemonic = { pattern = "E_[COND_]{BCLR=1|BTST=5|BSET=6|BTOG=7}_IMM[S]", binds = ["cond", "bitop_sel", "s"] }
 fixed = [
   { bits = "4:0", value = 0x18 },
   { bits = "18:18", value = 0 },   # 0 = immediate bit number

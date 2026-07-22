@@ -29,7 +29,10 @@ detail = "section 5, shift instruction group"
 [[forms]]
 name = "default"
 syntax = "E_[COND_]{LSL|ASR|LSR|ROR}[_{AND|OR|XOR|ADD|SUB|ADC|SBC}][S] ([cond,] dest, [roperand,] r2shift, shift5)"
-mnemonic = { pattern = "E_[COND_]{LSL|ASR|LSR|ROR}[_FUSEOP][S]", binds = ["cond", "shift_type", "fuse_op", "s"] }
+mnemonics = [
+  { pattern = "E_[COND_]{LSL=0|ASR=1|LSR=2|ROR=3}[S]", binds = ["cond", "shift_type", "s"] },
+  { pattern = "E_[COND_]{LSL=0|ASR=1|LSR=2|ROR=3}_{AND=1|OR=2|XOR=3|ADD=4|SUB=5|ADC=6|SBC=7}[S]", binds = ["cond", "shift_type", "fuse_op", "s"] },
+]
 fixed = [{ bits = "4:0", value = 0x10 }]
 operands = ["dest", "src1", "src2", "shift5"]
 modifiers = ["cond", "s", "shift_type", "fuse_op"]

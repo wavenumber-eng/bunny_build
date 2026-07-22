@@ -63,7 +63,7 @@ bunny_build = "E_HOLD() = 0x1C + (PC<<10) + (1<<15) + (EU<<5)"
 [[forms]]
 name = "vectored"
 syntax = "E_[COND_]VECTORED_HOLD[_LV][_NRA] ([cond,] table)"
-mnemonic = { pattern = "E_[COND_]VECTORED_HOLD[_NRA][_LV]", binds = ["cond", "nra", "lv"] }
+mnemonic = { pattern = "E_[COND_]VECTORED_HOLD[_LV][_NRA]", binds = ["cond", "lv", "nra"] }
 fixed = [
   { bits = "4:0", value = 0x1c },
   { bits = "9:9", value = 0 },
@@ -78,7 +78,7 @@ bunny_build = "E_VECTORED_HOLD(table) = 0x1C + (table<<10) + (table<<20) + (EU<<
 [[forms]]
 name = "acc_vectored"
 syntax = "E_[COND_]ACC_VECTORED_HOLD[_LV][_NRA] ([cond,] table, vectors)"
-mnemonic = { pattern = "E_[COND_]ACC_VECTORED_HOLD[_NRA][_LV]", binds = ["cond", "nra", "lv"] }
+mnemonic = { pattern = "E_[COND_]ACC_VECTORED_HOLD[_LV][_NRA]", binds = ["cond", "lv", "nra"] }
 fixed = [
   { bits = "4:0", value = 0x1c },
   { bits = "9:9", value = 1 },

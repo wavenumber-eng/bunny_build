@@ -59,7 +59,10 @@ bunny_build = "E_MOV(dest,src) = 0x0 + (src<<14) + (dest<<10) + (EU<<5)"
 [[forms]]
 name = "imm"
 syntax = "E_[COND_]LOAD_{IMM|SIMM}[N][S] ([cond,] dest, imm11s [, shift5])"
-mnemonic = { pattern = "E_[COND_]LOAD_{IMM|SIMM}[N][S]", binds = ["cond", "shift5_simm", "n", "s"] }
+mnemonics = [
+  { pattern = "E_[COND_]LOAD_IMM[N][S]", binds = ["cond", "n", "s"] },
+  { pattern = "E_[COND_]LOAD_SIMM[N][S]", binds = ["cond", "n", "s"] },
+]
 fixed = [
   { bits = "4:0", value = 0x00 },
   { bits = "18:18", value = 1 },   # immediate form select

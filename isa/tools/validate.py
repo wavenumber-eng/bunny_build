@@ -26,8 +26,10 @@ import sys
 import tomllib
 from pathlib import Path
 
-# Bracket groups in a mnemonic pattern: [X] optional token, {A|B} alternation.
-MNEM_GROUP = re.compile(r"\[[A-Z0-9_]+\]|\{[A-Z0-9_]+(?:\|[A-Z0-9_]+)+\}")
+# Bracket groups in a mnemonic pattern (notation v2, see isa/README.md):
+# [X] optional token; {A|B=n|...} alternation with optional explicit values
+# and empty alternatives permitted.
+MNEM_GROUP = re.compile(r"\[[A-Z0-9_]+\]|\{[A-Z0-9_]*(?:=\d+)?(?:\|[A-Z0-9_]*(?:=\d+)?)+\}")
 
 ROOT = Path(__file__).resolve().parent.parent
 EZH = ROOT / "ezh_b"
@@ -162,23 +164,27 @@ def main() -> int:
                 continue
             referenced.update(form.get("operands", []))
             referenced.update(form.get("modifiers", []))
-            mnem = form.get("mnemonic")
-            if mnem is None:
+            mnems = form.get("mnemonics") or ([form["mnemonic"]] if "mnemonic" in form else [])
+            if not mnems:
                 print(f"ERROR {fq}: missing mnemonic pattern (isa-adr-0001)")
                 errors += 1
-            else:
+            form_fields = form.get("operands", []) + form.get("modifiers", [])
+            for mnem in mnems:
                 groups = MNEM_GROUP.findall(mnem["pattern"])
                 binds = mnem.get("binds", [])
-                form_fields = form.get("operands", []) + form.get("modifiers", [])
                 if len(groups) != len(binds):
                     print(
-                        f"ERROR {fq}: mnemonic pattern has {len(groups)} bracket "
-                        f"group(s) but {len(binds)} bind(s)"
+                        f"ERROR {fq}: mnemonic pattern {mnem['pattern']!r} has "
+                        f"{len(groups)} bracket group(s) but {len(binds)} bind(s)"
                     )
                     errors += 1
                 for b in binds:
                     if b not in form_fields:
                         print(f"ERROR {fq}: mnemonic bind {b!r} is not an operand/modifier of this form")
+                        errors += 1
+                for w in mnem.get("when", {}):
+                    if w not in form_fields:
+                        print(f"ERROR {fq}: mnemonic when-field {w!r} is not an operand/modifier of this form")
                         errors += 1
             low_mask = mask & 0x1F
             if low_mask == 0:

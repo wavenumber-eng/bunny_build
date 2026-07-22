@@ -30,7 +30,10 @@ detail = "section 5, flip/shift instruction group"
 [[forms]]
 name = "default"
 syntax = "E_[COND_]{FEND|FBIT}_{LSR|ASR}[_{AND|OR|XOR|ADD|SUB|ADC|SBC}][S] ([cond,] dest, [roperand,] r2shift, shift5)"
-mnemonic = { pattern = "E_[COND_]{FEND|FBIT}_{LSR|ASR}[_FUSEOP][S]", binds = ["cond", "fbit", "asr_sel", "fuse_op", "s"] }
+mnemonics = [
+  { pattern = "E_[COND_]{FEND=0|FBIT=1}_{LSR=0|ASR=1}[S]", binds = ["cond", "fbit", "asr_sel", "s"] },
+  { pattern = "E_[COND_]{FEND=0|FBIT=1}_{LSR=0|ASR=1}_{AND=1|OR=2|XOR=3|ADD=4|SUB=5|ADC=6|SBC=7}[S]", binds = ["cond", "fbit", "asr_sel", "fuse_op", "s"] },
+]
 fixed = [{ bits = "4:0", value = 0x11 }]
 operands = ["dest", "src1", "src2", "shift5"]
 modifiers = ["cond", "s", "fbit", "asr_sel", "fuse_op"]

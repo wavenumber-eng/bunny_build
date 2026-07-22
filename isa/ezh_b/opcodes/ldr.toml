@@ -32,7 +32,14 @@ detail = "section 5, E_LDR instruction group"
 [[forms]]
 name = "default"
 syntax = "E_[COND_]{LDRB|LDR}[S][_PRE|_POST] ([cond,] dest, source, offset8s)"
-mnemonic = { pattern = "E_[COND_]{LDRB|LDR}[S][_PRE][_POST]", binds = ["cond", "word", "sgn", "wb_ld", "post"] }
+mnemonics = [
+  { pattern = "E_[COND_]{LDRB=0|LDR=1}", binds = ["cond", "word"] },
+  { pattern = "E_[COND_]LDRBS", binds = ["cond"], when = { sgn = 1 } },
+  { pattern = "E_[COND_]{LDRB=0|LDR=1}_PRE", binds = ["cond", "word"], when = { wb_ld = 1 } },
+  { pattern = "E_[COND_]LDRBS_PRE", binds = ["cond"], when = { sgn = 1, wb_ld = 1 } },
+  { pattern = "E_[COND_]{LDRB=0|LDR=1}_POST", binds = ["cond", "word"], when = { wb_ld = 1, post = 1 } },
+  { pattern = "E_[COND_]LDRBS_POST", binds = ["cond"], when = { sgn = 1, wb_ld = 1, post = 1 } },
+]
 fixed = [{ bits = "4:0", value = 0x01 }]
 operands = ["dest", "src1", "offset8s"]
 modifiers = ["cond", "word", "sgn", "wb_ld", "post"]
