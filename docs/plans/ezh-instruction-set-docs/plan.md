@@ -88,10 +88,16 @@ status = "pending"
 depends_on = ["build-static-html"]
 
 [[steps]]
-id = "external-review"
-title = "Obtain independent external review (EZH creator review of instruction semantics)"
+id = "hardware-adjudication"
+title = "Bench verification of adjudication items on real hardware (MCXN947/LPC55S69): GOTO 8MB window, ANDOR operand width/semantics, rshift >=32 amounts, CFS-pointer reads, store post-update cancellation, hold table replica, TIGHT_LOOP corner cases, emergency-bit polarity, INT_TRIGGER(0)"
 status = "pending"
-depends_on = ["build-static-html", "design-doc-intent-audit", "test-runtime-impact-audit"]
+depends_on = ["verify-encodings"]
+
+[[steps]]
+id = "external-review"
+title = "Obtain independent external review: EZH creator reviews instruction semantics, the adjudication list (with bench results attached), and the doc chapters"
+status = "pending"
+depends_on = ["build-static-html", "design-doc-intent-audit", "test-runtime-impact-audit", "hardware-adjudication"]
 
 [[exit_criteria]]
 id = "signoff"
@@ -126,6 +132,26 @@ status = "pending"
 [[exit_criteria]]
 id = "external-review"
 title = "Independent external review is complete"
+status = "pending"
+
+[[exit_criteria]]
+id = "architecture-chapter"
+title = "Architecture chapter covers buses, two-ahead pipeline, registers, flags, boolean detection, heartbeat, supervisor, and ALL interrupt mechanisms, with per-section provenance"
+status = "pending"
+
+[[exit_criteria]]
+id = "assembler-guide-chapter"
+title = "Assembler guide documents the directive and pseudo-instruction layers (incl. E__END) and the on-target assembly model"
+status = "pending"
+
+[[exit_criteria]]
+id = "cookbook-chapter"
+title = "Cookbook covers the mined sample corpus patterns with runnable, provenance-clean examples"
+status = "pending"
+
+[[exit_criteria]]
+id = "platform-guide-chapter"
+title = "Platform guide lists every EZH/SmartDMA part with base address, pin mux, IRQ, and INPUTMUX data"
 status = "pending"
 +++
 
@@ -247,5 +273,14 @@ differs slightly from the header's.
 - **Synthesize, don't copy.** The spec and fsl header carry NXP confidential banners;
   they inform, are never copied. AN14650 is public and citable. Track provenance per
   section.
+- **RM-grounding for deck-only facts.** A fact that appears only in the
+  NXP-internal decks (or only deck + spec) must be grounded in a public
+  Reference Manual before the docs state it plainly (per-chip RMs carry the
+  SmartDMA/EZH chapters; fetch via nxp-monke); otherwise it ships hedged as
+  unverified pending bench (`hardware-adjudication`) or creator review.
+- **platform-guide does not gate build-static-html** (decided 2026-07-22):
+  the initial published set ships with sections 1-5 and 7; the platform
+  guide publishes in a follow-up regeneration when its per-chip data lands.
+  Content steps decouple from the toolchain build.
 - Docs must serve all levels: low-level (bit encodings, for tool writers) through
   high-level help (how do I capture a camera frame).
