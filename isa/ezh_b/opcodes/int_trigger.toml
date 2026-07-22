@@ -37,6 +37,7 @@ detail = "instruction set chapter, E_INT_TRIGGER purpose/options/restrictions (s
 
 [[forms]]
 name = "default"
+brief = "Pulses the selected interrupt channels (the common output always fires)"
 syntax = "E_INT_TRIGGER (x24)"
 mnemonic = { pattern = "E_INT_TRIGGER", binds = [] }
 fixed = [{ bits = "4:0", value = 0x14 }]

@@ -450,12 +450,34 @@ def bitfield_svg(form: dict, fields: dict, op_key: str = "") -> str:
     return "".join(parts)
 
 
-def mnemonic_rows(op: dict, form: dict, fields: dict) -> list[tuple[str, int]]:
-    rows: list[tuple[str, int]] = []
+def describe(brief: str, sel: list, fields: dict) -> str:
+    """Compose a per-mnemonic description: form/entry brief + one clause per
+    selected modifier, in mnemonic (pipeline) order — all from db data."""
+    clauses = []
+    for field, val in sel:
+        f = fields.get(field)
+        if f is None:
+            continue
+        if "value_briefs" in f:
+            c = f["value_briefs"].get(str(val), "")
+        elif field == "cond" or val:  # cond present, or flag set
+            c = f.get("brief", "")
+        else:
+            c = ""
+        if c:
+            clauses.append(c)
+    return "; ".join([brief, *clauses]) if clauses else brief
+
+
+def mnemonic_rows(op: dict, form: dict, fields: dict) -> list[tuple[str, int, str]]:
+    rows: list[tuple[str, int, str]] = []
     specs = form.get("mnemonics") or ([form["mnemonic"]] if "mnemonic" in form else [])
     for spec in specs:
-        for name, values in expand(spec["pattern"], spec.get("binds", []), spec.get("when", {})):
-            rows.append((name, expected_base(form, fields, values)))
+        brief = spec.get("brief") or form.get("brief", "")
+        for name, values, sel in expand(spec["pattern"], spec.get("binds", []),
+                                        spec.get("when", {})):
+            rows.append((name, expected_base(form, fields, values),
+                         describe(brief, sel, fields)))
     return sorted(rows)
 
 
@@ -471,10 +493,12 @@ def alias_rows(op: dict, fields: dict) -> list[tuple[str, int, str]]:
             word |= encode(fields[key], val)
         preset = ", ".join(f"{k}={v:#x}" if isinstance(v, int) and v >= 0 else f"{k}={v}"
                            for k, v in alias.get("preset", {}).items())
-        note = f"{alias['form']} form with {preset}"
+        note = alias.get("brief", "") or f"{alias['form']} form preset"
+        note += f" ({alias['form']} form: {preset})"
         rows.append((f"E_{alias['name']}", word, note))
         if "cond" in form.get("modifiers", []):
-            rows.append((f"E_COND_{alias['name']}", word, note + " (+ cond argument)"))
+            cond_clause = fields["cond"].get("brief", "cond variant")
+            rows.append((f"E_COND_{alias['name']}", word, note + "; " + cond_clause))
     return sorted(rows)
 
 
@@ -532,12 +556,14 @@ def render_opcode(name: str, op: dict, fields: dict, arch: dict) -> str:
         if rows:
             tr = "".join(
                 f"<tr><td class='mn'>{html.escape(n)}</td>"
-                f"<td class='enc'>0x{b:08x}</td></tr>"
-                for n, b in rows
+                f"<td class='enc'>0x{b:08x}</td>"
+                f"<td class='prov'>{html.escape(d)}</td></tr>"
+                for n, b, d in rows
             )
             table = (
                 "<div class='tblwrap'><table class='results-table'>"
-                f"<tr><th>mnemonic</th><th>base word</th></tr>{tr}</table></div>"
+                f"<tr><th>mnemonic</th><th>base word</th><th>description</th>"
+                f"</tr>{tr}</table></div>"
             )
             out.append(panel(f"MNEMONICS: {form['name'].upper()} ({len(rows)})", table,
                              collapsed=True))

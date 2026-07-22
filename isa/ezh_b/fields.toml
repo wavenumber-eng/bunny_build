@@ -15,11 +15,13 @@
 [fields.cond]
 kind = "condition"
 desc = "Conditional execution code; EU (0) executes unconditionally"
+brief = "executes only when the Flag condition holds (COND_)"
 slices = [{ instr = "8:5", value = "3:0" }]
 
 [fields.s]
 kind = "flag"
 desc = "Set flags (S suffix, ALU/MOV families). Only ADD/SUB/ADC/SBC and shift/rotate stages can change C; logical ops and MOV retain the previous carry even with S"
+brief = "sets the ALU flags (S)"
 slices = [{ instr = "9:9", value = "0:0" }]
 
 # The LDRB/LDR_REG load families spell their S suffix as SIGNED access, and it
@@ -27,11 +29,13 @@ slices = [{ instr = "9:9", value = "0:0" }]
 [fields.sgn]
 kind = "flag"
 desc = "Signed access (S suffix on LDRB/LDR_REG load families)"
+brief = "sign-extends the loaded byte (S = signed)"
 slices = [{ instr = "21:21", value = "0:0" }]
 
 [fields.n]
 kind = "flag"
 desc = "Invert result (N modifier, MOV family: MVN, LOAD_IMMN)"
+brief = "bitwise-inverts the value (N)"
 slices = [{ instr = "31:31", value = "0:0" }]
 
 # The ALU family (opcodes 0x06-0x0e) spells N at bit 19, not bit 31 (bit 31 is
@@ -39,11 +43,13 @@ slices = [{ instr = "31:31", value = "0:0" }]
 [fields.n_alu]
 kind = "flag"
 desc = "Invert result (N modifier, ALU family ADD/SUB/ADC/SBC/OR/AND/XOR)"
+brief = "inverts the ALU result (N)"
 slices = [{ instr = "19:19", value = "0:0" }]
 
 [fields.n_rshift]
 kind = "flag"
 desc = "Invert result (N modifier, register-shift fused family)"
+brief = "inverts the ALU result (N)"
 slices = [{ instr = "27:27", value = "0:0" }]
 
 [fields.dest]
@@ -124,31 +130,37 @@ slices = [{ instr = "28:24", value = "4:0" }]
 [fields.f_alu]
 kind = "flag"
 desc = "F modifier: byte-order flip of the ALU result (post-stage, ALU family)"
+brief = "byte-flips the result (F)"
 slices = [{ instr = "31:31", value = "0:0" }]
 
 [fields.shift_type_alu]
 kind = "sel"
 desc = "Fused shift type, ALU family: 0=LSL 1=ASR 2=LSR 3=ROR"
+value_briefs = { "0" = "then post-shifts the result left by Shift5imm (LSL)", "1" = "then post-shifts the result right arithmetically by Shift5imm (ASR)", "2" = "then post-shifts the result right by Shift5imm (LSR)", "3" = "then rotates the result right by Shift5imm (ROR)" }
 slices = [{ instr = "30:29", value = "1:0" }]
 
 [fields.shift_type]
 kind = "sel"
 desc = "Shift type, shift/register-shift families: 0=LSL 1=ASR 2=LSR 3=ROR"
+value_briefs = { "0" = "left shift (LSL)", "1" = "arithmetic right shift (ASR)", "2" = "right shift (LSR)", "3" = "right rotate (ROR)" }
 slices = [{ instr = "19:18", value = "1:0" }]
 
 [fields.fuse_op]
 kind = "sel"
 desc = "Fused ALU op, shift families: 0=none 1=AND 2=OR 3=XOR 4=ADD 5=SUB 6=ADC 7=SBC"
+value_briefs = { "0" = "", "1" = "fused AND with Roperand", "2" = "fused OR with Roperand", "3" = "fused XOR with Roperand", "4" = "fused ADD of Roperand", "5" = "fused SUB: shifted value minus Roperand", "6" = "fused ADC of Roperand", "7" = "fused SBC: shifted value minus Roperand minus carry" }
 slices = [{ instr = "31:29", value = "2:0" }]
 
 [fields.bitop_sel]
 kind = "sel"
 desc = "Bit operation select (opcode 0x18): 1=BCLR 5=BTST 6=BSET 7=BTOG"
+value_briefs = { "1" = "clears the selected bit (BCLR)", "5" = "tests the selected bit: DST = Rdata AND (1 << bit) (BTST)", "6" = "sets the selected bit (BSET)", "7" = "toggles the selected bit (BTOG)" }
 slices = [{ instr = "31:29", value = "2:0" }]
 
 [fields.order_rshift]
 kind = "flag"
 desc = "Pipeline order, register-shift fused family: 0=shift then ALU op, 1=ALU op then shift"
+value_briefs = { "0" = "order: shift, then ALU op", "1" = "order: ALU op, then shift" }
 slices = [{ instr = "28:28", value = "0:0" }]
 
 # 3-bit register address: the shift-amount register of the 0x19 family can only
@@ -180,21 +192,25 @@ slices = [{ instr = "31:24", value = "7:0" }]
 [fields.word]
 kind = "flag"
 desc = "Access size: 1 = 32-bit word, 0 = byte (B mnemonic suffix)"
+value_briefs = { "0" = "byte access (B)", "1" = "" }
 slices = [{ instr = "18:18", value = "0:0" }]
 
 [fields.wb_ld]
 kind = "flag"
 desc = "Address writeback, load family (PRE/POST addressing)"
+brief = "writes the updated address back to the pointer"
 slices = [{ instr = "20:20", value = "0:0" }]
 
 [fields.wb_st]
 kind = "flag"
 desc = "Address writeback, store family (PRE/POST addressing)"
+brief = "writes the updated address back to the pointer"
 slices = [{ instr = "10:10", value = "0:0" }]
 
 [fields.post]
 kind = "flag"
 desc = "Post-increment addressing (with writeback set): 0 = pre, 1 = post"
+value_briefs = { "0" = "pointer updated before the access (PRE)", "1" = "pointer updated after the access (POST)" }
 slices = [{ instr = "19:19", value = "0:0" }]
 
 [fields.roffset]
@@ -209,11 +225,13 @@ slices = [{ instr = "27:24", value = "3:0" }]
 [fields.fbit]
 kind = "flag"
 desc = "Flip kind: 0 = FEND (endian/byte flip), 1 = FBIT (bit reverse)"
+value_briefs = { "0" = "byte-order flip (FEND)", "1" = "bit-order flip (FBIT)" }
 slices = [{ instr = "18:18", value = "0:0" }]
 
 [fields.asr_sel]
 kind = "flag"
 desc = "Shift kind after flip: 0 = LSR, 1 = ASR"
+value_briefs = { "0" = "logical right shift (LSR)", "1" = "arithmetic right shift (ASR)" }
 slices = [{ instr = "19:19", value = "0:0" }]
 
 # ---------------------------------------------------------------------------
@@ -244,6 +262,7 @@ slices = [{ instr = "31:11", value = "22:2" }]
 [fields.link]
 kind = "flag"
 desc = "Link (L suffix): save return address to RA before branching"
+brief = "saves the return address to RA (L)"
 slices = [{ instr = "10:10", value = "0:0" }]
 
 [fields.gpo_and8]
@@ -290,11 +309,13 @@ slices = [{ instr = "31:31", value = "0:0" }]
 [fields.lv]
 kind = "flag"
 desc = "Large vector table entries: 4 words per entry instead of 1 (LV modifier, VECTORED_HOLD family)"
+brief = "large vector-table entries, 4 words each (LV)"
 slices = [{ instr = "19:19", value = "0:0" }]
 
 [fields.nra]
 kind = "flag"
 desc = "No return address capture (NRA modifier, VECTORED_HOLD family)"
+brief = "does not update RA (NRA)"
 slices = [{ instr = "18:18", value = "0:0" }]
 
 [fields.vectors8]

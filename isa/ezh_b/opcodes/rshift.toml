@@ -54,6 +54,7 @@ detail = "ADVISORY: shift_by_32_or_more logic - rotate uses amount mod 32; shift
 
 [[forms]]
 name = "default"
+brief = "Shifts R2shift by the low byte of Rshift (0-255), result to DST"
 syntax = "E_[COND_]R{LSL|ASR|LSR|ROR}[N][_op][S] / E_[COND_]op[N]_R{LSL|ASR|LSR|ROR}[S] ([cond,] dest, roperand, r2shift, rshift)"
 mnemonics = [
   { pattern = "E_[COND_]{RLSL=0|RASR=1|RLSR=2|RROR=3}[N][S]", binds = ["cond", "shift_type", "n_rshift", "s"] },

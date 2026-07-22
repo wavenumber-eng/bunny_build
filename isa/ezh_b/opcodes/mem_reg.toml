@@ -44,6 +44,7 @@ detail = "instruction set chapter, E_MEM_REG purpose/options/restrictions (synth
 
 [[forms]]
 name = "load"
+brief = "Loads from memory at Raddr + Roffset into DST"
 syntax = "E_[COND_]{LDR_REGB[S]|LDR_REG} ([cond,] dest, source, roffset)"
 mnemonics = [
   { pattern = "E_[COND_]{LDR_REGB=0|LDR_REG=1}", binds = ["cond", "word"] },
@@ -62,6 +63,7 @@ bunny_build = "E_LDR_REGB(dest,src,roff) = 0x1D + (dest<<10) + (src<<14) + (roff
 
 [[forms]]
 name = "store"
+brief = "Stores Rdata to memory at Raddr + Roffset"
 syntax = "E_[COND_]STR_REG[B] ([cond,] raddr, rdata, roffset)"
 mnemonic = { pattern = "E_[COND_]{STR_REGB=0|STR_REG=1}", binds = ["cond", "word"] }
 fixed = [

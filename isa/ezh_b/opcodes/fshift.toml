@@ -39,6 +39,7 @@ detail = "instruction set chapter, E_FSHIFT purpose/options/restrictions (synthe
 
 [[forms]]
 name = "default"
+brief = "Flips R2shift, then right-shifts it by Shift5imm, result to DST"
 syntax = "E_[COND_]{FEND|FBIT}_{LSR|ASR}[_{AND|OR|XOR|ADD|SUB|ADC|SBC}][S] ([cond,] dest, [roperand,] r2shift, shift5)"
 mnemonics = [
   { pattern = "E_[COND_]{FEND=0|FBIT=1}_{LSR=0|ASR=1}[S]", binds = ["cond", "fbit", "asr_sel", "s"] },

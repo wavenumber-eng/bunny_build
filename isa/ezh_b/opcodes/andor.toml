@@ -55,6 +55,7 @@ detail = "instruction set chapter, E_ANDOR purpose/options/restrictions (synthes
 
 [[forms]]
 name = "default"
+brief = "DST = (rsrc AND rand) OR ror"
 syntax = "E_[COND_]ANDOR[S] ([cond,] dest, rsrc, rand, ror)"
 mnemonic = { pattern = "E_[COND_]ANDOR[S]", binds = ["cond", "s"] }
 fixed = [{ bits = "4:0", value = 0x16 }]

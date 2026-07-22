@@ -50,6 +50,7 @@ detail = "instruction set chapter, E_ADD purpose/options/restrictions (synthesiz
 # ---------------------------------------------------------------------------
 [[forms]]
 name = "reg"
+brief = "Adds SRC2 to SRC1, result to DST"
 syntax = "E_[COND_]ADD[N]_[F]{LSL|ASR|LSR|ROR}[S] ([cond,] dest, src1, src2 [, shift5])"
 mnemonics = [
   { pattern = "E_[COND_]ADD[N][S]", binds = ["cond", "n_alu", "s"] },
@@ -74,6 +75,7 @@ bunny_build = "E_ADD(dest,src1,src2) = 0x6 + (src1<<14) + (dest<<10) + (src2<<20
 
 [[forms]]
 name = "imm"
+brief = "Adds the 12-bit signed immediate to SRC1, result to DST"
 syntax = "E_[COND_]ADD[N]_IMM[S] ([cond,] dest, src1, imm12s)"
 mnemonic = { pattern = "E_[COND_]ADD[N]_IMM[S]", binds = ["cond", "n_alu", "s"] }
 fixed = [

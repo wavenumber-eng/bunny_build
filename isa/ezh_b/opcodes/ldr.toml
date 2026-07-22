@@ -47,6 +47,7 @@ detail = "instruction set chapter, E_LDR purpose/options/restrictions (synthesiz
 
 [[forms]]
 name = "default"
+brief = "Loads from memory at pointer + scaled offset8s into DST"
 syntax = "E_[COND_]{LDRB[S]|LDR}[_PRE|_POST] ([cond,] dest, source, offset8s)"
 mnemonics = [
   { pattern = "E_[COND_]{LDRB=0|LDR=1}", binds = ["cond", "word"] },
@@ -68,18 +69,21 @@ bunny_build = "E_LDRB(dest,src,off8) = 0x1 + (dest<<10) + (src<<14) + (off8<<24)
 
 [[aliases]]
 name = "POP"
+brief = "Pops a word off the stack into DST (SP pre-decrements; the stack grows upward)"
 form = "default"
 operands = ["dest"]
 preset = { src1 = 0xc, offset8s = -1, word = 1, wb_ld = 1 }
 
 [[aliases]]
 name = "POPB"
+brief = "Pops a byte (zero-extended) off the stack into DST"
 form = "default"
 operands = ["dest"]
 preset = { src1 = 0xc, offset8s = -1, word = 0, wb_ld = 1 }
 
 [[aliases]]
 name = "POPBS"
+brief = "Pops a byte (sign-extended) off the stack into DST"
 form = "default"
 operands = ["dest"]
 preset = { src1 = 0xc, offset8s = -1, word = 0, wb_ld = 1, sgn = 1 }

@@ -60,6 +60,7 @@ detail = "instruction set chapter, E_HOLD purpose/options/restrictions (synthesi
 # ---------------------------------------------------------------------------
 [[forms]]
 name = "plain"
+brief = "Halts until the Boolean pattern detector fires"
 syntax = "E_[COND_]HOLD ([cond])"
 mnemonic = { pattern = "E_[COND_]HOLD", binds = ["cond"] }
 fixed = [
@@ -80,6 +81,7 @@ bunny_build = "E_HOLD() = 0x1C + (PC<<10) + (1<<15) + (EU<<5)"
 
 [[forms]]
 name = "vectored"
+brief = "Halts, then dispatches through the vector table at table register + 4"
 syntax = "E_[COND_]VECTORED_HOLD[_LV][_NRA] ([cond,] table)"
 mnemonic = { pattern = "E_[COND_]VECTORED_HOLD[_LV][_NRA]", binds = ["cond", "lv", "nra"] }
 fixed = [
@@ -95,6 +97,7 @@ bunny_build = "E_VECTORED_HOLD(table) = 0x1C + (table<<10) + (table<<20) + (EU<<
 
 [[forms]]
 name = "acc_vectored"
+brief = "Halts, then dispatches through the vector table; acceleration mask in vectors"
 syntax = "E_[COND_]ACC_VECTORED_HOLD[_LV][_NRA] ([cond,] table, vectors)"
 mnemonic = { pattern = "E_[COND_]ACC_VECTORED_HOLD[_LV][_NRA]", binds = ["cond", "lv", "nra"] }
 fixed = [

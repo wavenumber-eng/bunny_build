@@ -98,6 +98,7 @@ def expand(pattern: str, binds: list[str], when: dict[str, int]) -> list[tuple[s
     for combo in product(*choices):
         name = ""
         values: dict[str, int] = dict(when)
+        sel: list[tuple[str, object]] = [(f, v) for f, v in when.items()]
         gi = 0
         skip = False
         for kind, payload in parts:
@@ -111,13 +112,15 @@ def expand(pattern: str, binds: list[str], when: dict[str, int]) -> list[tuple[s
             if field == "cond":
                 if text:  # COND_ token present; cond value comes from an argument
                     values["cond"] = None
+                    sel.append(("cond", None))
                 continue
             if field in values and values[field] != val:
                 skip = True  # when-guard pins this field to a different value
                 break
             values[field] = val
+            sel.append((field, val))
         if not skip:
-            out.append((name, values))
+            out.append((name, values, sel))
     return out
 
 
@@ -169,7 +172,7 @@ def main() -> int:
                     print(f"FAIL {opname}/{form['name']}: {e}")
                     errors += 1
                     continue
-                for name, values in names:
+                for name, values, _sel in names:
                     emit(name, f"{opname}/{form['name']}", expected_base(form, fields, values))
         for alias in op.get("aliases", []):
             form = next(f for f in op["forms"] if f["name"] == alias["form"])

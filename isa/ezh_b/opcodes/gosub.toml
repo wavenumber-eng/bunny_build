@@ -45,6 +45,7 @@ detail = "instruction set chapter, E_GOSUB purpose/options/restrictions (synthes
 
 [[forms]]
 name = "default"
+brief = "Calls the 30-bit word address; RA receives the return address"
 syntax = "E_GOSUB (label)"
 mnemonic = { pattern = "E_GOSUB", binds = [] }
 fixed = [{ bits = "1:0", value = 0x3 }]

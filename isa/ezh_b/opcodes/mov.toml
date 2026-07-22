@@ -45,6 +45,7 @@ detail = "section 5.1: purpose, options (reg-to-reg, imm-to-reg, 11-bit signed i
 
 [[forms]]
 name = "reg"
+brief = "Moves SRC1 into DST"
 syntax = "E_[COND_]{MOV|MVN}[S] ([cond,] dest, src)"
 mnemonic = { pattern = "E_[COND_]{MOV|MVN}[S]", binds = ["cond", "n", "s"] }
 fixed = [
@@ -65,8 +66,8 @@ bunny_build = "E_MOV(dest,src) = 0x0 + (src<<14) + (dest<<10) + (EU<<5)"
 name = "imm"
 syntax = "E_[COND_]LOAD_{IMM|SIMM}[N][S] ([cond,] dest, imm11s [, shift5_simm])"
 mnemonics = [
-  { pattern = "E_[COND_]LOAD_IMM[N][S]", binds = ["cond", "n", "s"] },
-  { pattern = "E_[COND_]LOAD_SIMM[N][S]", binds = ["cond", "n", "s"] },
+  { pattern = "E_[COND_]LOAD_IMM[N][S]", binds = ["cond", "n", "s"], brief = "Loads the 11-bit signed immediate into DST" },
+  { pattern = "E_[COND_]LOAD_SIMM[N][S]", binds = ["cond", "n", "s"], brief = "Loads the 11-bit signed immediate, shifted left by shift5 (0-31), into DST" },
 ]
 fixed = [
   { bits = "4:0", value = 0x00 },

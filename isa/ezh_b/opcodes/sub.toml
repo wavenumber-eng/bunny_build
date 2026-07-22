@@ -46,6 +46,7 @@ detail = "instruction set chapter, E_SUB purpose/options/restrictions (synthesiz
 # ---------------------------------------------------------------------------
 [[forms]]
 name = "reg"
+brief = "Subtracts SRC2 from SRC1, result to DST"
 syntax = "E_[COND_]SUB[N]_[F]{LSL|ASR|LSR|ROR}[S] ([cond,] dest, src1, src2 [, shift5])"
 mnemonics = [
   { pattern = "E_[COND_]SUB[N][S]", binds = ["cond", "n_alu", "s"] },
@@ -70,6 +71,7 @@ bunny_build = "E_SUB(dest,src1,src2) = 0x8 + (src1<<14) + (dest<<10) + (src2<<20
 
 [[forms]]
 name = "imm"
+brief = "Subtracts the 12-bit signed immediate from SRC1, result to DST"
 syntax = "E_[COND_]SUB[N]_IMM[S] ([cond,] dest, src1, imm12s)"
 mnemonic = { pattern = "E_[COND_]SUB[N]_IMM[S]", binds = ["cond", "n_alu", "s"] }
 fixed = [

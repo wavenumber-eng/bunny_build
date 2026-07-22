@@ -40,6 +40,7 @@ detail = "instruction set chapter, E_BITOP purpose/options/restrictions (synthes
 
 [[forms]]
 name = "reg"
+brief = "Bit operation on Rdata at the bit selected by Rbit, result to DST"
 syntax = "E_[COND_]{BCLR|BTST|BSET|BTOG}[S] ([cond,] dest, rdata, rbit)"
 mnemonic = { pattern = "E_[COND_]{BCLR=1|BTST=5|BSET=6|BTOG=7}[S]", binds = ["cond", "bitop_sel", "s"] }
 fixed = [
@@ -55,6 +56,7 @@ bunny_build = "E_BSET(dest,rdata,rbit) = 0x18 + (rdata<<14) + (dest<<10) + (rbit
 
 [[forms]]
 name = "imm"
+brief = "Bit operation on Rdata at bit imm5, result to DST"
 syntax = "E_[COND_]{BCLR|BTST|BSET|BTOG}_IMM[S] ([cond,] dest, rdata, bit5)"
 mnemonic = { pattern = "E_[COND_]{BCLR=1|BTST=5|BSET=6|BTOG=7}_IMM[S]", binds = ["cond", "bitop_sel", "s"] }
 fixed = [

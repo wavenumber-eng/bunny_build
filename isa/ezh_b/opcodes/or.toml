@@ -48,6 +48,7 @@ detail = "instruction set chapter, E_OR purpose/options/restrictions (synthesize
 # ---------------------------------------------------------------------------
 [[forms]]
 name = "reg"
+brief = "ORs SRC1 with SRC2, result to DST"
 syntax = "E_[COND_]OR[N]_[F]{LSL|ASR|LSR|ROR}[S] ([cond,] dest, src1, src2 [, shift5])"
 mnemonics = [
   { pattern = "E_[COND_]OR[N][S]", binds = ["cond", "n_alu", "s"] },
@@ -72,6 +73,7 @@ bunny_build = "E_OR(dest,src1,src2) = 0xc + (src1<<14) + (dest<<10) + (src2<<20)
 
 [[forms]]
 name = "imm"
+brief = "ORs SRC1 with the 12-bit signed immediate, result to DST"
 syntax = "E_[COND_]OR[N]_IMM[S] ([cond,] dest, src1, imm12s)"
 mnemonic = { pattern = "E_[COND_]OR[N]_IMM[S]", binds = ["cond", "n_alu", "s"] }
 fixed = [

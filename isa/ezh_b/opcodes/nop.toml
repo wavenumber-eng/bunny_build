@@ -51,6 +51,7 @@ detail = "instruction set chapter, E_NOP purpose/options/restrictions (synthesiz
 
 [[forms]]
 name = "nop"
+brief = "No operation"
 syntax = "E_NOP"
 mnemonic = { pattern = "E_NOP", binds = [] }
 # Per isa-adr-0001 decode-mask convention: opcode plus the sub-op selector are
@@ -64,6 +65,7 @@ modifiers = []
 
 [[forms]]
 name = "heart_imm"
+brief = "Loads the heartbeat counter with IMM16"
 syntax = "E_HEART_RYTHM_IMM (val16imm)"
 mnemonic = { pattern = "E_HEART_RYTHM_IMM", binds = [] }
 fixed = [
@@ -79,6 +81,7 @@ bunny_build = "E_HEART_RYTHM_IMM(v16) = 0x32 + (v16<<16)"
 
 [[forms]]
 name = "heart_reg"
+brief = "Loads the heartbeat counter from Rcount"
 syntax = "E_HEART_RYTHM (r16bit)"
 mnemonic = { pattern = "E_HEART_RYTHM", binds = [] }
 fixed = [
@@ -94,6 +97,7 @@ bunny_build = "E_HEART_RYTHM(r) = 0x32 + (r<<14) + (1<<9)"
 
 [[forms]]
 name = "synch"
+brief = "Enables/disables synchronize-all-to-beat (Bool1imm)"
 syntax = "E_SYNCH_ALL_TO_BEAT (on1imm)"
 mnemonic = { pattern = "E_SYNCH_ALL_TO_BEAT", binds = [] }
 fixed = [
@@ -108,6 +112,7 @@ bunny_build = "E_SYNCH_ALL_TO_BEAT(on) = 0x52 + (on<<31)"
 
 [[forms]]
 name = "wait"
+brief = "Halts until the next heartbeat"
 syntax = "E_WAIT_FOR_BEAT"
 mnemonic = { pattern = "E_WAIT_FOR_BEAT", binds = [] }
 fixed = [

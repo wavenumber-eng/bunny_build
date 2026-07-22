@@ -46,6 +46,7 @@ detail = "instruction set chapter, E_SBC purpose/options/restrictions (synthesiz
 # ---------------------------------------------------------------------------
 [[forms]]
 name = "reg"
+brief = "Subtracts SRC2 then the carry flag from SRC1, result to DST"
 syntax = "E_[COND_]SBC[N]_[F]{LSL|ASR|LSR|ROR}[S] ([cond,] dest, src1, src2 [, shift5])"
 mnemonics = [
   { pattern = "E_[COND_]SBC[N][S]", binds = ["cond", "n_alu", "s"] },
@@ -70,6 +71,7 @@ bunny_build = "E_SBC(dest,src1,src2) = 0xa + (src1<<14) + (dest<<10) + (src2<<20
 
 [[forms]]
 name = "imm"
+brief = "Subtracts the 12-bit signed immediate then carry from SRC1, result to DST"
 syntax = "E_[COND_]SBC[N]_IMM[S] ([cond,] dest, src1, imm12s)"
 mnemonic = { pattern = "E_[COND_]SBC[N]_IMM[S]", binds = ["cond", "n_alu", "s"] }
 fixed = [

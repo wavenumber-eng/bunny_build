@@ -48,6 +48,7 @@ detail = "instruction set chapter, E_XOR purpose/options/restrictions (synthesiz
 # ---------------------------------------------------------------------------
 [[forms]]
 name = "reg"
+brief = "XORs SRC1 with SRC2, result to DST"
 syntax = "E_[COND_]XOR[N]_[F]{LSL|ASR|LSR|ROR}[S] ([cond,] dest, src1, src2 [, shift5])"
 mnemonics = [
   { pattern = "E_[COND_]XOR[N][S]", binds = ["cond", "n_alu", "s"] },
@@ -72,6 +73,7 @@ bunny_build = "E_XOR(dest,src1,src2) = 0xe + (src1<<14) + (dest<<10) + (src2<<20
 
 [[forms]]
 name = "imm"
+brief = "XORs SRC1 with the 12-bit signed immediate, result to DST"
 syntax = "E_[COND_]XOR[N]_IMM[S] ([cond,] dest, src1, imm12s)"
 mnemonic = { pattern = "E_[COND_]XOR[N]_IMM[S]", binds = ["cond", "n_alu", "s"] }
 fixed = [

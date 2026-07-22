@@ -43,6 +43,7 @@ detail = "instruction set chapter, E_PER_READ purpose/options/restrictions (synt
 
 [[forms]]
 name = "default"
+brief = "Reads the peripheral at 0x4000_0000 + offset into DST"
 syntax = "E_[COND_]PER_READ ([cond,] dest, addr20)"
 mnemonic = { pattern = "E_[COND_]PER_READ", binds = ["cond"] }
 fixed = [{ bits = "4:0", value = 0x04 }]

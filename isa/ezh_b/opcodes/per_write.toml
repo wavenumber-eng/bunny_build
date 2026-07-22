@@ -45,6 +45,7 @@ detail = "instruction set chapter, E_PER_WRITE purpose/options/restrictions (syn
 
 [[forms]]
 name = "default"
+brief = "Writes SRC1 to the peripheral at 0x4000_0000 + offset"
 syntax = "E_[COND_]PER_WRITE ([cond,] src, addr20)"
 mnemonic = { pattern = "E_[COND_]PER_WRITE", binds = ["cond"] }
 fixed = [

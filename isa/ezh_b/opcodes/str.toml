@@ -47,6 +47,7 @@ detail = "instruction set chapter, E_STR purpose/options/restrictions (synthesiz
 
 [[forms]]
 name = "default"
+brief = "Stores Rdata to memory at pointer + scaled offset8s"
 syntax = "E_[COND_]{STRB|STR}[_PRE|_POST] ([cond,] raddr, rdata, offset8s)"
 mnemonics = [
   { pattern = "E_[COND_]{STRB=0|STR=1}", binds = ["cond", "word"] },
@@ -63,12 +64,14 @@ bunny_build = "E_STRB(raddr,rdata,off8) = 0x2 + (raddr<<14) + (rdata<<20) + (off
 
 [[aliases]]
 name = "PUSH"
+brief = "Pushes Reg onto the stack (SP post-increments; the stack grows upward)"
 form = "default"
 operands = ["src2"]
 preset = { src1 = 0xc, offset8s = 1, word = 1, wb_st = 1, post = 1 }
 
 [[aliases]]
 name = "PUSHB"
+brief = "Pushes the low byte of Reg onto the stack"
 form = "default"
 operands = ["src2"]
 preset = { src1 = 0xc, offset8s = 1, word = 0, wb_st = 1, post = 1 }
