@@ -234,7 +234,6 @@ slices = [{ instr = "31:2", value = "31:2" }]
 
 
 
-
 [fields.goto_addr21]
 kind = "imm"
 signed = false

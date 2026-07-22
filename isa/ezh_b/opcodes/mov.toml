@@ -16,6 +16,8 @@ access. MOVS (S) is the canonical way to test a register value. Writing PC as th
 destination branches - ordinary unless S is set, which schedules the branch
 (and sets no flags).
 S sets the flags but never the carry: C retains its previous value.
+To test a value without storing a result (the CMP/TST idiom), use GPI as
+the discard destination.
 """
 restrictions = [
   "No support for SPO/SNE condition flags",

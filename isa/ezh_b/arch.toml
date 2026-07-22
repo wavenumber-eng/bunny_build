@@ -81,7 +81,7 @@ desc = "Stack pointer"
 [registers.PC]
 value = 0xd
 class = "control"
-desc = "Program counter; writing PC branches - ordinary unless the op sets flags (S), which requests a scheduled branch instead of setting flags"
+desc = "Program counter; writing PC branches - ordinary unless the op sets flags (S), which requests a scheduled branch instead of setting flags. What a PC source read yields (the pipeline runs two instructions ahead) needs hardware confirmation"
 
 [registers.GPI]
 value = 0xe
@@ -203,6 +203,9 @@ desc = "Event input"
 
 
 
+
+[glossary.flags]
+desc = "ALU flags update only when an instruction sets them: S-suffixed ops (plus algorithmic latching for SPO/SNE). Z is set iff the 32-bit result is zero; N is result bit 31; C changes only through ADD/SUB/ADC/SBC and shift/rotate stages - logical ops and MOV retain the previous carry even with S. Every other instruction (branches, GOSUB, holds, all data-bus accesses) leaves the flags untouched, so flag state survives across them."
 
 [glossary.scheduled_branch]
 desc = "A branch that lets the two already-prefetched opcodes execute instead of flushing them, costing one cycle instead of three. Requested by S+PC-destination ALU ops, by GOTO under UNS/NZS, and used by accelerated vectored holds."

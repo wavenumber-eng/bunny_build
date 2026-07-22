@@ -9,7 +9,9 @@ mnemonics_base = ["E_LDR_REG", "E_LDR_REGB", "E_STR_REG", "E_STR_REGB"]
 [semantics]
 prose = """
 Register-plus-register addressed memory access: LDR_REG reads and STR_REG
-writes at Raddr + Roffset (bit 30 selects the direction), for walking
+writes at an address formed from Raddr and Roffset (bit 30 selects the
+direction; the exact offset arithmetic needs hardware confirmation - see the
+restrictions), for walking
 buffers whose stride lives in a register. Loads come in word, byte (B), and
 sign-extended byte (BS) forms; stores in word and byte. Performance matches
 the immediate-offset E_LDR and E_STR: the access is submitted in one cycle

@@ -16,6 +16,9 @@ share E_LDR's submit-and-continue performance. The PUSH aliases are presets
 of this form - the stack grows upward, so PUSH post-increments SP by one
 word.
 (Hardware confirmation pending: byte stores drive the byte on all four AHB byte lanes.)
+Note the operand order: the address register comes FIRST
+(E_STR(addr, data, offset)) - the reverse of the load spelling's
+destination-first order, a classic swapped-store hazard.
 """
 restrictions = [
   "Post-increment of PC is not allowed",

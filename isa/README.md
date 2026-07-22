@@ -23,6 +23,10 @@ isa/
     validate.py          # schema check + demo C/Verilog emission
     extract_header.py    # numeric probe of bunny_build__instr.h -> JSON inventory
     verify_encodings.py  # name-free check of ALL header encoder fns vs the db
+    extract_fsl.py       # numeric probe of the bundled reference header (read in place)
+    verify_fsl.py        # three-way check: fsl <-> db <-> bunny_build + report
+    expand_mnemonics.py  # mnemonic patterns -> exact 1502-name reproduction
+    gen_docs_spike.py    # doc-generator spike (superseded by build-static-html)
 ```
 
 ## Core model
@@ -49,7 +53,7 @@ A **field** maps *value bits* to *instruction bits* as a list of **slices**:
 
 ```toml
 [fields.per_addr20_w]
-desc = "peripheral byte address, word aligned, 1MB window (split encoding)"
+desc = "Peripheral byte offset from 0x4000_0000 within the 1MB window, word aligned (PER_WRITE split encoding; 18 offset bits encoded)"
 slices = [
   { instr = "31:24", value = "19:12" },
   { instr = "19:10", value = "11:2"  },
