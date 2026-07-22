@@ -13,9 +13,11 @@ Calls a subroutine at an absolute 30-bit word address - any word in the
 the remaining 30 bits are the word address directly. RA is always
 overwritten with the return address, so nested calls must stack RA
 explicitly (the stack grows upward); return by branching through RA.
-Because GOSUB overlays the whole encoding space, decoders must match it
-before any other opcode (most-specific-first by mask popcount does this
-naturally - GOSUB has the smallest mask).
+Because GOSUB overlays the whole encoding space, a decoder must ensure
+that any word with bits [1:0] = 0b11 decodes as GOSUB. This is safe by
+construction: every other defined opcode value has [1:0] != 0b11, so no
+other pattern can match such a word - under most-specific-first ordering
+GOSUB simply falls out last, naturally and correctly.
 """
 restrictions = [
   "Target address must be word aligned (bits [1:0] of the address are implied 0b00, replaced by the 0b11 tag)",
