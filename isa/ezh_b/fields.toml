@@ -164,7 +164,7 @@ slices = [{ instr = "26:24", value = "2:0" }]
 # adjudication list for the EZH creator.
 [fields.or_reg3]
 kind = "register"
-desc = "OR-source register, R0-R7 only per sv_tb decode (E_ANDOR)"
+desc = "OR-source register, R0-R7 only per hardware analysis (E_ANDOR)"
 slices = [{ instr = "26:24", value = "2:0" }]
 
 # ---------------------------------------------------------------------------
@@ -229,7 +229,6 @@ desc = "GOSUB target byte address, word aligned; bits [31:2] of the address"
 constraint = "addr % 4 == 0"
 slices = [{ instr = "31:2", value = "31:2" }]
 
-# GOTO immediate target: word-aligned 21-bit byte address. Address bits [1:0]
 # The architectural immediate is 21 WORD bits in instr [31:11] (sv_tb:
 # dest = (PC & 0xff800000) | (inst[31:11] << 2)) - a 23-bit / 8MB window with
 # the top 9 address bits preserved from PC. bunny_build's encoder masks the

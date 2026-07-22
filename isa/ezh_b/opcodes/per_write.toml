@@ -16,8 +16,10 @@ addressing: the immediate is a word-aligned byte offset from 0x4000_0000
 peripheral window - no register needs to be spent on peripheral addressing.
 Performance matches E_LDR (AN14650 section 5.28). (Note: AN14650 5.28 says
 the offset "covers a 22-bit offset region" - arithmetically impossible for
-the encoded field; the SV address computation, both headers, and real
+the encoded field; the hardware address computation, both headers, and real
 camera code agree on 1MB.)
+The macro argument is the offset itself, not the absolute peripheral
+address.
 """
 restrictions = [
   "Address must be word aligned",

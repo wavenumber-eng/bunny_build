@@ -13,8 +13,8 @@ mnemonics_base = ["E_MODIFY_GPO_BYTE"]
 prose = """
 Atomically modifies the low byte of the general-purpose outputs by applying an
 AND mask, an OR mask, and an XOR mask in one instruction. Only GPO[7:0] is
-affected: the upper 24 bits pass through unchanged (sv_tb applies the AND mask
-one-extended and the OR/XOR masks zero-extended).
+affected: the upper 24 bits pass through unchanged (the AND mask applies
+one-extended, the OR/XOR masks zero-extended).
 """
 restrictions = [
   "No conditional variant: the AND mask byte occupies the cond field bits",

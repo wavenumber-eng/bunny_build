@@ -17,20 +17,20 @@ workhorse for bit-packing loops whose field widths are computed at run time.
 (Note: AN14650 5.12's description sentence says "byte or bit order flipping"
 - a copy-paste from 5.11; its own options list and both other sources agree
 this family shifts by the lower 8 bits of a register.) Amounts of 32 and
-above are spec-silent; the sv_tb (advisory) applies rotate amounts modulo 32
+above are spec-silent; hardware analysis (advisory) applies rotate amounts modulo 32
 and saturates shifts - the value shifts fully out, with the carry capturing
 the last bit at exactly 32 and clearing beyond 32. On the adjudication list.
 With SPO/SNE and an LSL by 1, the carry is automatically shifted into the
 LSB - the tailchaining idiom for chaining shift work across registers.
 SPO/SNE cancel only the fused ALU stage here (see the shift family for
-the full algorithmic-flags story). (sv_tb advisory: a fused ADC/SBC with
+the full algorithmic-flags story). (hardware analysis, advisory: a fused ADC/SBC with
 a nonzero shift amount takes its carry-in from the shift stage, not the
 CA flag.)
 """
 restrictions = [
   "S with destination PC does not set flags (schedules branch instead)",
   "Shift-amount register is a 3-bit field: R0-R7 only (bit 27 is the N modifier)",
-  "Shift amounts >= 32 are spec-silent: sv_tb models mod-32 rotate and full shift-out with carry rules (adjudication item)",
+  "Shift amounts >= 32 are spec-silent: hardware analysis models mod-32 rotate and full shift-out with carry rules (adjudication item)",
 ]
 
 [timing]

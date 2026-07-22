@@ -20,9 +20,9 @@ upward, so POP pre-decrements SP by one word.
 """
 restrictions = [
   "Post-increment of PC is not allowed",
-  "A pointer register that is also the read destination gets no address update - PRE or POST, the update is ignored (sv_tb advisory: writeback is also silently ignored when the pointer is PC)",
+  "A pointer register that is also the read destination gets no address update - PRE or POST, the update is ignored (hardware analysis, advisory: writeback is also silently ignored when the pointer is PC)",
   "No support for SPO/SNE condition flags",
-  "Reads using CFS as the pointer see the bottom 8 bits of CFS as 0x00 (AN14650; sv_tb instead returns the live BS-input byte - adjudication item)",
+  "Reads using CFS as the pointer see the bottom 8 bits of CFS as 0x00 (per AN14650; hardware analysis instead shows the live BS-input byte - tentatively resolved toward the latter per source ranking, creator review pending)",
   "CFS cannot be the destination of a byte read",
   "S on byte loads means signed access (bit 21), not set-flags; loads never set flags",
   "PUSH/POP: byte and word stacking must not be mixed across non-word-aligned boundaries - SP bits [1:0] are ignored in word-access address calculation (AN14650 5.29)",

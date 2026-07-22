@@ -19,7 +19,7 @@ The algorithmic conditions in full: SPO/SNE cancel only the fused ALU
 stage - the shift and the writeback still execute, and an N inversion is
 NOT cancelled; the algorithmic flags themselves latch only from an opcode
 that was conditioned on SPO/SNE. This is the binary-multiply idiom: shift
-every iteration, operate only when the MSB says so. (sv_tb advisory: a
+every iteration, operate only when the MSB says so. (hardware analysis, advisory: a
 fused ADC/SBC with a nonzero shift amount takes its carry-in from the
 shift stage, not the CA flag.)
 """

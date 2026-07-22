@@ -11,8 +11,8 @@ prose = """
 Calls a subroutine at an absolute 30-bit word address - any word in the
 4GB space: any instruction word whose bits [1:0] are 0b11 is a GOSUB, and
 the remaining 30 bits are the word address directly. RA is always
-overwritten with the return address - the word after the GOSUB (per the
-sv_tb, advisory) - so nested calls must stack RA
+overwritten with the return address - the word after the GOSUB (hardware
+analysis, advisory - creator confirmation pending) - so nested calls must stack RA
 explicitly (the stack grows upward); return by branching through RA.
 Because GOSUB overlays the whole encoding space, a decoder must ensure
 that any word with bits [1:0] = 0b11 decodes as GOSUB. This is safe by

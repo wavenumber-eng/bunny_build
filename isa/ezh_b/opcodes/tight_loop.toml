@@ -19,6 +19,7 @@ restrictions = [
   "The instruction immediately following E_TIGHT_LOOP executes only once; the repeated block starts at the instruction after it",
   "To repeat a single instruction, set Rend to 3 words past the E_TIGHT_LOOP address",
   "Cannot set flags (no S variant)",
+  "Corner cases under adjudication: a zero-iteration loop is inexpressible (Rcount = 0 still runs the body once), and whether Rend/Rcount are snapshotted at E_TIGHT_LOOP execution or sampled live is unstated",
 ]
 
 [timing]

@@ -16,10 +16,13 @@ prose = """
 Opcode 0x12 is a small control family selected by a sub-op field. NOP does
 nothing for one cycle. HEART_RYTHM loads the 16-bit heartbeat counter (from
 an immediate or a register) - the timebase for deterministic-interval
-execution. SYNCH_ALL_TO_BEAT switches the synchronize-all-instructions-to-
-beat feature on or off with a 1-bit immediate. WAIT_FOR_BEAT halts until the
+execution. SYNCH_ALL_TO_BEAT switches the
+synchronize-all-instructions-to-beat feature on or off with a 1-bit
+immediate. WAIT_FOR_BEAT halts until the
 next heartbeat, the idiom for aligning work (serial sampling, for example)
 to fixed intervals; load the counter with HEART_RYTHM first.
+(In the original header E_NOP is an object-like macro, written without
+parentheses.)
 """
 restrictions = [
   "No conditional variants: bits [8:5] are the sub-op selector, not a cond field",
