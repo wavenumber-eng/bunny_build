@@ -24,6 +24,7 @@ repo tree unless OUTDIR points there.
 from __future__ import annotations
 
 import html
+import json
 import sys
 from pathlib import Path
 
@@ -201,7 +202,20 @@ a:hover { color: var(--text); text-decoration: underline; }
 svg { display: block; margin: 8px 0; max-width: 100%; }
 .legend { margin: -2px 0 8px 0; }
 .lg-fx { color: var(--green); }
+#ezh-tip { position: fixed; display: none; z-index: 50; max-width: 28rem;
+    background: var(--bg-input); border: 1px solid var(--amber);
+    color: var(--text); font-family: var(--font-mono); font-size: 12px;
+    line-height: 1.35; padding: 8px 10px; pointer-events: none;
+    box-shadow: 0 0 12px var(--amber-glow); }
+#ezh-tip b { color: var(--amber); }
+#ezh-tip .dim { color: var(--text-dim); }
+#ezh-tip table { border-collapse: collapse; margin: 5px 0 0 0; font-size: 11px; }
+#ezh-tip th, #ezh-tip td { border: 1px solid var(--border); padding: 1px 6px; }
+#ezh-tip th { background: var(--bg-panel); color: var(--amber); font-weight: normal; }
 svg rect { stroke: var(--border); }
+svg rect[data-tip] { cursor: help; }
+svg rect[data-tip]:hover { stroke: var(--amber); stroke-width: 1.5; }
+svg text { pointer-events: none; }
 svg text { fill: var(--text); }
 svg text.bit { fill: var(--text-dim); }
 svg text.vfx { fill: var(--green); }
@@ -248,6 +262,24 @@ if (fontBtn) fontBtn.addEventListener('click', () => {
     applyPrefs();
 });
 applyPrefs();
+// Hover tooltips: cells carry data-tip keys into the db-generated EZH_TIPS.
+const tipEl = document.createElement('div');
+tipEl.id = 'ezh-tip';
+document.body.appendChild(tipEl);
+document.addEventListener('mousemove', e => {
+    const t = e.target.closest ? e.target.closest('[data-tip]') : null;
+    if (t && window.EZH_TIPS && EZH_TIPS[t.dataset.tip]) {
+        tipEl.innerHTML = EZH_TIPS[t.dataset.tip];
+        tipEl.style.display = 'block';
+        let x = e.clientX + 14, y = e.clientY + 14;
+        const r = tipEl.getBoundingClientRect();
+        if (x + r.width > innerWidth - 8) x = innerWidth - r.width - 8;
+        if (y + r.height > innerHeight - 8) y = e.clientY - r.height - 10;
+        tipEl.style.left = x + 'px'; tipEl.style.top = y + 'px';
+    } else {
+        tipEl.style.display = 'none';
+    }
+});
 // Deep links: #opcode expands that section (search anchors land here too).
 function openHash() {
     const el = location.hash && document.getElementById(location.hash.slice(1));
@@ -261,7 +293,61 @@ openHash();
 N_FIELD_COLORS = 6
 
 
-def bitfield_svg(form: dict, fields: dict) -> str:
+def build_tips(arch: dict, fields: dict, opcodes: dict) -> dict[str, str]:
+    """db-generated hover-tooltip HTML, keyed by the cells' data-tip values."""
+    tips: dict[str, str] = {}
+    e = html.escape
+
+    reg_line = " · ".join(
+        f"{e(n)}={r['value']:x}" for n, r in arch["registers"].items()
+    )
+    cond_rows = "".join(
+        "<tr><td>{}</td><td>0x{:x}</td><td>{}</td></tr>".format(
+            e("/".join([n, *c.get("alias", [])])), c["value"],
+            e(c["desc"].split(":")[0].split(". ")[0]))
+        for n, c in arch["conditions"].items()
+    )
+    cond_table = ("<table><tr><th>cond</th><th>val</th><th>meaning</th></tr>"
+                  + cond_rows + "</table>")
+
+    for name, f in fields.items():
+        width = sum(
+            int(s["instr"].split(":")[0]) - int(s["instr"].split(":")[1]) + 1
+            for s in f["slices"]
+        )
+        bits = ", ".join(
+            f"instr[{e(s['instr'])}] &larr; value[{e(s['value'])}]" for s in f["slices"]
+        )
+        body = (f"<b>{e(name)}</b> <span class='dim'>({e(f.get('kind', '?'))}, "
+                f"{width} bit{'s' if width != 1 else ''})</span><br>{e(f['desc'])}"
+                f"<br><span class='dim'>{bits}</span>")
+        if f.get("kind") == "condition":
+            body += cond_table
+        elif f.get("kind") == "register":
+            body += ("<br><span class='dim'>R0-R7 only (3-bit field)</span>"
+                     if width == 3 else f"<br><span class='dim'>{reg_line}</span>")
+        if f.get("signed"):
+            body += "<br><span class='dim'>signed (two's complement)</span>"
+        if f.get("constraint"):
+            body += f"<br><span class='dim'>constraint: {e(f['constraint'])}</span>"
+        tips[f"f:{name}"] = body
+
+    for name, op in opcodes.items():
+        o = op["opcode"]
+        tips[f"op:{name}"] = (
+            f"<b>opcode {e(o['name'])}</b> = 0b{o['value']:05b} "
+            f"(0x{o['value']:02X}) <span class='dim'>&middot; "
+            f"{e(o.get('family', '?'))} family</span><br>"
+            "<span class='dim'>fixed low bits; part of this form's decode "
+            "mask/match</span>")
+    tips["fixed"] = ("<b>fixed bits</b><br><span class='dim'>decode-significant: "
+                     "included in this form's mask/match (often a form-select)</span>")
+    tips["rsvd"] = ("<b>reserved-zero</b><br><span class='dim'>canonical encoders "
+                    "emit 0; decoders treat these bits as don't-care</span>")
+    return tips
+
+
+def bitfield_svg(form: dict, fields: dict, op_key: str = "") -> str:
     """One 32-bit row; contiguous same-owner runs merged into labeled cells."""
     owner: list[tuple[str, str]] = [("rsvd", "0")] * 32  # bit -> (kind, label)
     for fx in form.get("fixed", []):
@@ -300,9 +386,16 @@ def bitfield_svg(form: dict, fields: dict) -> str:
         x, w = (31 - hi) * W, (hi - lo + 1) * W
         if kind == "field":
             cls, tcls = color_of.setdefault(label, f"f{len(color_of) % N_FIELD_COLORS}"), ""
+            tip = f"f:{label}"
+        elif kind == "rsvd":
+            cls, tcls, tip = "rz", "vrz", "rsvd"
         else:
-            cls, tcls = ("rz", "vrz") if kind == "rsvd" else ("fx", "vfx")
-        parts.append(f'<rect x="{x}" y="{TICK}" width="{w}" height="{H}" class="{cls}"/>')
+            cls, tcls = "fx", "vfx"
+            tip = f"op:{op_key}" if lo == 0 and op_key else "fixed"
+        parts.append(
+            f'<rect x="{x}" y="{TICK}" width="{w}" height="{H}" class="{cls}" '
+            f'data-tip="{tip}"/>'
+        )
         text = label if kind != "rsvd" else "0"
         size = 11 if len(text) * 7 <= w else max(7, int(w / len(text) * 1.6))
         tattr = f' class="{tcls}"' if tcls else ""
@@ -406,7 +499,7 @@ def render_opcode(name: str, op: dict, fields: dict, arch: dict) -> str:
             f"<div class='prose'><code>{html.escape(form.get('syntax', ''))}</code></div>"
             f"<div class='prov'>decode mask 0x{mask:08x} · match 0x{match:08x}</div>"
         )
-        fbody += bitfield_svg(form, fields)
+        fbody += bitfield_svg(form, fields, op_key=name)
         if form.get("notes"):
             fbody += f"<div class='prov'>{html.escape(form['notes'])}</div>"
         out.append(panel(f"FORM: {form['name'].upper()}", fbody))
@@ -458,13 +551,14 @@ FOOTER = (
 )
 
 
-def page(title: str, body: str) -> str:
+def page(title: str, body: str, tips_json: str = "{}") -> str:
     return (
         "<!DOCTYPE html>\n<html>\n<head>\n"
         '<meta charset="UTF-8">\n'
         '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n'
         f"<title>{html.escape(title)}</title>\n<style>{CSS}</style>\n</head>\n<body>"
         f'<div class="container">{body}{FOOTER}</div>'
+        f"<script>window.EZH_TIPS = {tips_json};</script>"
         f"<script>{SCRIPT}</script></body>\n</html>\n"
     )
 
@@ -480,6 +574,7 @@ def main() -> int:
 
     arch, fields, opcodes = load()
     ordered = sorted(opcodes.items(), key=lambda kv: kv[1]["opcode"]["value"])
+    tips_json = json.dumps(build_tips(arch, fields, opcodes), sort_keys=True)
 
     # Single expandable reference: every opcode is a collapsed panel on the
     # index itself (per direction: expandable details, not links to pages).
@@ -500,14 +595,15 @@ def main() -> int:
         "the machine-readable ISA database.</div>"
         + "\n".join(sections)
     )
-    (outdir / "index.html").write_text(page("EZH instruction set", index_body),
-                                       encoding="utf-8")
+    (outdir / "index.html").write_text(
+        page("EZH instruction set", index_body, tips_json), encoding="utf-8")
     print(f"expandable index ({len(ordered)} opcode sections) -> {outdir}")
     print(f"{total_mnem} mnemonics rendered (expand_mnemonics.py guarantees 1502 vs fsl)")
 
     if single:
         single.write_text(
-            page("EZH instruction set (preview)", index_body), encoding="utf-8"
+            page("EZH instruction set (preview)", index_body, tips_json),
+            encoding="utf-8",
         )
         print(f"single-page preview -> {single}")
     return 0

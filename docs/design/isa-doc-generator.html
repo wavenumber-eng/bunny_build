@@ -110,8 +110,12 @@ default; anchor id = opcode name).</li>
 <li>Semantics prose and restrictions (from the db, synthesized text only).</li>
 <li>Timing: cycles plus qualifying note.</li>
 <li>Per form: syntax line; derived decode mask/match; bitfield diagram
-with an "opcode" caption on the fixed low bits and a one-line color
-legend (green fixed / tinted fields / dim reserved-zero);
+with an "opcode" caption on the fixed low bits, a one-line color
+legend (green fixed / tinted fields / dim reserved-zero), and
+db-generated hover tooltips on every cell — field description, width,
+and slice mapping; the full 16-condition table on the cond cell; the
+register map on register cells; opcode identity on the fixed low bits;
+the reserved-zero rule on dim cells;
 form notes; expanded mnemonic table (name, canonical base word) —
 including alias mnemonics (<code>E_POP</code>/<code>E_PUSH</code>
 families) on their base form's section, presented as presets of that
