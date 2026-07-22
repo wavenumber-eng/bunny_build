@@ -48,7 +48,7 @@ brief = "Loads from memory at Raddr + Roffset into DST"
 syntax = "E_[COND_]{LDR_REGB[S]|LDR_REG} ([cond,] dest, source, roffset)"
 mnemonics = [
   { pattern = "E_[COND_]{LDR_REGB=0|LDR_REG=1}", binds = ["cond", "word"] },
-  { pattern = "E_[COND_]LDR_REGBS", binds = ["cond"], when = { sgn = 1 } },
+  { pattern = "E_[COND_]LDR_REGBS", binds = ["cond"], when = { word = 0, sgn = 1 } },
 ]
 fixed = [
   { bits = "4:0", value = 0x1d },

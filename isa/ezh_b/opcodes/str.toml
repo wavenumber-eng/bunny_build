@@ -71,7 +71,7 @@ preset = { src1 = 0xc, offset8s = 1, word = 1, wb_st = 1, post = 1 }
 
 [[aliases]]
 name = "PUSHB"
-brief = "Pushes the low byte of Reg onto the stack"
+brief = "Pushes the low byte of Reg onto the stack (SP post-increments; the stack grows upward)"
 form = "default"
 operands = ["src2"]
 preset = { src1 = 0xc, offset8s = 1, word = 0, wb_st = 1, post = 1 }

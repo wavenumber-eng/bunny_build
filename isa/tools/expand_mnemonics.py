@@ -98,7 +98,7 @@ def expand(pattern: str, binds: list[str], when: dict[str, int]) -> list[tuple[s
     for combo in product(*choices):
         name = ""
         values: dict[str, int] = dict(when)
-        sel: list[tuple[str, object]] = [(f, v) for f, v in when.items()]
+        sel: list[tuple[str, object]] = []
         gi = 0
         skip = False
         for kind, payload in parts:
@@ -120,6 +120,11 @@ def expand(pattern: str, binds: list[str], when: dict[str, int]) -> list[tuple[s
             values[field] = val
             sel.append((field, val))
         if not skip:
+            # when-pins that no group carried trail the group tokens: the
+            # groups already sit in mnemonic (pipeline) order, and unspelled
+            # pins read naturally as trailing notes.
+            seen = {f for f, _ in sel}
+            sel += [(f, v) for f, v in when.items() if f not in seen]
             out.append((name, values, sel))
     return out
 
