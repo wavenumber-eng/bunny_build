@@ -32,6 +32,7 @@ cycles = "1"
 
 [[forms]]
 name = "default"
+brief = "Shifts R2shift by Shift5imm, result to DST"
 syntax = "E_[COND_]{LSL|ASR|LSR|ROR}[_{AND|OR|XOR|ADD|SUB|ADC|SBC}][S] ([cond,] dest, [roperand,] r2shift, shift5)"
 mnemonics = [
   { pattern = "E_[COND_]{LSL=0|ASR=1|LSR=2|ROR=3}[S]", binds = ["cond", "shift_type", "s"] },

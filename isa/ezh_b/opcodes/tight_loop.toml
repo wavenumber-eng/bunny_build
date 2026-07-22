@@ -27,6 +27,7 @@ cycles = "1"
 
 [[forms]]
 name = "default"
+brief = "Arms the zero-overhead loop: Rend = end address, Rcount = extra repeats"
 syntax = "E_[COND_]TIGHT_LOOP ([cond,] rend, rcount)"
 mnemonic = { pattern = "E_[COND_]TIGHT_LOOP", binds = ["cond"] }
 fixed = [{ bits = "4:0", value = 0x1a }]

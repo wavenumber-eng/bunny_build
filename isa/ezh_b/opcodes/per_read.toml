@@ -30,6 +30,7 @@ notes = "Same performance as E_LDR: single-cycle submission, total latency at le
 
 [[forms]]
 name = "default"
+brief = "Reads the peripheral at 0x4000_0000 + offset into DST"
 syntax = "E_[COND_]PER_READ ([cond,] dest, addr20)"
 mnemonic = { pattern = "E_[COND_]PER_READ", binds = ["cond"] }
 fixed = [{ bits = "4:0", value = 0x04 }]

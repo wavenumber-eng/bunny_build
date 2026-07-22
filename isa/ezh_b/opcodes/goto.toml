@@ -31,6 +31,7 @@ notes = "Single cycle for a scheduled branch (the next two opcodes are not flush
 
 [[forms]]
 name = "imm"
+brief = "Branches to the 21-bit word immediate within the current 8MB window"
 syntax = "E_[COND_]GOTO[L] ([cond,] label)"
 mnemonic = { pattern = "E_[COND_]GOTO[L]", binds = ["cond", "link"] }
 fixed = [
@@ -45,6 +46,7 @@ bunny_build = "E_GOTO(label) = 0x15 + (1<<9) + ((addr & 0x1FFFFF) << 9)"
 
 [[forms]]
 name = "reg"
+brief = "Branches to the 32-bit address in Raddr"
 syntax = "E_[COND_]GOTO_REG[L] ([cond,] raddr)"
 mnemonic = { pattern = "E_[COND_]GOTO_REG[L]", binds = ["cond", "link"] }
 fixed = [
