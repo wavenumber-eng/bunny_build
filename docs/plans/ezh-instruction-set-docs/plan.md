@@ -83,12 +83,12 @@ status = "pending"
 [[exit_criteria]]
 id = "isa-db-authoritative"
 title = "Machine-readable ISA db exists and mechanically round-trips against the original fsl header and bunny_build encoders"
-status = "done"
+status = "met"
 
 [[exit_criteria]]
 id = "instruction-set-complete"
 title = "Every Arch B base opcode and modifier documented with operands, behavior, restrictions, and bit-level encoding"
-status = "done"
+status = "met"
 
 [[exit_criteria]]
 id = "static-html-published"
