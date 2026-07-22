@@ -1,0 +1,70 @@
+
+
+[opcode]
+name = "HOLD"
+value = 0x1c
+family = "control"
+mnemonics_base = ["E_HOLD", "E_VECTORED_HOLD", "E_ACC_VECTORED_HOLD"]
+
+[semantics]
+prose = """
+Halts execution until an event occurs. Plain HOLD parks the program counter.
+VECTORED_HOLD resumes execution by dispatching through a vector table selected
+by a register; the LV (large vector) modifier selects 16-byte vector-table
+entries instead of 4-byte, and NRA suppresses the return-address capture into
+RA. ACC variants carry a per-vector acceleration mask byte in [31:24] (bit
+24+n accelerates vector n).
+"""
+restrictions = []
+
+[timing]
+cycles = "tbd"
+
+[[forms]]
+name = "plain"
+syntax = "E_[COND_]HOLD ([cond])"
+mnemonic = { pattern = "E_[COND_]HOLD", binds = ["cond"] }
+fixed = [
+  { bits = "4:0", value = 0x1c },
+  { bits = "13:10", value = 0xd },  
+  { bits = "15:15", value = 1 },
+]
+operands = []
+modifiers = ["cond"]
+
+[forms.encoding_reference]
+bunny_build = "E_HOLD() = 0x1C + (PC<<10) + (1<<15) + (EU<<5)"
+
+
+
+
+
+
+[[forms]]
+name = "vectored"
+syntax = "E_[COND_]VECTORED_HOLD[_LV][_NRA] ([cond,] table)"
+mnemonic = { pattern = "E_[COND_]VECTORED_HOLD[_NRA][_LV]", binds = ["cond", "nra", "lv"] }
+fixed = [
+  { bits = "4:0", value = 0x1c },
+  { bits = "9:9", value = 0 },
+]
+operands = ["table_reg"]
+modifiers = ["cond", "nra", "lv"]
+notes = "The table register value is emitted into BOTH [13:10] and [23:20] (replicated slice field)."
+
+[forms.encoding_reference]
+bunny_build = "E_VECTORED_HOLD(table) = 0x1C + (table<<10) + (table<<20) + (EU<<5)"
+
+[[forms]]
+name = "acc_vectored"
+syntax = "E_[COND_]ACC_VECTORED_HOLD[_LV][_NRA] ([cond,] table, vectors)"
+mnemonic = { pattern = "E_[COND_]ACC_VECTORED_HOLD[_NRA][_LV]", binds = ["cond", "nra", "lv"] }
+fixed = [
+  { bits = "4:0", value = 0x1c },
+  { bits = "9:9", value = 1 },
+]
+operands = ["table_reg", "vectors8"]
+modifiers = ["cond", "nra", "lv"]
+
+[forms.encoding_reference]
+bunny_build = "E_ACC_VECTORED_HOLD(table,vec) = 0x1C + (table<<10) + (table<<20) + (1<<9) + (vec<<24) + (EU<<5)"

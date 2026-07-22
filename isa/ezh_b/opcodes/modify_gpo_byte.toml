@@ -1,0 +1,36 @@
+
+
+
+
+
+[opcode]
+name = "MODIFY_GPO_BYTE"
+value = 0x1e
+family = "io"
+mnemonics_base = ["E_MODIFY_GPO_BYTE"]
+
+[semantics]
+prose = """
+Atomically modifies the low byte of the general-purpose outputs by applying an
+AND mask, an OR mask, and an XOR mask in one instruction. Only GPO[7:0] is
+affected: the upper 24 bits pass through unchanged (apply the AND mask
+one-extended and the OR/XOR masks zero-extended).
+"""
+restrictions = [
+  "No conditional variant: the AND mask byte occupies the cond field bits",
+  "Encoding needs hardware confirmation",
+]
+
+[timing]
+cycles = "1"
+
+[[forms]]
+name = "default"
+syntax = "E_MODIFY_GPO_BYTE (andmask, ormask, xormask)"
+mnemonic = { pattern = "E_MODIFY_GPO_BYTE", binds = [] }
+fixed = [{ bits = "4:0", value = 0x1e }]
+operands = ["gpo_and8", "gpo_or8", "gpo_xor8"]
+modifiers = []
+
+[forms.encoding_reference]
+bunny_build = "E_MODIFY_GPO_BYTE(a,o,x) = 0x1E + (a<<8) + (o<<16) + (x<<24)"

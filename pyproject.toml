@@ -1,0 +1,11 @@
+[project]
+name = "bunny-build"
+version = "0.1.0"
+description = "Alternative pseudo-assembler for the NXP EZH (SmartDMA) IO coprocessor"
+requires-python = ">=3.12,<3.13"
+
+[tool.uv]
+package = false
+
+[dependency-groups]
+dev = ["wn-dev-std>=2026.7.18"]
