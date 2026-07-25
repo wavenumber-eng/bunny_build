@@ -26,6 +26,8 @@ isa/
     extract_fsl.py       # numeric probe of the bundled reference header (read in place)
     verify_fsl.py        # three-way check: fsl <-> db <-> bunny_build + report
     expand_mnemonics.py  # mnemonic patterns -> exact 1502-name reproduction
+    pc_model.py          # PC-relative arithmetic model + self-test vs the sources
+
     gen_docs_spike.py    # doc-generator spike (superseded by build-static-html)
 ```
 

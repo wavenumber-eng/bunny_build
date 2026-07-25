@@ -204,6 +204,9 @@ desc = "Event input"
 
 
 
+[glossary.naming]
+desc = "EZH and SmartDMA are the same block. SmartDMA is NXP's official name in public documentation and in silicon register naming (SMARTDMA0, SMARTDMAARCHB_INMUX, SMARTDMA_IRQn, SMARTDMA_PIO). EZH ('EZ Handler') is the original architecture name and survives in the programmer-facing surface: the E_* mnemonics, the fsl_ezh_* headers, and the EZHB_* control registers. Use EZH for architecture and instruction-set discussion and SmartDMA for part-specific material."
+
 [glossary.flags]
 desc = "ALU flags update only when an instruction sets them: S-suffixed ops (plus algorithmic latching for SPO/SNE). Z is set iff the 32-bit result is zero; N is result bit 31; C changes only through ADD/SUB/ADC/SBC and shift/rotate stages - logical ops and MOV retain the previous carry even with S. Every other instruction (branches, GOSUB, holds, all data-bus accesses) leaves the flags untouched, so flag state survives across them."
 
