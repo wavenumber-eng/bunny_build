@@ -339,12 +339,19 @@ The repeated-`110` construction is why the constants are `0xDB`, `0x6D`, `0xB6` 
 bytes of a repeating three-bit pattern, which is exactly what you can assemble from shifted
 11-bit immediates without touching the stack.
 
+> **This idiom predates bunny_build.** The eight-instruction sequence appears
+> character-for-character in NXP's own sample corpus — `EZH_PWMClock` and
+> `EZH_FunctionCall` in the feature-demo sources both end with it. bunny_build did not
+> invent the park; it packaged an established idiom as a pseudo-instruction so it stops
+> being eight lines you copy between programs.
+
 > **Signalling the Arm is a separate step.** The park does not raise an interrupt. If the
 > Arm needs to know the program finished, issue [[E_INT_TRIGGER]] before parking —
 > `E_INT_TRIGGER(0)` is the idiomatic "done" signal, since the common interrupt output
 > fires regardless of the channel mask (see
-> [architecture](architecture.html#arm-ezh)). Historical samples do exactly this: trigger,
-> then park.
+> [architecture](architecture.html#arm-ezh)). The sample corpus does exactly this, in that
+> order: both programs that carry the park block issue `E_INT_TRIGGER(0)` on the
+> instruction immediately before entering it.
 
 ## Gotchas {#gotchas}
 

@@ -42,13 +42,13 @@ depends_on = ["inventory-sources"]
 [[steps]]
 id = "assembler-guide"
 title = "Assembler guide chapter: two-pass model, labels, directives (E_DCD/E_DCD_VAL/E_LABEL), pseudo-instructions (E_LOAD_32IMM and the important E__END park pattern), on-target assembly thesis, Keil-era migration"
-status = "active"
+status = "done"
 depends_on = ["inventory-sources"]
 
 [[steps]]
 id = "sample-mining"
 title = "Mine ALL old code samples for patterns and idioms: flat-samples (bist, display controller, FlexIO camera/8080/MIP, QSPI), LPC55 (hello_pdm PDM decimator, PWM/ADC/CRC trio, TFT driving, keyscan), MCX, RT500, kl28z - catalog E__END-style helpers, debug recipes, DSP tricks"
-status = "pending"
+status = "active"
 depends_on = ["inventory-sources"]
 
 [[steps]]
