@@ -15,7 +15,7 @@ mechanism for signalling the host CPU (frame complete, buffer ready) without
 touching a bus.
 """
 restrictions = [
-  "The common interrupt output triggers regardless of the channel mask",
+  "The common interrupt output triggers regardless of the channel mask - so a zero mask (E_INT_TRIGGER(0)) still raises the common interrupt and is the idiomatic end-of-program signal",
   "No conditional variant: the 24-bit mask occupies the cond field bits",
   "Cannot set flags (no S variant)",
 ]
@@ -33,7 +33,11 @@ detail = "section 5.21: single-cycle interrupt pulse, common output always trigg
 
 [[provenance]]
 source = "spec_b_06"
-detail = "instruction set chapter, E_INT_TRIGGER purpose/options/restrictions (synthesized, not copied)"
+detail = "instruction set chapter, E_INT_TRIGGER purpose/options/restrictions (synthesized, not copied). AUTHORITATIVE on the zero-argument question: states the opcode triggers the common interrupt output AS WELL AS any of the 24 channels, that the immediate only chooses which channels ('common interrupt always triggered'), and lists Restrictions: None. This contradicts AN14650 4.2.14's claim that the parameter must be > 0; AN14650 5.21 sides with the spec, as does the sample corpus. Resolved toward the spec on the 2026-07-25 authority ranking"
+
+[[provenance]]
+source = "sv_tb"
+detail = "ADVISORY: e_int executes unconditionally and applies no constraint to the immediate; it declines to push a zero value onto the expected-interrupt queue only because a zero on the channel bus is indistinguishable from idle for the checker - a testbench observability note, not a hardware restriction"
 
 [[forms]]
 name = "default"

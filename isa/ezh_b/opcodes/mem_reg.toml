@@ -19,7 +19,7 @@ and DFETCH lands read data in the background.
 """
 restrictions = [
   "No support for SPO/SNE condition flags",
-  "Reads using CFS as the pointer see the bottom 8 bits of CFS as 0x00 (per AN14650; hardware analysis instead shows the live BS-input byte - tentatively resolved toward the latter per source ranking, creator review pending)",
+  "Reads using CFS as the pointer see the bottom 8 bits of CFS as 0x00 (spec E_LDR_REG restriction list and AN14650 5.26 agree; hardware analysis shows the live BS-input byte instead - resolved toward 0x00 on the 2026-07-25 ranking: the creator's spec outranks the advisory testbench, and AN independently agrees)",
   "CFS cannot be the destination of a byte read",
   "S on byte loads means signed access (bit 21), not set-flags; no flag setting in this family",
   "Offset semantics under adjudication: AN14650 5.26 says the offset size is one byte, hardware analysis adds the full 32-bit offset-register value - and reads the offset register through a 3-bit extractor while the encoders carry 4 bits [27:24]",

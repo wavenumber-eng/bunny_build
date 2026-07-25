@@ -26,6 +26,8 @@ isa/
     extract_fsl.py       # numeric probe of the original fsl header (read in place)
     verify_fsl.py        # three-way check: fsl <-> db <-> bunny_build + report
     expand_mnemonics.py  # mnemonic patterns -> exact 1502-name reproduction
+    pc_model.py          # PC-relative arithmetic model + self-test vs the sources
+    lint_chapter.py      # prose-chapter contract checks (docs_src/*.md)
     gen_docs_spike.py    # doc-generator spike (superseded by build-static-html)
 ```
 
@@ -141,3 +143,23 @@ fails.
 - Run `uv run python isa/tools/expand_mnemonics.py` after touching any
   `mnemonic` data — it must report the exact 1502-name reproduction with all
   bases verified.
+
+- Run `uv run python isa/tools/lint_chapter.py` after editing any prose chapter
+  in `docs_src/`. It enforces the chapter contract from the generator design
+  doc: front matter parses and carries required keys; every `[[E_NAME]]`
+  cross-link resolves against the expanded mnemonic set; every section has a
+  `[[provenance]]` entry and no entry names a missing section; no broken
+  intra-page anchors; **no non-public source id appears in body text**; every
+  `[[unverified]]` entry carries a status from `{open, corroborated, resolved}`.
+  It also checks that every `E_PER_READ`/`E_PER_WRITE` operand is a symbol
+  `include/ezh_arch.h` actually defines — published NXP listings spell several
+  of them differently (`EZH_BREAKADDR` vs `EZHBREAKADDR`), and those are not
+  `E_*` tokens so nothing else catches them.
+
+  It runs the `pc_model.py` self-test, so a change to the PC-relative arithmetic
+  model fails here rather than silently propagating into prose, **and prints the
+  resolved target of every PC-relative operand in every code example by
+  default**. That report is how claims like "lands one instruction past the
+  body" get checked without doing the arithmetic by hand; it is on by default
+  because leaving it opt-in once already let a wrong claim survive a review that
+  the tool could refute. `--quiet` suppresses it.

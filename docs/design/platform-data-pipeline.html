@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en" data-doc-status="accepted">
+<head>
+<meta charset="utf-8">
+<title>Design: platform data pipeline (per-part EZH/SmartDMA facts)</title>
+<style>
+body { font-family: system-ui, sans-serif; max-width: 60rem; margin: 2rem auto;
+       padding: 0 1rem; line-height: 1.55; color: #1c1e21; }
+h1 { border-bottom: 2px solid #26547c; padding-bottom: .3rem; }
+h2 { color: #26547c; margin-top: 2rem; }
+h3 { margin-top: 1.4rem; }
+code, pre { font-family: ui-monospace, Consolas, monospace; background: #f4f6f8;
+            padding: .1rem .3rem; border-radius: 3px; }
+pre { padding: .7rem 1rem; overflow-x: auto; }
+table { border-collapse: collapse; }
+th, td { border: 1px solid #ccc; padding: .3rem .7rem; text-align: left; }
+th { background: #eef2f7; }
+.tbd { background: #fff6e5; border-left: 4px solid #e8a13d; padding: .5rem .8rem; }
+.trap { background: #fdecea; border-left: 4px solid #d64541; padding: .5rem .8rem; }
+</style>
+</head>
+<body>
+
+<h1>Design: platform data pipeline</h1>
+
+<p><strong>Status:</strong> method accepted (Eli, 2026-07-25); implementation
+deferred to the <code>platform-guide</code> step of the
+<code>ezh-instruction-set-docs</code> plan. <strong>Purpose:</strong> derive the
+per-part EZH/SmartDMA reference tables mechanically instead of transcribing
+them by hand. <strong>Consumer:</strong> the platform guide chapter (site
+section 6), generated the same way the instruction reference is &mdash; from
+data, not prose.</p>
+
+<h2>Why this exists</h2>
+
+<p>The platform guide needs, for every part carrying EZH/SmartDMA: base
+address, IRQ number, pin mux options, and the INPUTMUX trigger map. AN14650
+Table 2 covers six rows and gives base addresses only; the current portfolio is
+roughly forty-five parts and still growing. Hand-transcription across that
+surface is where errors breed.</p>
+
+<p>That is not hypothetical. Three separate errors were caught in this area
+within a single working session, every one of them from reading a source by
+hand:</p>
+
+<ul>
+<li>An IRQ number off by one, taken from a 1-based table (see the trap below).</li>
+<li>A rule &mdash; &ldquo;MCXA1xx parts do not have it&rdquo; &mdash; generalised
+from two spot checks, and wrong: MCXA173/174/176 do.</li>
+<li>A discovery probe that silently returned zero LPC parts because it searched
+for the wrong one of the block&rsquo;s two names.</li>
+</ul>
+
+<p>A pipeline that derives the table mechanically removes that whole class of
+error, and makes &ldquo;what changed since the last SDK release?&rdquo; an
+answerable question rather than a re-audit.</p>
+
+<h2>The naming hazard (read this first)</h2>
+
+<div class="trap">
+<p><strong>Discovery must probe for BOTH names.</strong> The block is called
+<em>EZH</em> in LPC-era silicon and <em>SmartDMA</em> in MCX/RT-era silicon (see
+<code>arch.toml [glossary.naming]</code>). Searching only for
+<code>FSL_FEATURE_SOC_SMARTDMA_COUNT</code> returns <strong>zero LPC
+parts</strong> &mdash; not an error, just an empty result, which is the
+dangerous kind.</p>
+</div>
+
+<table>
+<tr><th>Device repo</th><th>Probe that works</th></tr>
+<tr><td><code>mcux-devices-mcx</code></td><td><code>FSL_FEATURE_SOC_SMARTDMA_COUNT</code></td></tr>
+<tr><td><code>mcux-devices-rt</code></td><td><code>FSL_FEATURE_SOC_SMARTDMA_COUNT</code></td></tr>
+<tr><td><code>mcux-devices-lpc</code></td><td><code>EZH_ARCH_B</code>, plus a broader <code>EZH</code> sweep</td></tr>
+</table>
+
+<p>The tool must record <em>which</em> probe matched each part, so the
+LPC/MCX naming split stays explicit in the output rather than being flattened
+away.</p>
+
+<h2>Sources of truth, per field</h2>
+
+<p>Two upstreams, used for different things. Neither is sufficient alone.</p>
+
+<table>
+<tr><th>Field</th><th>Source</th><th>Notes</th></tr>
+<tr><td>Presence of the block</td><td>SDK <code>&lt;PART&gt;_features.h</code></td>
+<td><code>FSL_FEATURE_SOC_SMARTDMA_COUNT</code>; LPC needs the EZH probe instead</td></tr>
+<tr><td>IRQ number</td><td>SDK <code>&lt;PART&gt;_COMMON.h</code> <code>IRQn_Type</code></td>
+<td>Authoritative &mdash; it is what <code>NVIC_EnableIRQ()</code> takes</td></tr>
+<tr><td>Base address</td><td>SDK <code>&lt;PART&gt;_COMMON.h</code></td>
+<td>Gives secure <em>and</em> non-secure aliases on TrustZone parts</td></tr>
+<tr><td>Pin mux options</td><td>nxp-monkey <code>signal_configuration.json</code></td><td><code>SMARTDMA_PIO</code></td></tr>
+<tr><td>INPUTMUX trigger map</td><td>nxp-monkey <code>INPUTMUX0.json</code></td>
+<td><code>SMARTDMAARCHB_INMUX[n]</code>, <code>INP[6:0]</code>, enumerated values present</td></tr>
+<tr><td>Register block / field names</td><td>nxp-monkey <code>SMARTDMA0.json</code></td><td>Offsets, widths, field names</td></tr>
+<tr><td>Board-level pin wiring</td><td>Zephyr board DTS</td>
+<td>e.g. <code>boards/nxp/frdm_mcxa577</code>; for cookbook examples rather than reference tables</td></tr>
+</table>
+
+<div class="trap">
+<p><strong>Do not read IRQ numbers from the config-tool interrupt table.</strong>
+nxp-monkey&rsquo;s <code>resource_tables/interrupts.json</code> numbers entries
+<strong>1-based</strong>, while <code>IRQn_Type</code> is 0-based. Calibrated
+across six consecutive entries on MCXN947, the offset is a consistent +1: the
+table&rsquo;s entry &ldquo;54&rdquo; is <code>SMARTDMA_IRQn = 53</code>. Take IRQ
+numbers from the SDK header.</p>
+</div>
+
+<h2>Reaching the SDK data: the manifest chain</h2>
+
+<pre>github.com/nxp-mcuxpresso/mcuxsdk-manifests
+  west.yml
+    imports submanifests/devices/{LPC,MCX,RT}.yml     &lt;- also DSC, Kinetis, Wireless, i.MX
+      MCX.yml -&gt; project mcux-devices-mcx
+                 path     mcuxsdk/devices/MCX
+                 revision &lt;pinned SHA&gt;
+                 track    release/26.09.00-pvw1
+
+mcux-devices-mcx/
+  MCXA/ MCXC/ MCXE/ MCXL/ MCXN/ MCXW/
+    MCXN/MCXN947/
+      MCXN947_cm33_core0_COMMON.h     &lt;- IRQn enum, base addresses
+      MCXN947_cm33_core0_features.h   &lt;- feature macros
+      chip.yml, drivers/, arm|gcc|iar/</pre>
+
+<p><strong>Pin the revision.</strong> The submanifest carries an exact SHA per
+device repo. Reading at that SHA rather than at a moving branch is what makes
+regeneration reproducible and makes a diff between two runs meaningful.</p>
+
+<h2>Stages</h2>
+
+<h3>1 &mdash; Discover (cheap)</h3>
+<p>Probe the three device repos with both terms; emit a candidate part list with
+the matching probe recorded per part. Code search over the org is sufficient and
+fast; a manifest-driven shallow clone is the fallback if search API limits bite.</p>
+
+<h3>2 &mdash; Confirm and extract (cheap)</h3>
+<p>For each candidate, read <code>&lt;PART&gt;_features.h</code> and
+<code>&lt;PART&gt;_COMMON.h</code> at the pinned revision. Yields presence,
+instance count, IRQ number, and base addresses (secure and non-secure). Parts
+that fail confirmation drop out here with a recorded reason &mdash; a part that
+matched a broad <code>EZH</code> grep because of an unrelated INPUTMUX reference
+must not survive into the output silently.</p>
+
+<h3>3 &mdash; Enrich (expensive; deferred)</h3>
+<p>Drive <code>nxp-monkey fetch</code> for confirmed parts only, then extract pin
+mux, INPUTMUX triggers, and the register block. This is the &ldquo;work
+backwards&rdquo; stage: the confirmed list drives the fetches, so the catalogue is
+never swept wholesale. Roughly 134&nbsp;MB per part, so approximately 6&nbsp;GB
+across the current list.</p>
+
+<p><strong>Deferred by decision (Eli, 2026-07-25)</strong> until the
+<code>platform-guide</code> step is actually picked up. Stages 1&ndash;2 are cheap
+enough to run on demand in the meantime.</p>
+
+<h3>4 &mdash; Emit</h3>
+<p>One deterministic JSON per part, committed, stamped with tool version, pinned
+manifest revision, and MCUXpresso tool version. This is the platform guide
+chapter&rsquo;s input, exactly as the ISA database is the instruction
+reference&rsquo;s.</p>
+
+<h2>Drift checking</h2>
+
+<pre>uv run python isa/tools/discover_parts.py          # regenerate
+uv run python isa/tools/discover_parts.py --check  # fail if committed output is stale</pre>
+
+<p>Mirrors the doc generator&rsquo;s <code>--check</code>: regenerate to a
+temporary tree, diff against the committed output, any difference is a failure.
+This is what makes the pipeline a maintenance tool rather than a one-time
+script &mdash; NXP adds parts and revises headers, and the failure should be
+loud. Because the manifest revision is pinned, a bump to a newer SDK release is
+a deliberate, reviewable change with a visible diff.</p>
+
+<h2>Open items for implementation</h2>
+
+<ul>
+<li>Confirm whether LPC54608/54628/54S018(M) are genuine instances or matched the
+broad <code>EZH</code> probe via an unrelated INPUTMUX reference. They are not in
+AN14650&rsquo;s table.</li>
+<li><code>MIMXRT595S</code> exposes the block to both the CM33 and the DSP core
+(separate <code>_cm33_</code> and <code>_dsp_</code> feature headers) &mdash;
+decide how multi-core visibility is represented in the output schema.</li>
+<li>Multi-core parts generally (MCXN947 has core0/core1 headers): which core&rsquo;s
+IRQ table is authoritative, or are both recorded?</li>
+<li>Settle the output schema before stage 3 &mdash; it is cheaper to change with
+no fetched data committed.</li>
+</ul>
+
+<h2>Relationship to the rest of the doc set</h2>
+
+<p>The platform guide does <strong>not</strong> gate
+<code>build-static-html</code> (decided 2026-07-22): the initial published set
+ships sections 1&ndash;5 and 7, and the platform guide lands in a follow-up
+regeneration once this pipeline has run. Two open questions from the
+architecture chapter are wrapper-side and should be answered opportunistically
+during that work, since they need exactly this data:
+<code>E_INT_TRIGGER(0)</code> / interrupt-hijack routing, and confirmation of the
+<code>EZHB_EMER_SEL[8]</code> polarity inference across more than one part.</p>
+
+</body>
+</html>

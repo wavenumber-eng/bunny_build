@@ -19,7 +19,15 @@ The algorithmic conditions in full: SPO/SNE cancel only the fused ALU
 stage - the shift and the writeback still execute, and an N inversion is
 NOT cancelled; the algorithmic flags themselves latch only from an opcode
 that was conditioned on SPO/SNE. This is the binary-multiply idiom: shift
-every iteration, operate only when the MSB says so. (hardware analysis, advisory: a
+every iteration, operate only when the MSB says so.
+When the ALU stage is cancelled it passes through its LEFT operand; every
+other pipeline stage still runs. In this family the left operand is the
+shifted value, so the result is (src2 shifted) with src1 discarded - which
+is what makes shift-and-accumulate work. In the post-shift ALU families
+(ADD/SUB/ADC/SBC/AND/OR/XOR with a fused shift) the left operand is src1
+instead, so the result is src1 put through the post-shift and any N
+inversion. Same rule, different operand, because the families order the
+shifter and the ALU differently. (hardware analysis, advisory: a
 fused ADC/SBC with a nonzero shift amount takes its carry-in from the
 shift stage, not the CA flag.)
 """

@@ -47,8 +47,11 @@ bunny_build encoders. Nothing bit-accurate is ever hand-written in a page.</p>
 <code>opcodes/*.toml</code></td><td>All reference content: forms, fixed bits,
 operand/modifier fields, mnemonic patterns, timing, restrictions,
 provenance.</td></tr>
-<tr><td><code>docs_src/*.md</code> (name TBD at implementation)</td>
-<td>Prose chapters: architecture overview, programming pattern library.</td></tr>
+<tr><td><code>docs_src/*.md</code></td>
+<td>Prose chapters: architecture overview, assembler guide, cookbook,
+platform guide. Each carries a <code>+++</code> TOML front-matter block
+(see Provenance rendering). First one landed:
+<code>docs_src/architecture.md</code>.</td></tr>
 <tr><td><code>docs_src/templates/*.html.j2</code></td><td>Jinja2 page
 templates.</td></tr>
 <tr><td><code>docs_src/style.css</code></td><td>Single stylesheet, inlined
@@ -77,6 +80,27 @@ existing verifier suite (<code>validate.py</code>,
 <code>expand_mnemonics.py</code>) so documentation drift fails CI exactly the
 way encoding drift does. Generated output is only ever committed together
 with a passing check.</p>
+
+<p><strong>Chapter linting runs ahead of generation.</strong>
+<code>isa/tools/lint_chapter.py</code> (built 2026-07-25) enforces the prose
+chapter contract described under Provenance rendering &mdash; front matter
+keys, cross-link resolution, provenance coverage, anchor integrity,
+confidential-source containment, and <code>[[unverified]]</code> status
+validity &mdash; and runs the <code>pc_model.py</code> self-test. Wire it into
+the generator&rsquo;s <code>--check</code> path when
+<code>build-static-html</code> lands, and into CI alongside the encoding
+verifiers: a chapter that fails linting must not reach generation, because
+these are exactly the defects that survive a careful human read (an
+unresolved mnemonic, a section whose provenance was never recorded, a
+confidential source id pasted into prose).</p>
+
+<p>The PC-relative resolver (<code>--pc</code>) is deliberately
+informational rather than pass/fail: the linter cannot know what a prose
+comment intended, but printing the resolved instruction delta for every
+PC-relative operand makes an off-by-one-word claim visible at a glance. That
+class of error &mdash; a byte immediate read as words, or a target counted
+from the wrong anchor &mdash; is the most common defect in EZH example code
+and the hardest to spot by reading.</p>
 
 <h2>Architecture</h2>
 
@@ -143,6 +167,30 @@ citations, with section numbers where recorded. Non-public ids
 appear in generated output; the prose they informed is synthesized text in
 the db. This enforces the plan's "synthesize, don't copy" rule at the
 rendering layer as well as the authoring layer.</p>
+
+<p><strong>Prose chapters carry provenance the same way (2026-07-25).</strong>
+A chapter is Markdown preceded by a <code>+++</code>-delimited TOML front
+matter block &mdash; the same delimiter dev-std uses for plans and logs.
+It holds chapter metadata, one <code>[[provenance]]</code> entry per body
+section (keyed by the section's <code>{#anchor}</code>, listing
+<code>sources</code> and a <code>detail</code> string), and one
+<code>[[unverified]]</code> entry per hedged claim
+(<code>claim</code>, <code>basis</code>, <code>resolve_by</code>).</p>
+
+<p>Keeping provenance in front matter rather than inline is deliberate: a
+non-public source id is then <em>structurally</em> incapable of reaching a
+rendered page, instead of relying on the author not to write it. The
+generator renders citations for public ids only and drops the rest, exactly
+as it does for opcode pages. Hedged claims additionally appear inline in the
+body as blockquotes, so the reader sees the hedge while tooling can still
+enumerate them from the front matter.</p>
+
+<p>Chapter checks that belong in <code>--check</code> alongside the drift
+diff: every <code>[[E_NAME]]</code> token resolves against the expanded
+mnemonic set; every body section has a <code>[[provenance]]</code> entry;
+no <code>[[provenance]]</code>/<code>[[unverified]]</code> entry names a
+section that does not exist; no intra-page anchor is broken; no non-public
+source id appears in body text.</p>
 
 <h2>Styling</h2>
 
@@ -211,6 +259,14 @@ search panel on every page, <code>/</code> focuses it). Three tiers, all
 precomputed in Python:</p>
 
 <ol>
+<li><strong>EZH / SmartDMA synonymy (required)</strong> — the two names refer
+to the same block (see <code>arch.toml [glossary.naming]</code>). NXP's
+official documentation and the silicon's own register names use
+<em>SmartDMA</em>; the programmer-facing surface uses <em>EZH</em>. Readers
+will arrive searching either term, and a search for one that returns nothing
+is a discoverability failure, not a niche edge case. The index must treat
+them as synonyms in both directions, and the same applies to the
+<code>SMARTDMA0</code> / <code>EZHB_*</code> register spellings.</li>
 <li><strong>Exact/prefix mnemonic lookup</strong> — a
 <code>name &rarr; page#anchor</code> map over all 1502 expanded mnemonics
 (plus register, condition, and field names). Typing

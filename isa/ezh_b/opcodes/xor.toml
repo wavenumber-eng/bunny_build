@@ -20,7 +20,10 @@ flags).
 S here never changes the carry flag: only ADD/SUB/ADC/SBC and shifts
 can affect C, so C retains its previous value.
 SPO/SNE conditions are legal with this family - the algorithmic
-shift+ALU idiom (see the shift family for their full semantics).
+shift+ALU idiom (see the shift family for their full semantics). When they
+cancel the ALU stage, it passes through its LEFT operand: here that is src1,
+which then still goes through any N inversion and fused post-shift before
+writeback. src2 is discarded.
 """
 restrictions = [
   "S with destination PC does not set flags (schedules branch instead)",
@@ -33,6 +36,10 @@ cycles = "1"
 [[provenance]]
 source = "bunny_build"
 detail = "E_XOR* encoder formulas (family matrix extracted by isa/tools/extract_header.py)"
+
+[[provenance]]
+source = "spec_b_06"
+detail = "surviving-operand rule under SPO/SNE cancellation: the spec's worked example E_COND_ADDN_LSL(SPO,R1,R2,R3,24) states the result is R2 (src1) inverted then shifted left by 24, i.e. the ALU passes through its left operand while the inversion and post-shift still run (synthesized, not copied)"
 
 [[provenance]]
 source = "an14650"

@@ -23,7 +23,13 @@ the last bit at exactly 32 and clearing beyond 32. On the adjudication list.
 With SPO/SNE and an LSL by 1, the carry is automatically shifted into the
 LSB - the tailchaining idiom for chaining shift work across registers.
 SPO/SNE cancel only the fused ALU stage here (see the shift family for
-the full algorithmic-flags story). (hardware analysis, advisory: a fused ADC/SBC with
+the full algorithmic-flags story). This family is the one that carries BOTH
+geometries, selected by the order bit, so the surviving operand differs
+within it: cancellation passes through the ALU's LEFT operand, which for
+shift-then-operate (E_RLSL_ADD) is the shifted src2, and for
+operate-then-shift (E_ADD_RLSL) is src1, which then still goes through the
+shift stage. Same rule as the immediate-shift and post-shift families -
+applied twice, because both orders live here. (hardware analysis, advisory: a fused ADC/SBC with
 a nonzero shift amount takes its carry-in from the shift stage, not the
 CA flag.)
 """
