@@ -340,18 +340,21 @@ bytes of a repeating three-bit pattern, which is exactly what you can assemble f
 11-bit immediates without touching the stack.
 
 > **This idiom predates bunny_build.** The eight-instruction sequence appears
-> character-for-character in NXP's own sample corpus — `EZH_PWMClock` and
-> `EZH_FunctionCall` in the feature-demo sources both end with it. bunny_build did not
-> invent the park; it packaged an established idiom as a pseudo-instruction so it stops
-> being eight lines you copy between programs.
+> character-for-character across NXP's own sample corpus — eight times in the feature-demo
+> file alone, eight more in the display-controller sources, and once in third-party
+> production code. It is the corpus's *standard program terminator*, not one program's
+> trick. bunny_build did not invent the park; it packaged an established idiom as a
+> pseudo-instruction so it stops being eight lines you copy between programs.
 
 > **Signalling the Arm is a separate step.** The park does not raise an interrupt. If the
 > Arm needs to know the program finished, issue [[E_INT_TRIGGER]] before parking —
 > `E_INT_TRIGGER(0)` is the idiomatic "done" signal, since the common interrupt output
 > fires regardless of the channel mask (see
 > [architecture](architecture.html#arm-ezh)). The sample corpus does exactly this, in that
-> order: both programs that carry the park block issue `E_INT_TRIGGER(0)` on the
-> instruction immediately before entering it.
+> order: programs carrying the park block issue `E_INT_TRIGGER(0)` on the instruction
+> immediately before entering it. Across the deduplicated corpus `E_INT_TRIGGER(0)` occurs
+> roughly sixty times — including thirty-five in a single display-controller source — which
+> is worth knowing given that AN14650 §4.2.14 describes a zero argument as out of spec.
 
 ## Gotchas {#gotchas}
 

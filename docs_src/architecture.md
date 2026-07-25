@@ -172,7 +172,7 @@ id = "int-trigger-zero"
 status = "resolved"
 section = "arm-ezh"
 claim = "Behaviour of E_INT_TRIGGER(0)"
-basis = "AN14650 4.2.14 claims the parameter must be greater than 0. Contradicted by the spec's E_INT_TRIGGER section, which states the opcode triggers the common interrupt output AS WELL AS any of the 24 channels, that the immediate only chooses the channels ('common interrupt always triggered'), and lists Restrictions: None. AN14650 5.21 agrees with the spec, as does the training deck and the whole sample corpus. So E_INT_TRIGGER(0) fires the common interrupt and no hijack channels - exactly the end-of-program signal. AN 4.2.14 is advice for the hijack case, not a constraint"
+basis = "AN14650 4.2.14 claims the parameter must be greater than 0. Contradicted by the spec's E_INT_TRIGGER section, which states the opcode triggers the common interrupt output AS WELL AS any of the 24 channels, that the immediate only chooses the channels ('common interrupt always triggered'), and lists Restrictions: None. AN14650 5.21 agrees with the spec, as does the training deck. Corroborated by measurement rather than impression: across the deduplicated sample corpus E_INT_TRIGGER(0) occurs about sixty times, including 35 in one display-controller source and 10 in the feature-demo file, and it is the instruction immediately preceding the standard park block. So E_INT_TRIGGER(0) fires the common interrupt and no hijack channels - exactly the end-of-program signal. AN 4.2.14 is advice for the hijack case, not a constraint"
 resolve_by = "closed on the 2026-07-25 authority ranking (spec over AN); bench confirmation optional. Unblocks the assembler guide's park-pattern section"
 
 [[unverified]]

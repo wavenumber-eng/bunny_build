@@ -48,13 +48,13 @@ depends_on = ["inventory-sources"]
 [[steps]]
 id = "sample-mining"
 title = "Mine ALL old code samples for patterns and idioms: flat-samples (bist, display controller, FlexIO camera/8080/MIP, QSPI), LPC55 (hello_pdm PDM decimator, PWM/ADC/CRC trio, TFT driving, keyscan), MCX, RT500, kl28z - catalog E__END-style helpers, debug recipes, DSP tricks"
-status = "active"
+status = "done"
 depends_on = ["inventory-sources"]
 
 [[steps]]
 id = "pattern-library"
 title = "Cookbook chapter: run-and-stop, multi-app dispatch, vector-table idioms, continuous DMA/IRQ capture, debug recipes and DSP patterns from the mined samples"
-status = "pending"
+status = "active"
 depends_on = ["inventory-sources", "sample-mining"]
 
 [[steps]]

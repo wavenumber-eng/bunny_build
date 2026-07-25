@@ -212,6 +212,30 @@ PC_FORMS = (
     (re.compile(r"\bE_(?:COND_)?LDR\s*\(\s*[^,]+,\s*PC\s*,\s*([-\d\s*]+)\)"), "words"),
 )
 
+def code_blocks(body: str) -> list[str]:
+    """Return the contents of every fenced code block.
+
+    Scanned line by line rather than by pairing fences with a regex. A regex
+    that pairs bare ``` fences silently mis-pairs as soon as the document also
+    uses a tagged fence (```c), shifting every subsequent block and skipping
+    content without any error - which is how PC-relative lines in two chapters
+    went unresolved while the run still reported success.
+    """
+    blocks: list[str] = []
+    current: list[str] | None = None
+    for line in body.splitlines():
+        if line.startswith("```"):
+            if current is None:
+                current = []          # opening fence, tagged or not
+            else:
+                blocks.append("\n".join(current))
+                current = None
+            continue
+        if current is not None:
+            current.append(line)
+    return blocks
+
+
 _IMM_EXPR = re.compile(r"^-?\d+(?:\s*\*\s*\d+)*$")
 
 
@@ -236,7 +260,7 @@ def pc_report(path: Path, body: str) -> list[str]:
     a glance instead of by hand.
     """
     lines: list[str] = []
-    for bi, block in enumerate(re.findall(r"^```\n(.*?)^```", body, re.S | re.M), 1):
+    for bi, block in enumerate(code_blocks(body), 1):
         instrs = [
             ln for ln in block.splitlines() if ln.strip().startswith("E_")
         ]
