@@ -70,11 +70,11 @@ resolve_by = "code fix - pick one spelling and make header and source agree; the
 
 [[unverified]]
 id = "goto-window-2mb"
-status = "corroborated"
+status = "resolved"
 section = "gotchas"
-claim = "E_GOTO to a label reaches only the low 2 MB of the architecture's 8 MB branch window"
-basis = "src/bunny_build__instr.c masks the resolved byte address with 0x1FFFFF and shifts it left by 9, filling instruction bits [29:11]; the architecture's immediate field is 21 bits at [31:11] covering target bits [22:2]. Already recorded in isa/ezh_b/opcodes/goto.toml as an assembler improvement opportunity, not an encoding defect"
-resolve_by = "assembler change; harmless today because EZH program memory sits well inside the low 2 MB on every part in the sample corpus"
+claim = "E_GOTO to a label reaches only the low 2 MB of the architecture's 8 MB branch window - the encoding is correct within that range, the range is purely the mask"
+basis = "Challenged in review as possibly a 4x offset defect, on the grounds that bunny_build shifts a BYTE address by 9 while the ISA field is a WORD immediate at [31:11]. Settled by round-tripping bunny_build's encoder against goto.toml's decode model: a word-aligned byte address shifted left 9 places bits [20:2] - the word index - exactly in the immediate field, and imm << 2 recovers the byte address. Exact for every address below 2 MB, aliasing above. Verified across all 524288 word addresses in [0, 2MB): widening the mask to 0x7FFFFF changes zero encodings, so it is a safe enhancement rather than a bug fix. Form bit 9 never collides with the shifted address because word-aligned addresses have bits [1:0] clear"
+resolve_by = "closed by construction; the assembler change (0x7FFFFF at the four label-taking branch forms) remains an open enhancement"
 +++
 
 # The bunny_build Assembler
@@ -325,9 +325,12 @@ R2  = 0x0000B600      CFM      = 0xDB6DB600
 binary is `110` repeated eight times — and `110` is `6`, the bit-slice event setting
 `BS_0`, *always 0*.
 
-So all eight slices are forced to constant zero and none of them is routed to the logical
-combiner. The combiner output can never go high, the `BS` flag can never assert, and the
-[[E_HOLD]] therefore never releases. The core stops fetching and waits forever, using no
+So all eight slices are forced to constant zero, and no slice is routed to the logical
+combiner by an OR-enable. Whichever way you read the chain's termination — the
+[architecture chapter](architecture.html#boolean-detection) notes that slice 7's result
+reaches the combiner regardless — the combiner sees zero either way, because every slice
+*value* is zero. The combiner output can never go high, the `BS` flag can never assert, and
+the [[E_HOLD]] therefore never releases. The core stops fetching and waits forever, using no
 bus bandwidth. The trailing [[E_GOTO]] back to the label is a belt-and-braces: if the hold
 *does* somehow release, execution loops back and re-parks rather than running on into
 whatever follows.
@@ -350,14 +353,28 @@ word — which decodes as a valid [[E_MOV]], not a trap. Your program will assem
 misbehave. Read the build output; bunny_build is chatty by design and the error is there.
 
 **Branch-to-label reaches 2 MB, not 8 MB.** The architecture's immediate branch covers an
-8 MB window; bunny_build masks the resolved address with `0x1FFFFF` and fills instruction
-bits `[29:11]`, which covers the low 2 MB. Harmless on every part in the sample corpus —
-EZH program memory sits well inside that — but it is a real difference from the encoding,
-and it is recorded in the ISA database as an assembler improvement opportunity rather than
-a bug in the instruction.
+8 MB window. bunny_build masks the resolved address with `0x1FFFFF` before shifting it into
+place, which limits label branches to the low 2 MB.
+
+The encoding is *correct* within that range, which is worth stating precisely because the
+shift makes it look wrong at a glance. bunny_build shifts a **byte** address left by 9,
+while the instruction field is a **word** immediate at bits `[31:11]`. Those agree: a
+word-aligned byte address shifted by 9 places its bits `[20:2]` — the word index — exactly
+in the immediate field, and the hardware's `imm << 2` recovers the byte address. Round-trip
+is exact for every address below 2 MB, and aliases above it.
+
+Widening it is a one-constant change (`0x7FFFFF` in place of `0x1FFFFF`, at the four
+label-taking branch forms) and is **byte-for-byte identical** for every program that
+already fits in 2 MB — so it is a safe enhancement, not a bug fix. Recorded in the ISA
+database as an improvement opportunity.
 
 **`E_LOAD_32IMM` needs a working stack.** It pushes and pops `R5`. Load `SP` from the
 parameter block before using it.
+
+**`E_LOAD_32IMM` warns about a bad destination and then emits anyway.** The guard prints an
+error for a destination above `R7` but does not return, so the nine-instruction sequence is
+still generated — with a destination whose semantics the sequence does not respect. Same
+shape as the undefined-label case: a diagnostic you have to read, not a stop.
 
 **The park pseudo-instruction currently cannot be called.** The public header declares
 `void E_END();`, the implementation defines `void E__END()`. Nothing in the repository calls
