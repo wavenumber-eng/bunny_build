@@ -46,6 +46,8 @@ ALLOWED_NON_MNEMONICS = {
     "E_DCD_VAL": "assembler directive, not a hardware instruction",
     "E_LABEL": "assembler directive, not a hardware instruction",
     "E__END": "bunny_build pseudo-instruction (park pattern)",
+    "E_END": "the park pseudo-instruction's header spelling; documented as the "
+             "one that does not link (see the assembler guide)",
 }
 
 
@@ -119,9 +121,13 @@ def lint(path: Path, names: set[str], nonpublic: set[str]) -> tuple[list[str], l
         if key not in meta:
             errors.append(f"{path}: front matter missing required key '{key}'")
 
-    # Sections and their anchors.
+    # Top-level sections carry provenance; anchors may live at any heading
+    # level, so link targets and provenance targets are collected separately.
     sections = re.findall(r"^##\s+(.*?)\s*\{#([a-z0-9-]+)\}\s*$", body, re.M)
     ids = {anchor for _title, anchor in sections}
+    all_anchors = set(
+        re.findall(r"^#{2,4}\s+.*?\{#([a-z0-9-]+)\}\s*$", body, re.M)
+    )
     if not ids:
         errors.append(f"{path}: no '## Title {{#anchor}}' sections found")
 
@@ -162,9 +168,9 @@ def lint(path: Path, names: set[str], nonpublic: set[str]) -> tuple[list[str], l
         if name not in names:
             errors.append(f"{path}: unresolved cross-link [[{name}]]")
 
-    # Intra-page anchors.
+    # Intra-page anchors may target any heading level, not just top-level ones.
     for anchor in sorted(set(re.findall(r"\]\(#([a-z0-9-]+)\)", body))):
-        if anchor not in ids:
+        if anchor not in all_anchors:
             errors.append(f"{path}: broken intra-page anchor '#{anchor}'")
 
     # Confidential source containment.

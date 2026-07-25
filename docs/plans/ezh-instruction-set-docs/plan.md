@@ -36,13 +36,13 @@ depends_on = ["populate-isa-db"]
 [[steps]]
 id = "architecture-overview"
 title = "Write architecture overview from spec + AN14650 + decks (lean on all three, cover everything): buses, pipeline incl. the runs-two-ahead nuances, registers, flags, boolean detection, heartbeat, supervisor, and ALL ARM/EZH interrupt mechanisms"
-status = "active"
+status = "done"
 depends_on = ["inventory-sources"]
 
 [[steps]]
 id = "assembler-guide"
 title = "Assembler guide chapter: two-pass model, labels, directives (E_DCD/E_DCD_VAL/E_LABEL), pseudo-instructions (E_LOAD_32IMM and the important E__END park pattern), on-target assembly thesis, Keil-era migration"
-status = "pending"
+status = "active"
 depends_on = ["inventory-sources"]
 
 [[steps]]
