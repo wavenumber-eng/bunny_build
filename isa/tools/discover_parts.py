@@ -15,6 +15,7 @@ nxp-monkey stage.
 from __future__ import annotations
 
 import argparse
+from functools import lru_cache
 import json
 import re
 import shutil
@@ -40,9 +41,13 @@ DEVICE_MANIFESTS = {
 SMARTDMA_COUNT_RE = re.compile(
     r"(?m)^\s*#define\s+FSL_FEATURE_SOC_SMARTDMA_COUNT\s+\((\d+)\)"
 )
-EZH_PROBE_RE = re.compile(
-    r"(?m)^\s*#define\s+(?:FSL_FEATURE_SOC_EZH\w*_COUNT|EZH_ARCH_B)\b"
+EZH_COUNT_RE = re.compile(
+    r"(?m)^\s*#define\s+(FSL_FEATURE_SOC_EZH\w*_COUNT)\s+\((\d+)\)"
 )
+EZH_ARCH_B_RE = re.compile(
+    r"(?m)^\s*#define\s+(EZH_ARCH_B)\b(?:\s+\(?(\d+)\)?)?"
+)
+LPC_BROAD_EZH_RE = re.compile(r"\bEZH\b|LPC_EZH_ARCH_B|EZH_ARCH_B")
 IRQ_RE = re.compile(
     r"(?m)^\s*([A-Z0-9_]+_IRQn)\s*=\s*(-?\d+)\s*,?\s*(?:/\*\*<\s*(.*?)\s*\*/)?"
 )
@@ -56,6 +61,7 @@ class DiscoveryError(RuntimeError):
     """Raised when platform discovery cannot complete."""
 
 
+@lru_cache(maxsize=None)
 def fetch_text(url: str) -> str:
     req = urllib.request.Request(
         url,
@@ -140,12 +146,23 @@ def feature_presence(text: str) -> dict[str, Any] | None:
             "probe": "FSL_FEATURE_SOC_SMARTDMA_COUNT",
             "count": int(smartdma.group(1)),
         }
-    if EZH_PROBE_RE.search(text):
-        return {
-            "block_name": "EZH",
-            "probe": "EZH_ARCH_B",
-            "count": 1,
-        }
+    for ezh_count in EZH_COUNT_RE.finditer(text):
+        count = int(ezh_count.group(2))
+        if count > 0:
+            return {
+                "block_name": "EZH",
+                "probe": ezh_count.group(1),
+                "count": count,
+            }
+    ezh_arch_b = EZH_ARCH_B_RE.search(text)
+    if ezh_arch_b:
+        count = int(ezh_arch_b.group(2) or "1")
+        if count > 0:
+            return {
+                "block_name": "EZH",
+                "probe": ezh_arch_b.group(1),
+                "count": count,
+            }
     return None
 
 
@@ -165,6 +182,10 @@ def expected_common_path(feature_path: str) -> str:
     return feature_path.removesuffix("_features.h") + "_COMMON.h"
 
 
+def expected_chip_path(feature_path: str) -> str:
+    return str(Path(feature_path).parent / "chip.yml").replace("\\", "/")
+
+
 def strip_comment(text: str | None) -> str:
     if not text:
         return ""
@@ -180,7 +201,7 @@ def irq_candidates(block_name: str, text: str) -> list[dict[str, Any]]:
         if block_name == "SMARTDMA":
             is_match = (
                 "SMARTDMA" in name_key
-                or name_key == "SDMA_IRQn"
+                or name_key == "SDMA_IRQN"
                 or "SMARTDMA" in comment_key
                 or "SMART DMA" in comment_key
             )
@@ -220,6 +241,44 @@ def base_addresses(block_name: str, text: str) -> list[dict[str, Any]]:
     return sorted(found.values(), key=lambda item: (item["macro"], item["address_int"]))
 
 
+def lpc_broad_ezh_sweep(
+    repo: str,
+    revision: str,
+    paths: set[str],
+    feature_paths: list[str],
+) -> dict[str, Any]:
+    scan_paths: set[str] = set()
+    for feature_path in feature_paths:
+        scan_paths.add(feature_path)
+        common_path = expected_common_path(feature_path)
+        chip_path = expected_chip_path(feature_path)
+        if common_path in paths:
+            scan_paths.add(common_path)
+        if chip_path in paths:
+            scan_paths.add(chip_path)
+    scan_paths.update(path for path in paths if "EZH" in path.upper())
+
+    candidates: list[dict[str, Any]] = []
+    for path in sorted(scan_paths):
+        path_match = "EZH" in path.upper()
+        text = fetch_text(raw_url(repo, revision, path))
+        text_match = LPC_BROAD_EZH_RE.search(text) is not None
+        if path_match or text_match:
+            candidate = {
+                "path": path,
+                "reason": "path" if path_match else "content",
+            }
+            if path.endswith("_COMMON.h"):
+                candidate["irqs"] = irq_candidates("EZH", text)
+                candidate["base_addresses"] = base_addresses("EZH", text)
+            candidates.append(candidate)
+    return {
+        "broad_ezh_files_scanned": len(scan_paths),
+        "broad_ezh_candidates": len(candidates),
+        "unconfirmed_candidates": candidates,
+    }
+
+
 def discover_series(series: str, project: dict[str, str]) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     repo = project["repo"]
     revision = project["revision"]
@@ -228,6 +287,15 @@ def discover_series(series: str, project: dict[str, str]) -> tuple[list[dict[str
     feature_paths = sorted(path for path in paths if path.endswith("_features.h"))
     parts: dict[str, dict[str, Any]] = {}
     confirmed_core_views = 0
+    broad_scan = (
+        lpc_broad_ezh_sweep(repo, revision, paths, feature_paths)
+        if series == "LPC"
+        else {
+            "broad_ezh_files_scanned": 0,
+            "broad_ezh_candidates": 0,
+            "unconfirmed_candidates": [],
+        }
+    )
 
     for feature_path in feature_paths:
         feature_text = fetch_text(raw_url(repo, revision, feature_path))
@@ -278,6 +346,7 @@ def discover_series(series: str, project: dict[str, str]) -> tuple[list[dict[str
         "confirmed_core_views": confirmed_core_views,
         "confirmed_parts": len(parts),
         "tree_entries": len(tree),
+        **broad_scan,
     }
     return sorted(parts.values(), key=lambda item: item["part"]), stats
 
@@ -299,8 +368,14 @@ def build_model(manifest_rev: str, selected: set[str]) -> tuple[dict[str, Any], 
                     "id": "lpc-current-sdk-no-ezh-probe",
                     "severity": "blocks_platform_guide_completeness",
                     "detail": (
-                        "The pinned LPC device repo has feature headers, but none "
-                        "match FSL_FEATURE_SOC_SMARTDMA_COUNT or EZH_ARCH_B. "
+                        "The pinned LPC device repo has "
+                        f"{stats['feature_headers_scanned']} feature headers, "
+                        "but none match FSL_FEATURE_SOC_SMARTDMA_COUNT or "
+                        "EZH_ARCH_B. The LPC broad sweep checked "
+                        f"{stats['broad_ezh_files_scanned']} feature/common/chip "
+                        "metadata paths and found "
+                        f"{stats['broad_ezh_candidates']} unconfirmed EZH marker "
+                        "file(s). "
                         "Legacy LPC EZH rows need AN/RM/nxp-monkey confirmation."
                     ),
                 }

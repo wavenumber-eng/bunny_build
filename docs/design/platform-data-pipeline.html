@@ -146,10 +146,15 @@ must not survive into the output silently.</p>
 <p><strong>Stage 1&ndash;2 implementation (2026-07-28):</strong>
 <code>isa/tools/discover_parts.py</code> emits
 <code>isa/ezh_b/platform/index.json</code> plus one JSON file per confirmed part
-under <code>isa/ezh_b/platform/parts/</code>. The first committed run finds 57
-SDK-confirmed parts across MCX and RT, with 77 core views. It records a hard open
-item for LPC because the pinned LPC repo has no feature header matching
-<code>FSL_FEATURE_SOC_SMARTDMA_COUNT</code> or <code>EZH_ARCH_B</code>.</p>
+under <code>isa/ezh_b/platform/parts/</code>. For LPC, it also performs the
+broader <code>EZH</code> metadata sweep across feature headers, COMMON headers,
+<code>chip.yml</code> files, and EZH-named paths, then records any unconfirmed
+candidates, including any IRQ/base-address facts visible in the candidate
+COMMON header. The current run finds 57 SDK-confirmed parts across MCX and RT,
+with 77 core views. It records a hard open item for LPC because the pinned LPC
+repo has no feature header matching <code>FSL_FEATURE_SOC_SMARTDMA_COUNT</code>
+or <code>EZH_ARCH_B</code>, while the broad sweep finds three unconfirmed
+LPC55 common-header candidates.</p>
 
 <h3>3 &mdash; Enrich (expensive; deferred)</h3>
 <p>Drive <code>nxp-monkey fetch</code> for confirmed parts only, then extract pin
@@ -186,8 +191,10 @@ a deliberate, reviewable change with a visible diff.</p>
 <ul>
 <li>The pinned LPC device repo currently has 47 feature headers but no
 <code>FSL_FEATURE_SOC_SMARTDMA_COUNT</code> or <code>EZH_ARCH_B</code> match.
-Legacy LPC rows therefore need AN/RM/nxp-monkey confirmation instead of silently
-falling out of the generated table.</li>
+The implemented broad sweep checks feature/common/chip metadata and EZH-named
+paths, then records unconfirmed candidates. Legacy LPC rows therefore need
+AN/RM/nxp-monkey confirmation instead of silently falling out of the generated
+table.</li>
 <li>Confirm whether LPC54608/54628/54S018(M) are genuine instances or matched the
 broad <code>EZH</code> probe via an unrelated INPUTMUX reference. They are not in
 AN14650&rsquo;s table.</li>

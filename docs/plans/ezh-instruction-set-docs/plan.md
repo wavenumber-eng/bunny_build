@@ -59,7 +59,7 @@ depends_on = ["inventory-sources", "sample-mining"]
 
 [[steps]]
 id = "platform-guide"
-title = "Platform/chip guide: dedicated section for every part with EZH/SmartDMA (LPC5410x, LPC54114/51U68, LPC55(S)xx, RT500, MCXN9xx, and the newer MCXA266/A3x) - base addresses, pin mux, IRQ numbers, INPUTMUX trigger maps; fetch authoritative per-chip data via nxp-monke"
+title = "Platform/chip guide: dedicated section for every part with EZH/SmartDMA (LPC5410x, LPC54114/51U68, LPC55(S)xx, RT500, MCXN9xx, and the newer MCXA266/A3x) - base addresses, pin mux, IRQ numbers, INPUTMUX trigger maps; fetch authoritative per-chip data via nxp-monkey"
 status = "pending"
 depends_on = ["inventory-sources"]
 
@@ -219,7 +219,7 @@ spec + AN + both decks), (3) Instruction reference (generated, done),
 (4) Assembler guide (= assembler-guide step: the directives/pseudo-instruction
 layers incl. E_END, and the on-target assembly thesis), (5) Cookbook
 (= pattern-library step, fed by sample-mining), (6) Platform guide
-(= platform-guide step: per-chip base addresses/pin mux/IRQs via nxp-monke),
+(= platform-guide step: per-chip base addresses/pin mux/IRQs via nxp-monkey),
 (7) Simulator (parked plan, slots in later). Sections 2-3 are machine-truth
 (spec+AN grounded); 4-6 are bunny_build's programming world. The training
 decks are NXP-internal: inform, never copy.
@@ -278,7 +278,7 @@ differs slightly from the header's.
 - **RM-grounding for deck-only facts.** A fact that appears only in the
   NXP-internal decks (or only deck + spec) must be grounded in a public
   Reference Manual before the docs state it plainly (per-chip RMs carry the
-  SmartDMA/EZH chapters; fetch via nxp-monke); otherwise it ships hedged as
+  SmartDMA/EZH chapters; fetch via nxp-monkey); otherwise it ships hedged as
   unverified pending bench confirmation or owner review.
 - **platform-guide does not gate build-static-html** (decided 2026-07-22):
   the initial published set ships with sections 1-5 and 7; the platform

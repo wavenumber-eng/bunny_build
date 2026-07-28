@@ -755,8 +755,11 @@ def generate_site(out_dir: Path) -> dict[str, int]:
             "title": "Platform Guide",
             "url": "platform.html",
             "kind": "page",
-            "summary": "Part-specific SmartDMA integration guide placeholder.",
-            "body": "platform smartdma integration trigger interrupt inputmux pin mux guide",
+            "summary": "Part-specific SmartDMA integration guide pending enrichment.",
+            "body": (
+                "platform smartdma integration sdk discovery trigger interrupt "
+                "inputmux pin mux guide enrichment"
+            ),
             "mnemonics": "",
             "tags": "platform smartdma",
         }
@@ -839,8 +842,9 @@ def generate_site(out_dir: Path) -> dict[str, int]:
         heading="Platform Guide",
         message=(
             "Part-specific SmartDMA wrapper setup, trigger routing, interrupts, "
-            "and pin material will be generated after the platform data pipeline "
-            "is implemented."
+            "and pin material will be generated after the SDK-header discovery "
+            "data is reviewed and the platform enrichment pass supplies the "
+            "remaining per-part facts."
         ),
     )
     write_text(

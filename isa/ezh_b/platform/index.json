@@ -15,7 +15,7 @@
   ],
   "open_items": [
     {
-      "detail": "The pinned LPC device repo has feature headers, but none match FSL_FEATURE_SOC_SMARTDMA_COUNT or EZH_ARCH_B. Legacy LPC EZH rows need AN/RM/nxp-monkey confirmation.",
+      "detail": "The pinned LPC device repo has 47 feature headers, but none match FSL_FEATURE_SOC_SMARTDMA_COUNT or EZH_ARCH_B. The LPC broad sweep checked 139 feature/common/chip metadata paths and found 3 unconfirmed EZH marker file(s). Legacy LPC EZH rows need AN/RM/nxp-monkey confirmation.",
       "id": "lpc-current-sdk-no-ezh-probe",
       "severity": "blocks_platform_guide_completeness"
     }
@@ -646,22 +646,68 @@
   "schema": "ezh-platform-sdk-headers-v1",
   "series": {
     "LPC": {
+      "broad_ezh_candidates": 3,
+      "broad_ezh_files_scanned": 139,
       "confirmed_core_views": 0,
       "confirmed_parts": 0,
       "feature_headers_scanned": 47,
-      "tree_entries": 2281
+      "tree_entries": 2281,
+      "unconfirmed_candidates": [
+        {
+          "base_addresses": [],
+          "irqs": [
+            {
+              "description": "EZH interrupt",
+              "name": "EZH_ARCH_B0_IRQn",
+              "number": 30
+            }
+          ],
+          "path": "LPC5500/LPC5534/LPC5534_COMMON.h",
+          "reason": "content"
+        },
+        {
+          "base_addresses": [],
+          "irqs": [
+            {
+              "description": "EZH interrupt",
+              "name": "EZH_ARCH_B0_IRQn",
+              "number": 30
+            }
+          ],
+          "path": "LPC5500/LPC5536/LPC5536_COMMON.h",
+          "reason": "content"
+        },
+        {
+          "base_addresses": [],
+          "irqs": [
+            {
+              "description": "EZH interrupt",
+              "name": "EZH_ARCH_B0_IRQn",
+              "number": 30
+            }
+          ],
+          "path": "LPC5500/LPC55S36/LPC55S36_COMMON.h",
+          "reason": "content"
+        }
+      ]
     },
     "MCX": {
+      "broad_ezh_candidates": 0,
+      "broad_ezh_files_scanned": 0,
       "confirmed_core_views": 73,
       "confirmed_parts": 54,
       "feature_headers_scanned": 134,
-      "tree_entries": 6021
+      "tree_entries": 6021,
+      "unconfirmed_candidates": []
     },
     "RT": {
+      "broad_ezh_candidates": 0,
+      "broad_ezh_files_scanned": 0,
       "confirmed_core_views": 4,
       "confirmed_parts": 3,
       "feature_headers_scanned": 57,
-      "tree_entries": 4186
+      "tree_entries": 4186,
+      "unconfirmed_candidates": []
     }
   },
   "stage": "sdk_header_discovery",
