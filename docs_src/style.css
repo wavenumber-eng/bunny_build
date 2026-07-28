@@ -393,6 +393,15 @@ input {
   font-size: 0.95rem;
 }
 
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table-scroll table {
+  min-width: 760px;
+}
+
 .prose th,
 .prose td {
   padding: 0.55rem;
@@ -404,6 +413,15 @@ input {
   background: var(--panel);
   color: var(--accent-2);
   text-align: left;
+}
+
+.compact-list {
+  margin: 0;
+  padding-left: 1rem;
+}
+
+.compact-list li + li {
+  margin-top: 0.35rem;
 }
 
 .provenance-block {

@@ -39,6 +39,7 @@ DOCS_SRC = ROOT / "docs_src"
 TEMPLATE_DIR = DOCS_SRC / "templates"
 DEFAULT_OUT = ROOT / "docs" / "html"
 VENDOR_DIR = DOCS_SRC / "vendor"
+PLATFORM_DIR = ROOT / "isa" / "ezh_b" / "platform"
 SENTINEL = ".ezh-docs-generated"
 
 CHAPTER_IDS = ("architecture", "assembler", "cookbook")
@@ -663,6 +664,205 @@ def symbol_search_docs(arch: dict[str, Any], fields: dict[str, Any]) -> list[dic
     return docs
 
 
+def short_revision(revision: str | None) -> str:
+    if not revision:
+        return ""
+    return revision[:12]
+
+
+def format_irq(irq: dict[str, Any]) -> dict[str, str]:
+    description = irq.get("description", "")
+    label = f"{irq['name']} = {irq['number']}"
+    return {"label": label, "description": description}
+
+
+def format_base_address(base: dict[str, Any]) -> dict[str, str]:
+    spaces = {
+        "default_or_nonsecure": "default/non-secure",
+        "secure_or_cmse": "secure/CMSE",
+        "nonsecure_alias": "non-secure alias",
+    }
+    return {
+        "label": f"{base['macro']} = {base['address']}",
+        "space": spaces.get(base.get("space"), base.get("space", "")),
+    }
+
+
+def load_platform_model() -> dict[str, Any]:
+    index_path = PLATFORM_DIR / "index.json"
+    if not index_path.exists():
+        raise GenerationError(f"missing platform index: {index_path.relative_to(ROOT)}")
+    index = json.loads(read_text(index_path))
+
+    parts: list[dict[str, Any]] = []
+    core_rows: list[dict[str, Any]] = []
+    families: dict[tuple[str, str], dict[str, Any]] = {}
+    missing_base_core_views = 0
+
+    for rel_path in index.get("part_files", []):
+        part_path = PLATFORM_DIR / rel_path
+        part = json.loads(read_text(part_path))
+        part_cores: list[dict[str, Any]] = []
+        anchor = f"part-{html_id(part['part'])}"
+        family_key = (part["series"], part["family"])
+        family = families.setdefault(
+            family_key,
+            {
+                "series": part["series"],
+                "family": part["family"],
+                "parts": 0,
+                "core_views": 0,
+            },
+        )
+        family["parts"] += 1
+
+        for core in part.get("cores", []):
+            formatted_irqs = [format_irq(item) for item in core.get("irqs", [])]
+            formatted_bases = [
+                format_base_address(item) for item in core.get("base_addresses", [])
+            ]
+            if not formatted_bases:
+                missing_base_core_views += 1
+            core_model = {
+                "core": core["core"],
+                "features_header": core.get("features_header"),
+                "common_header": core.get("common_header"),
+                "presence": core.get("presence", {}),
+                "irqs": formatted_irqs,
+                "base_addresses": formatted_bases,
+                "missing_irq": not formatted_irqs,
+                "missing_base": not formatted_bases,
+            }
+            part_cores.append(core_model)
+            core_rows.append(
+                {
+                    "part": part["part"],
+                    "anchor": anchor,
+                    "series": part["series"],
+                    "family": part["family"],
+                    **core_model,
+                }
+            )
+            family["core_views"] += 1
+
+        parts.append(
+            {
+                "part": part["part"],
+                "anchor": anchor,
+                "series": part["series"],
+                "family": part["family"],
+                "repo": part.get("repo"),
+                "repo_revision": part.get("repo_revision"),
+                "repo_revision_short": short_revision(part.get("repo_revision")),
+                "repo_path": part.get("repo_path"),
+                "track_branch": part.get("track_branch"),
+                "status": part.get("status"),
+                "cores": part_cores,
+                "enrichment": part.get("enrichment", {}),
+            }
+        )
+
+    series_rows = []
+    unconfirmed_candidates: list[dict[str, Any]] = []
+    for series, stats in sorted(index.get("series", {}).items()):
+        series_rows.append(
+            {
+                "series": series,
+                "feature_headers_scanned": stats.get("feature_headers_scanned", 0),
+                "confirmed_parts": stats.get("confirmed_parts", 0),
+                "confirmed_core_views": stats.get("confirmed_core_views", 0),
+                "broad_ezh_files_scanned": stats.get("broad_ezh_files_scanned", 0),
+                "broad_ezh_candidates": stats.get("broad_ezh_candidates", 0),
+            }
+        )
+        for candidate in stats.get("unconfirmed_candidates", []):
+            unconfirmed_candidates.append(
+                {
+                    "series": series,
+                    "path": candidate["path"],
+                    "reason": candidate.get("reason", ""),
+                    "irqs": [format_irq(item) for item in candidate.get("irqs", [])],
+                    "base_addresses": [
+                        format_base_address(item)
+                        for item in candidate.get("base_addresses", [])
+                    ],
+                }
+            )
+
+    summary = dict(index.get("summary", {}))
+    summary["missing_base_core_views"] = missing_base_core_views
+    return {
+        "index": index,
+        "summary": summary,
+        "manifest_revision": index.get("manifest", {}).get("revision", ""),
+        "manifest_revision_short": short_revision(index.get("manifest", {}).get("revision")),
+        "series": series_rows,
+        "families": sorted(families.values(), key=lambda item: (item["series"], item["family"])),
+        "parts": parts,
+        "core_rows": core_rows,
+        "open_items": index.get("open_items", []),
+        "notes": index.get("notes", []),
+        "unconfirmed_candidates": unconfirmed_candidates,
+    }
+
+
+def platform_search_docs(platform: dict[str, Any]) -> list[dict[str, Any]]:
+    docs = [
+        {
+            "id": "page:platform",
+            "title": "Platform Guide",
+            "url": "platform.html",
+            "kind": "page",
+            "summary": "SDK-discovered SmartDMA/EZH parts and known extraction gaps.",
+            "body": (
+                "platform smartdma ezh sdk discovery part core base address irq "
+                "inputmux pin mux enrichment open gaps"
+            ),
+            "mnemonics": "",
+            "tags": "platform smartdma ezh",
+        }
+    ]
+    for part in platform["parts"]:
+        terms: list[str] = [
+            part["part"],
+            part["series"],
+            part["family"],
+            part.get("repo_path") or "",
+            part.get("track_branch") or "",
+            "platform smartdma ezh",
+        ]
+        for core in part["cores"]:
+            terms.append(core["core"])
+            terms.append(core.get("features_header") or "")
+            terms.append(core.get("common_header") or "")
+            terms.append(core.get("presence", {}).get("probe", ""))
+            for irq in core["irqs"]:
+                terms.append(irq["label"])
+                terms.append(irq["description"])
+            for base in core["base_addresses"]:
+                terms.append(base["label"])
+                terms.append(base["space"])
+        core_count = len(part["cores"])
+        docs.append(
+            {
+                "id": f"platform:{part['part']}",
+                "title": f"{part['part']} platform",
+                "url": f"platform.html#{part['anchor']}",
+                "kind": "platform",
+                "summary": (
+                    f"{part['series']} {part['family']}; "
+                    f"{core_count} SDK-confirmed core view"
+                    f"{'' if core_count == 1 else 's'}."
+                ),
+                "body": " ".join(item for item in terms if item),
+                "mnemonics": "",
+                "lookup": f"{part['part']} {part['family']} {part['series']}",
+                "tags": "platform smartdma ezh",
+            }
+        )
+    return docs
+
+
 def prepare_out_dir(out_dir: Path) -> None:
     resolved = out_dir.resolve()
     protected = {
@@ -708,6 +908,7 @@ def generate_site(out_dir: Path) -> dict[str, int]:
     arch, fields, opcodes = load()
     mnemonic_to_opcode = build_mnemonic_map(opcodes, fields)
     opcode_models = build_opcode_models(arch, fields, opcodes)
+    platform = load_platform_model()
 
     env = Environment(
         loader=FileSystemLoader(TEMPLATE_DIR),
@@ -737,6 +938,7 @@ def generate_site(out_dir: Path) -> dict[str, int]:
     search_docs.extend(chapter_search_docs)
     search_docs.extend(op["search_doc"] for op in opcode_models)
     search_docs.extend(symbol_search_docs(arch, fields))
+    search_docs.extend(platform_search_docs(platform))
     search_docs.append(
         {
             "id": "page:instructions",
@@ -747,21 +949,6 @@ def generate_site(out_dir: Path) -> dict[str, int]:
             "body": "instruction reference opcode form bitfield mnemonic encoding base word",
             "mnemonics": "",
             "tags": "instructions",
-        }
-    )
-    search_docs.append(
-        {
-            "id": "page:platform",
-            "title": "Platform Guide",
-            "url": "platform.html",
-            "kind": "page",
-            "summary": "Part-specific SmartDMA integration guide pending enrichment.",
-            "body": (
-                "platform smartdma integration sdk discovery trigger interrupt "
-                "inputmux pin mux guide enrichment"
-            ),
-            "mnemonics": "",
-            "tags": "platform smartdma",
         }
     )
     search_docs.append(
@@ -810,7 +997,7 @@ def generate_site(out_dir: Path) -> dict[str, int]:
             {
                 "title": "Platform",
                 "href": "platform.html",
-                "description": "Part-specific SmartDMA setup material. This page is reserved for the platform-guide step.",
+                "description": "SDK-discovered SmartDMA/EZH parts, per-core IRQ/base facts, and explicit extraction gaps.",
             },
             {
                 "title": "Simulator",
@@ -838,18 +1025,10 @@ def generate_site(out_dir: Path) -> dict[str, int]:
         render_page(env, "Instruction Reference", "instructions", instructions_body, nav, style_css, app_js),
     )
 
-    placeholder_body = env.get_template("placeholder.html.j2").render(
-        heading="Platform Guide",
-        message=(
-            "Part-specific SmartDMA wrapper setup, trigger routing, interrupts, "
-            "and pin material will be generated after the SDK-header discovery "
-            "data is reviewed and the platform enrichment pass supplies the "
-            "remaining per-part facts."
-        ),
-    )
+    platform_body = env.get_template("platform.html.j2").render(platform=platform)
     write_text(
         out_dir / "platform.html",
-        render_page(env, "Platform Guide", "platform", placeholder_body, nav, style_css, app_js),
+        render_page(env, "Platform Guide", "platform", platform_body, nav, style_css, app_js),
     )
 
     placeholder_body = env.get_template("placeholder.html.j2").render(
