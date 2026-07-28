@@ -205,10 +205,10 @@ desc = "Event input"
 # ---------------------------------------------------------------------------
 
 [sources.spec_b_06]
-title = "EZHandler Arch B PreRel0.6 (EZH creator)"
+title = "EZHandler Arch B PreRel0.6 (original EZH owner)"
 public = false
 note = """NXP confidential; informs, never copied. AUTHORITY #1 FOR BEHAVIOR \
-(Eli, 2026-07-25): written by the EZH creator, so where it and AN14650 \
+(Eli, 2026-07-25): written by the original EZH owner, so where it and AN14650 \
 disagree the spec wins. Note this is an authority ranking, NOT a citation \
 ranking - the spec stays unquotable and unrenderable; AN14650 remains the \
 citable source. Caveats: it is core-level only (no EZHB_* wrapper registers), \
@@ -219,7 +219,7 @@ write-stall), so a traced worked example still beats a prose sentence."""
 title = "AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28)"
 public = true
 note = """Public NXP application note; THE citable source - all rendered \
-citations come from here. Authority-wise it ranks BELOW the creator's spec for \
+citations come from here. Authority-wise it ranks BELOW the owner-authored spec for \
 behavior (Eli, 2026-07-25): it is a later third-party rewrite and carries known \
 defects (its SPO/SNE summary bullet contradicts its own worked example; its \
 EZH_SetEmergencyMode listing contradicts its own register table; its flag table \
@@ -240,7 +240,7 @@ names EN/START/RQ vs explicitly negative ERRDIS) and should be marked as an \
 inference."""
 
 [sources.fsl_header]
-title = "fsl_ezh_armclang.h (hand-created by the EZH creator)"
+title = "fsl_ezh_armclang.h (hand-created by the original EZH owner)"
 public = false
 note = "Best available encoding reference; NXP confidential banner"
 
@@ -252,12 +252,12 @@ note = "Validated by MCX camera byte-for-byte test"
 [sources.sv_tb]
 title = "ezh_tb_package.sv"
 public = false
-note = """INTERNAL ONLY - never rendered or named in output fields. Advisory \
+note = """INTERNAL ONLY - never rendered or named in output fields. Secondary \
 for encodings (the hand-written header is primary). DEMOTED FOR BEHAVIOR (Eli, \
-2026-07-25): it was an experiment, so where the creator's spec speaks directly \
+2026-07-25): it was an experiment, so where the owner-authored spec speaks directly \
 the spec wins - it is authoritative only where the spec is silent or \
 self-contradictory. Still valuable for questions no prose source addresses \
-(pipeline mechanics, PC arithmetic, dispatch geometry). Creator review remains \
+(pipeline mechanics, PC arithmetic, dispatch geometry). Owner review remains \
 the final gate"""
 
 # ---------------------------------------------------------------------------

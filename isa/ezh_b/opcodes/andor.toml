@@ -3,7 +3,7 @@
 # NOTE: the header author's own encoders carry a pass-1 runtime warning
 # ("DOUBLE CHECK E_ANDOR ENCODING"), and the fsl header's four E_ANDOR*
 # macros cannot compile as written (missing '+' between the src1 and src2
-# terms) — priority adjudication item with the EZH creator before the docs
+# terms) - priority source/bench/owner review item before the docs
 # treat this opcode as settled.
 
 [opcode]
@@ -47,7 +47,7 @@ detail = "E_ANDOR* macros lines 1978-1981 are missing a '+' between (rsrc<<14) a
 
 [[provenance]]
 source = "sv_tb"
-detail = "ADVISORY: e_andor computes (src1 & src2) | src3 with src3 masked to 3 bits [26:24]; corroborates the repaired fsl macros and the register-not-rotate reading"
+detail = "Secondary evidence: e_andor computes (src1 & src2) | src3 with src3 masked to 3 bits [26:24]; corroborates the repaired fsl macros and the register-not-rotate reading"
 
 [[provenance]]
 source = "spec_b_06"

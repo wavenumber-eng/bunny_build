@@ -1,7 +1,7 @@
 # E_MODIFY_GPO_BYTE — opcode 0x1e: read-modify-write the low GPO byte.
 #
 # NOTE: the header encoder carries a pass-1 runtime warning ("DOUBLE CHECK
-# ENCODING OF E_MODIFY_GPO_BYTE") — adjudicate with the EZH creator.
+# ENCODING OF E_MODIFY_GPO_BYTE") - review with the original EZH owner.
 
 [opcode]
 name = "MODIFY_GPO_BYTE"
@@ -38,7 +38,7 @@ detail = "E_MODIFY_GPO_BYTE macro line 3327 references ordmask/xordmask but decl
 
 [[provenance]]
 source = "sv_tb"
-detail = "ADVISORY: e_gpo_mod decodes AND [15:8], OR [23:16], XOR [31:24], applied to GPO's low byte only; corroborates the repaired fsl macro"
+detail = "Secondary evidence: e_gpo_mod decodes AND [15:8], OR [23:16], XOR [31:24], applied to GPO's low byte only; corroborates the repaired fsl macro"
 
 [[provenance]]
 source = "spec_b_06"

@@ -43,7 +43,7 @@ detail = "sections 5.24 and 5.29: purpose, byte/sign options, scaled imm offset,
 
 [[provenance]]
 source = "spec_b_06"
-detail = "instruction set chapter, E_LDR purpose/options/restrictions (synthesized, not copied). Note: the spec DFETCH chapter and its own E_LDR section disagree on write-stall behavior - flagged for adjudication, no side picked"
+detail = "instruction set chapter, E_LDR purpose/options/restrictions (synthesized, not copied). Note: the spec DFETCH chapter and its own E_LDR section disagree on write-stall behavior - flagged for source/bench/owner review, no side picked"
 
 [[forms]]
 name = "default"

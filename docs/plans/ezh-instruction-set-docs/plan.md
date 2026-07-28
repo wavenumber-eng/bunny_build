@@ -137,12 +137,12 @@ status = "pending"
 [[exit_criteria]]
 id = "architecture-chapter"
 title = "Architecture chapter covers buses, two-ahead pipeline, registers, flags, boolean detection, heartbeat, supervisor, and ALL interrupt mechanisms, with per-section provenance"
-status = "pending"
+status = "met"
 
 [[exit_criteria]]
 id = "assembler-guide-chapter"
 title = "Assembler guide documents the directive and pseudo-instruction layers (incl. E__END) and the on-target assembly model"
-status = "pending"
+status = "met"
 
 [[exit_criteria]]
 id = "cookbook-chapter"
