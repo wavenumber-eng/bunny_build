@@ -51,6 +51,11 @@ sources = ["bunny_build", "an14650"]
 detail = "EZH_PWMClock in the feature-demo source: heartbeat + tight loop + E_SYNCH_ALL_TO_BEAT(1) + E_MODIFY_GPO_BYTE. AN14650 §4.2.7 for heartbeat semantics"
 
 [[provenance]]
+section = "streaming-dsp"
+sources = ["ezh_old_samples"]
+detail = "LPC55 hello_pdm: PDM-to-PCM decimator with event-synchronous integrator, comb/envelope work interleaved across the OSR window, breakpoint-vector loopback, and aligned SP circular buffer"
+
+[[provenance]]
 section = "data-movement"
 sources = ["an14650", "bunny_build"]
 detail = "AN14650 §4.2.10 performance note (batched loads vs immediate consumption); the display-controller sources are the largest worked examples"
@@ -338,6 +343,53 @@ to leave the mode again.
 
 This is the pattern for anything that must not jitter: bit-banged protocols, sampling,
 waveform generation.
+
+## Streaming DSP loops {#streaming-dsp}
+
+A streaming DSP program is still a continuous engine, but the useful pattern is different
+from a copy loop. The fast path must accept every input event, while the slow path spreads
+decimated work across the interval before the next output sample.
+
+The PDM-to-PCM program in the mined corpus does exactly that. Each raw PDM bit waits on
+the Boolean detector, folds the bit into a four-stage integrator, and then spends the
+available slack on one or two pieces of slower work: comb differentiators, pre-envelope
+filters, absolute value, fast/slow envelope trackers, and largest-difference tracking.
+The comb/filter work happens once per output sample, but it is interleaved through the
+oversampling window rather than placed in one burst at the end.
+
+```
+E_HOLD()                         ; next clock/data event
+; update the integrator chain for this raw bit
+; do one slice of decimated-side work while there is slack
+E_HOLD()
+; update the next raw bit
+; do the next slice of decimated-side work
+```
+
+The loop itself is kept out of the hot path. Initialise the breakpoint register to the
+loop end and the breakpoint vector to the loop start; when execution reaches the end
+marker, breakpoint substitution sends EZH back to the first instruction of the loop:
+
+```
+E_PER_WRITE(R1, EZHBREAKADDR)    ; loop end marker
+E_PER_WRITE(R0, EZHBREAKVECT)    ; loop restart address
+```
+
+The output buffer is another reusable trick. Point `SP` at an aligned ring, write with
+post-increment, test the low address bits to notify the Arm at a half-buffer boundary,
+then clear the wrap bit so the stack pointer circles:
+
+```
+E_STR_POST(SP, R4, 1)            ; store output sample and advance
+E_AND_IMMS(GPI, SP, half_buffer_mask)
+; if ZE, notify the Arm with SP so it can identify the filled half
+E_BCLR_IMM(SP, SP, wrap_bit)
+```
+
+This is not a generic "put DSP on EZH" recipe. It works because the algorithm has a
+strict input cadence, a small fixed state vector, and a slow side of the calculation that
+can be scheduled in pieces. That combination is what to look for in decimators, simple
+filters, and edge/envelope detectors.
 
 ## Moving and converting data {#data-movement}
 
