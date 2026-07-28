@@ -175,7 +175,8 @@ reference&rsquo;s.</p>
 
 <h2>Drift checking</h2>
 
-<pre>uv run python isa/tools/discover_parts.py                      # regenerate
+<pre>uv run python isa/tools/discover_parts.py --self-test          # offline parser regression tests
+uv run python isa/tools/discover_parts.py                      # regenerate
 uv run python isa/tools/discover_parts.py --check              # fail if committed output is stale
 uv run python isa/tools/discover_parts.py --require-complete   # fail on unresolved extraction gaps</pre>
 
@@ -183,8 +184,10 @@ uv run python isa/tools/discover_parts.py --require-complete   # fail on unresol
 temporary tree, diff against the committed output, any difference is a failure.
 This is what makes the pipeline a maintenance tool rather than a one-time
 script &mdash; NXP adds parts and revises headers, and the failure should be
-loud. Because the manifest revision is pinned, a bump to a newer SDK release is
-a deliberate, reviewable change with a visible diff.</p>
+loud. The discovery command runs the parser regression tests before touching
+network data, including zero-count EZH macros and RT-style
+<code>SDMA_IRQn</code> matching. Because the manifest revision is pinned, a bump
+to a newer SDK release is a deliberate, reviewable change with a visible diff.</p>
 
 <h2>Open items for implementation</h2>
 

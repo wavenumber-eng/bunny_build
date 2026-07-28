@@ -2,6 +2,7 @@
 
 Usage:
     uv run python isa/tools/discover_parts.py
+    uv run python isa/tools/discover_parts.py --self-test
     uv run python isa/tools/discover_parts.py --check
     uv run python isa/tools/discover_parts.py --require-complete
 
@@ -49,7 +50,7 @@ EZH_ARCH_B_RE = re.compile(
 )
 LPC_BROAD_EZH_RE = re.compile(r"\bEZH\b|LPC_EZH_ARCH_B|EZH_ARCH_B")
 IRQ_RE = re.compile(
-    r"(?m)^\s*([A-Z0-9_]+_IRQn)\s*=\s*(-?\d+)\s*,?\s*(?:/\*\*<\s*(.*?)\s*\*/)?"
+    r"(?m)^\s*([A-Z0-9_]+_IRQn)\s*=\s*(-?\d+)\s*,?\s*(?:/\*[*!]<\s*(.*?)\s*\*/)?"
 )
 BASE_RE = re.compile(
     r"(?m)^\s*#define\s+({prefix}[A-Z0-9_]*BASE(?:_NS)?)\s+"
@@ -508,10 +509,101 @@ def completeness_errors(index: dict[str, Any], parts: list[dict[str, Any]]) -> l
     return errors
 
 
+def parser_selftest() -> None:
+    presence_cases = [
+        (
+            "smartdma zero count",
+            "#define FSL_FEATURE_SOC_SMARTDMA_COUNT (0)\n",
+            None,
+        ),
+        (
+            "smartdma positive count",
+            "#define FSL_FEATURE_SOC_SMARTDMA_COUNT (1)\n",
+            {
+                "block_name": "SMARTDMA",
+                "probe": "FSL_FEATURE_SOC_SMARTDMA_COUNT",
+                "count": 1,
+            },
+        ),
+        (
+            "ezh zero count",
+            "#define FSL_FEATURE_SOC_EZH_ARCH_B_COUNT (0)\n",
+            None,
+        ),
+        (
+            "ezh positive count after zero count",
+            (
+                "#define FSL_FEATURE_SOC_EZH_ARCH_A_COUNT (0)\n"
+                "#define FSL_FEATURE_SOC_EZH_ARCH_B_COUNT (2)\n"
+            ),
+            {
+                "block_name": "EZH",
+                "probe": "FSL_FEATURE_SOC_EZH_ARCH_B_COUNT",
+                "count": 2,
+            },
+        ),
+        (
+            "ezh arch b implicit count",
+            "#define EZH_ARCH_B\n",
+            {"block_name": "EZH", "probe": "EZH_ARCH_B", "count": 1},
+        ),
+        (
+            "ezh arch b zero value",
+            "#define EZH_ARCH_B 0\n",
+            None,
+        ),
+        (
+            "ezh arch b parenthesized zero value",
+            "#define EZH_ARCH_B (0)\n",
+            None,
+        ),
+    ]
+    for label, text, expected in presence_cases:
+        actual = feature_presence(text)
+        if actual != expected:
+            raise DiscoveryError(
+                f"parser self-test failed for {label}: expected {expected!r}, got {actual!r}"
+            )
+
+    irq_text = """
+typedef enum IRQn {
+  SDMA_IRQn                    = 73,
+  DMA0_IRQn                    = 74, /*!< ordinary DMA */
+  FLEXCOMM0_IRQn               = 75, /*!< Smart DMA wake */
+} IRQn_Type;
+"""
+    smartdma_irqs = irq_candidates("SMARTDMA", irq_text)
+    if smartdma_irqs != [
+        {"name": "SDMA_IRQn", "number": 73, "description": ""},
+        {"name": "FLEXCOMM0_IRQn", "number": 75, "description": "Smart DMA wake"},
+    ]:
+        raise DiscoveryError(
+            "parser self-test failed for SmartDMA IRQ candidates: "
+            f"got {smartdma_irqs!r}"
+        )
+
+    ezh_irqs = irq_candidates(
+        "EZH",
+        """
+typedef enum IRQn {
+  EZH_ARCH_B0_IRQn             = 30, /*!< EZH interrupt */
+  SDMA_IRQn                    = 73,
+} IRQn_Type;
+""",
+    )
+    if ezh_irqs != [
+        {"name": "EZH_ARCH_B0_IRQn", "number": 30, "description": "EZH interrupt"}
+    ]:
+        raise DiscoveryError(
+            f"parser self-test failed for EZH IRQ candidates: got {ezh_irqs!r}"
+        )
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Discover EZH/SmartDMA platform facts from pinned SDK headers."
     )
+    parser.add_argument("--self-test", action="store_true", help="run offline parser tests")
     parser.add_argument("--check", action="store_true", help="fail if generated output is stale")
     parser.add_argument("--out", type=Path, default=DEFAULT_OUT, help="output directory")
     parser.add_argument(
@@ -537,6 +629,10 @@ def main() -> int:
     args = parse_args()
     selected = set(args.series or DEVICE_MANIFESTS)
     try:
+        parser_selftest()
+        if args.self_test:
+            print("Platform discovery parser self-test passed.")
+            return 0
         index, parts = build_model(args.manifest_rev, selected)
         if args.require_complete:
             errors = completeness_errors(index, parts)
