@@ -249,6 +249,11 @@ title = "bunny_build__instr.h / .c encoders"
 public = true
 note = "Validated by MCX camera byte-for-byte test"
 
+[sources.ezh_old_samples]
+title = "Historical EZH sample corpus"
+public = false
+note = "Non-public legacy sample corpus; informs pattern evidence, never rendered as a public citation"
+
 [sources.sv_tb]
 title = "ezh_tb_package.sv"
 public = false

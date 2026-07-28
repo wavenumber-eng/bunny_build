@@ -54,6 +54,11 @@ sources = ["an14650", "spec_b_06"]
 detail = "AN14650 §4.2.5, §4.2.5.1, §4.2.5.2"
 
 [[provenance]]
+section = "flags"
+sources = ["ezh_old_samples"]
+detail = "Feature-demo EZH_ConditionFlag uses EX/NEX after EZH read-modify-writes CTRL/EXF"
+
+[[provenance]]
 section = "alu-shifter"
 sources = ["an14650", "spec_b_06"]
 detail = "AN14650 §4.2.2, §4.2.3, §4.2.4"
@@ -102,6 +107,11 @@ detail = "AN14650 §3.1 (EZHB_EMER_SEL), §4.1.4, §4.2.13; nxp_chipdata MCXN947
 section = "arm-ezh"
 sources = ["an14650", "spec_b_06", "nxp_chipdata"]
 detail = "AN14650 §3.1, §4.1.4, §4.1.5, §4.1.9, §4.2.5.2.3, §4.2.14; nxp_chipdata MCXN947 SMARTDMA0 register block supplies the official field names (BOOTADR.ADDR[31:2]; CTRL START/EXF/ERRDIS/BUFEN/SYNCEN/WKEY; EMER_SEL EN/RQ; ARM2EZH IE/GP; PENDTRAP STATUS/POL/EN) and the SMARTDMAARCHB_INMUX[n] naming"
+
+[[provenance]]
+section = "arm-ezh"
+sources = ["ezh_old_samples"]
+detail = "Feature-demo EZH_ConditionFlag shows EZH updating CTRL/EXF with the write key"
 
 [[provenance]]
 section = "open-questions"
@@ -709,9 +719,10 @@ Four conditions read state from outside the ALU:
 
 - **`BS` / `NBS`** — the Boolean detector's logical combiner output is / is not asserted.
 - **`EX` / `NEX`** — the external flag is / is not set. The external flag is
-  `EZHB_CTRL` bit 1, writable by either the Arm or EZH itself; EZH has no instruction to
-  set or clear it directly, only to observe it. It is the general-purpose "the Arm is
-  telling me something" input.
+  `EZHB_CTRL` bit 1, writable by either the Arm or EZH itself through the control
+  register; EZH has no dedicated flag-set instruction. It is the general-purpose
+  "the Arm is telling me something" input, and it can also be used as a one-bit state
+  latch by an EZH program that deliberately read-modify-writes `EZHB_CTRL`.
 
 Testing `BS` on an ordinary conditional instruction is a *sampled* test, and it comes with
 a hazard. If `CFS` or `CFM` are being loaded from the data bus, nothing stalls the
@@ -1266,8 +1277,10 @@ E_LSL(R6, R6, 2)
 E_LDR(SP, R6, 0)             ; first member: the stack
 ```
 
-**The external flag.** `EZHB_CTRL` bit 1 is a one-bit mailbox the Arm can set and EZH can
-test with the `EX`/`NEX` conditions. EZH cannot set or clear it, only observe it.
+**The external flag.** `EZHB_CTRL` bit 1 is a one-bit mailbox that drives the
+`EX`/`NEX` conditions. The Arm usually owns it, but it is still a writable bit in the
+control register: EZH can update it with an ordinary read-modify-write, including the
+`0xC0DE` write key. Treat it as shared state, not as an Arm-only latch.
 
 **The pending trap.** With the trap enabled, the Arm can write `EZHB_PENDTRAP[7:0]` to
 synthesise bit-slice edges, firing an EZH vector directly. See

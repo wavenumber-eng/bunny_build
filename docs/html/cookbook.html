@@ -925,6 +925,24 @@ who owns what.</p>
 <p>Do not close a plain loop with <a href="instructions.html#gosub"><code>E_GOSUB</code></a>. It overwrites <code>RA</code> every iteration; use
 <a href="instructions.html#goto"><code>E_GOTO</code></a> unless you actually want the return address.</p>
 </blockquote>
+<h2 id="branch-shadow">Use branch shadows deliberately</h2>
+<p>Scheduled branches are not just a faster way to jump. They give you two instruction
+slots that execute while the branch target is being fetched. The rare but useful pattern
+is to put mutually exclusive conditional work there:</p>
+<pre><code>E_COND_GOTO(UNS, &quot;shadow_done&quot;)  ; scheduled: the next two instructions execute
+E_COND_PUSH(EX, R0)              ; if the external flag is set
+E_COND_PUSH(NEX, R1)             ; if the external flag is clear
+E_PUSH(R2)                       ; not in the shadow; never reached by this branch
+E_LABEL(&quot;shadow_done&quot;)
+</code></pre>
+<p>The scheduled branch is unconditional, but the two shadow instructions still keep their
+own conditions. Exactly one push happens, and it costs no extra branch. That is the kind
+of pattern scheduled branches are for: useful work in cycles that an ordinary branch
+would throw away.</p>
+<p>The same corpus program also shows EZH setting up the condition it later tests: it
+read-modify-writes the control register with the <code>0xC0DE</code> key and changes <code>EXF</code>, then
+uses <code>EX</code>/<code>NEX</code> in the branch shadow. That is legal, but it is shared state with the Arm.
+Use it when the program and Arm code have an explicit ownership rule.</p>
 <h2 id="protocol">Protocol emulation</h2>
 <p>gibbon-d drives an SPI PSRAM entirely from EZH, and the structure generalises to any
 bit-banged or FIFO-driven protocol:</p>

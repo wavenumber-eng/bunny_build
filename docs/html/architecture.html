@@ -1281,9 +1281,10 @@ nothing else. See <a href="#pipeline">scheduled branch</a>.</p>
 <ul>
 <li><strong><code>BS</code> / <code>NBS</code></strong> — the Boolean detector's logical combiner output is / is not asserted.</li>
 <li><strong><code>EX</code> / <code>NEX</code></strong> — the external flag is / is not set. The external flag is
-  <code>EZHB_CTRL</code> bit 1, writable by either the Arm or EZH itself; EZH has no instruction to
-  set or clear it directly, only to observe it. It is the general-purpose "the Arm is
-  telling me something" input.</li>
+  <code>EZHB_CTRL</code> bit 1, writable by either the Arm or EZH itself through the control
+  register; EZH has no dedicated flag-set instruction. It is the general-purpose
+  "the Arm is telling me something" input, and it can also be used as a one-bit state
+  latch by an EZH program that deliberately read-modify-writes <code>EZHB_CTRL</code>.</li>
 </ul>
 <p>Testing <code>BS</code> on an ordinary conditional instruction is a <em>sampled</em> test, and it comes with
 a hazard. If <code>CFS</code> or <code>CFM</code> are being loaded from the data bus, nothing stalls the
@@ -1968,8 +1969,10 @@ E_LSR(R6, R6, 2)             ; discard the mode bits
 E_LSL(R6, R6, 2)
 E_LDR(SP, R6, 0)             ; first member: the stack
 </code></pre>
-<p><strong>The external flag.</strong> <code>EZHB_CTRL</code> bit 1 is a one-bit mailbox the Arm can set and EZH can
-test with the <code>EX</code>/<code>NEX</code> conditions. EZH cannot set or clear it, only observe it.</p>
+<p><strong>The external flag.</strong> <code>EZHB_CTRL</code> bit 1 is a one-bit mailbox that drives the
+<code>EX</code>/<code>NEX</code> conditions. The Arm usually owns it, but it is still a writable bit in the
+control register: EZH can update it with an ordinary read-modify-write, including the
+<code>0xC0DE</code> write key. Treat it as shared state, not as an Arm-only latch.</p>
 <p><strong>The pending trap.</strong> With the trap enabled, the Arm can write <code>EZHB_PENDTRAP[7:0]</code> to
 synthesise bit-slice edges, firing an EZH vector directly. See
 <a href="#pending-trap">pending trap</a>.</p>

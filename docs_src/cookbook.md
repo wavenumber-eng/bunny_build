@@ -61,6 +61,11 @@ sources = ["bunny_build", "an14650"]
 detail = "EZH_FunctionCall in the feature-demo source; AN14650 §4.2.11 for the RA discipline"
 
 [[provenance]]
+section = "branch-shadow"
+sources = ["ezh_old_samples"]
+detail = "Feature-demo EZH_ConditionFlag uses E_COND_GOTO(UNS) with E_COND_PUSH(EX/NEX) in the two scheduled-branch shadow slots, and read-modify-writes EZH_CTRL with the 0xC0DE key to drive EXF"
+
+[[provenance]]
 section = "protocol"
 sources = ["bunny_build"]
 detail = "gibbon-d ezh_app__spi_wr / ezh_app__spi_rd: byte loops, GOSUB subroutines, polling"
@@ -384,6 +389,30 @@ who owns what.
 
 > Do not close a plain loop with [[E_GOSUB]]. It overwrites `RA` every iteration; use
 > [[E_GOTO]] unless you actually want the return address.
+
+## Use branch shadows deliberately {#branch-shadow}
+
+Scheduled branches are not just a faster way to jump. They give you two instruction
+slots that execute while the branch target is being fetched. The rare but useful pattern
+is to put mutually exclusive conditional work there:
+
+```
+E_COND_GOTO(UNS, "shadow_done")  ; scheduled: the next two instructions execute
+E_COND_PUSH(EX, R0)              ; if the external flag is set
+E_COND_PUSH(NEX, R1)             ; if the external flag is clear
+E_PUSH(R2)                       ; not in the shadow; never reached by this branch
+E_LABEL("shadow_done")
+```
+
+The scheduled branch is unconditional, but the two shadow instructions still keep their
+own conditions. Exactly one push happens, and it costs no extra branch. That is the kind
+of pattern scheduled branches are for: useful work in cycles that an ordinary branch
+would throw away.
+
+The same corpus program also shows EZH setting up the condition it later tests: it
+read-modify-writes the control register with the `0xC0DE` key and changes `EXF`, then
+uses `EX`/`NEX` in the branch shadow. That is legal, but it is shared state with the Arm.
+Use it when the program and Arm code have an explicit ownership rule.
 
 ## Protocol emulation {#protocol}
 
