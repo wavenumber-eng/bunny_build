@@ -169,9 +169,11 @@ until the SDK-header data shape and open extraction gaps are reviewed. Stages
 
 <h3>4 &mdash; Emit</h3>
 <p>One deterministic JSON per part, committed, stamped with tool version, pinned
-manifest revision, and MCUXpresso tool version. This is the platform guide
-chapter&rsquo;s input, exactly as the ISA database is the instruction
-reference&rsquo;s.</p>
+manifest revision, and MCUXpresso tool version. The static doc generator reads
+that committed JSON and renders the SDK-header platform view: confirmed parts,
+per-core IRQ/base-address facts, unconfirmed candidates, and open extraction
+gaps. The later enrichment pass fills in pin mux, INPUTMUX, and wrapper setup
+details.</p>
 
 <h2>Drift checking</h2>
 
@@ -212,11 +214,11 @@ no fetched data committed.</li>
 <h2>Relationship to the rest of the doc set</h2>
 
 <p>The platform guide does <strong>not</strong> gate
-<code>build-static-html</code> (decided 2026-07-22): the initial published set
-ships sections 1&ndash;5 and 7, and the platform guide lands in a follow-up
-regeneration once this pipeline has run. Two open questions from the
-architecture chapter are wrapper-side and should be answered opportunistically
-during that work, since they need exactly this data:
+<code>build-static-html</code> (decided 2026-07-22): the generated doc set can
+ship with the current SDK-header platform view while the pin mux and INPUTMUX
+enrichment remains active. Two open questions from the architecture chapter are
+wrapper-side and should be answered opportunistically during that work, since
+they need exactly this data:
 <code>E_INT_TRIGGER(0)</code> / interrupt-hijack routing, and confirmation of the
 <code>EZHB_EMER_SEL[8]</code> polarity inference across more than one part.</p>
 
