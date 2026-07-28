@@ -192,7 +192,7 @@ def main() -> int:
     errors += cross_diff(inv, bb, verbose)
 
     # ----- known macro limitations (informational) ---
-    print("\n--- known macro limitations ---")
+    print("\n--- known macro limitations (diagnostics) ---")
     defects = {n: m for n, m in sorted(inv.items()) if m.get("defect")}
     print(f"defective macros in fsl header: {len(defects)}")
     for n, m in defects.items():
