@@ -860,6 +860,37 @@ def platform_search_docs(platform: dict[str, Any]) -> list[dict[str, Any]]:
                 "tags": "platform smartdma ezh",
             }
         )
+    for candidate in platform["unconfirmed_candidates"]:
+        candidate_part = Path(candidate["path"]).parent.name
+        terms: list[str] = [
+            candidate_part,
+            candidate["series"],
+            candidate["path"],
+            candidate["reason"],
+            "platform smartdma ezh lpc candidate unconfirmed open gap",
+        ]
+        for irq in candidate["irqs"]:
+            terms.append(irq["label"])
+            terms.append(irq["description"])
+        for base in candidate["base_addresses"]:
+            terms.append(base["label"])
+            terms.append(base["space"])
+        docs.append(
+            {
+                "id": f"platform-candidate:{candidate_part}",
+                "title": f"{candidate_part} unconfirmed platform candidate",
+                "url": "platform.html#unconfirmed-lpc-candidates",
+                "kind": "platform candidate",
+                "summary": (
+                    f"{candidate['series']} broad-sweep candidate; requires "
+                    "AN/RM or nxp-monkey confirmation."
+                ),
+                "body": " ".join(item for item in terms if item),
+                "mnemonics": "",
+                "lookup": f"{candidate_part} {candidate['series']} LPC candidate",
+                "tags": "platform smartdma ezh lpc candidate",
+            }
+        )
     return docs
 
 
