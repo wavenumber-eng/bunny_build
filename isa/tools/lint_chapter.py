@@ -49,8 +49,7 @@ ALLOWED_NON_MNEMONICS = {
     "E_DCD_VAL": "assembler directive, not a hardware instruction",
     "E_LABEL": "assembler directive, not a hardware instruction",
     "E__END": "bunny_build pseudo-instruction (park pattern)",
-    "E_END": "the park pseudo-instruction's header spelling; documented as the "
-             "one that does not link (see the assembler guide)",
+    "E_END": "bunny_build pseudo-instruction (public park helper spelling)",
 }
 
 

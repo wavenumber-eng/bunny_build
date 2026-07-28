@@ -43,30 +43,22 @@ detail = "src/bunny_build__psuedo_instr.c E_LABEL/E_DCD/E_DCD_VAL; AN14650 §4.2
 [[provenance]]
 section = "pseudo"
 sources = ["bunny_build", "an14650"]
-detail = "src/bunny_build__psuedo_instr.c E_LOAD_32IMM and E__END; AN14650 §4.2.4 for why a 32-bit load must be synthesized from 11-bit immediates"
+detail = "src/bunny_build__psuedo_instr.c E_LOAD_32IMM and E_END/E__END; AN14650 §4.2.4 for why a 32-bit load must be synthesized from 11-bit immediates"
 
 [[provenance]]
 section = "park"
 sources = ["bunny_build"]
-detail = "src/bunny_build__psuedo_instr.c E__END(); CFM value 0xDB6DB600 decoded against the bit-slice event encoding in isa/ezh_b/arch.toml [bit_slice_cfg]"
+detail = "src/bunny_build__psuedo_instr.c E_END()/E__END(); CFM value 0xDB6DB600 decoded against the bit-slice event encoding in isa/ezh_b/arch.toml [bit_slice_cfg]"
 
 [[provenance]]
 section = "gotchas"
 sources = ["bunny_build"]
-detail = "src/bunny_build__instr.c (undefined-label fallback, 0x1FFFFF branch mask); src/bunny_build__psuedo_instr.c (E_LOAD_32IMM stack use, E_END/E__END declaration mismatch)"
+detail = "src/bunny_build__instr.c (undefined-label fallback, 0x1FFFFF branch mask); src/bunny_build__psuedo_instr.c (E_LOAD_32IMM stack use, E_END/E__END park helper spellings)"
 
 [[provenance]]
 section = "worked-example"
 sources = ["bunny_build"]
 detail = "test/lpc55s69__ezh_hello_gpio/source/ezh_app.c, reproduced from this repository"
-
-[[unverified]]
-id = "e-end-name-mismatch"
-status = "open"
-section = "gotchas"
-claim = "The park pseudo-instruction cannot be called under either of its two spellings"
-basis = "include/bunny_build__psuedo_instr.h declares `void E_END();` but src/bunny_build__psuedo_instr.c defines `void E__END()`. Nothing in the repository calls either, so the mismatch has never been exercised. E_END() would fail to link; E__END() has no prototype in the public header. Found while documenting, not yet fixed"
-resolve_by = "code fix - pick one spelling and make header and source agree; then this entry goes away"
 
 [[unverified]]
 id = "goto-window-2mb"
@@ -345,6 +337,10 @@ bytes of a repeating three-bit pattern, which is exactly what you can assemble f
 > trick. bunny_build did not invent the park; it packaged an established idiom as a
 > pseudo-instruction so it stops being eight lines you copy between programs.
 
+Call it as `E_END()` from the public header. `E__END()` is also declared and kept as the
+historical spelling used in older notes and examples; both spellings emit the same park
+sequence.
+
 > **Signalling the Arm is a separate step.** The park does not raise an interrupt. If the
 > Arm needs to know the program finished, issue [[E_INT_TRIGGER]] before parking —
 > `E_INT_TRIGGER(0)` is the idiomatic "done" signal, since the common interrupt output
@@ -384,12 +380,6 @@ parameter block before using it.
 error for a destination above `R7` but does not return, so the nine-instruction sequence is
 still generated — with a destination whose semantics the sequence does not respect. Same
 shape as the undefined-label case: a diagnostic you have to read, not a stop.
-
-**The park pseudo-instruction currently cannot be called.** The public header declares
-`void E_END();`, the implementation defines `void E__END()`. Nothing in the repository calls
-either, so the mismatch has gone unexercised: `E_END()` fails to link, and `E__END()` has no
-prototype. Until header and source agree on one spelling, write the eight-instruction
-sequence inline — it is listed in full [above](#park).
 
 **Your program function runs twice.** Anything with a side effect outside the instruction
 stream happens twice, and anything that varies between the two calls corrupts label

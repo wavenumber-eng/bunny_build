@@ -50,6 +50,12 @@ void E__END()
 }
 
 
+void E_END()
+{
+    E__END();
+}
+
+
 
 void E_LOAD_32IMM(uint32_t rx, uint32_t imm)
 {

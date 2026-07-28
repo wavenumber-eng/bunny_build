@@ -895,6 +895,11 @@ file alone, eight more in the display-controller sources, and once in third-part
 production code. It is the corpus's <em>standard program terminator</em>, not one program's
 trick. bunny_build did not invent the park; it packaged an established idiom as a
 pseudo-instruction so it stops being eight lines you copy between programs.</p>
+</blockquote>
+<p>Call it as <code>E_END()</code> from the public header. <code>E__END()</code> is also declared and kept as the
+historical spelling used in older notes and examples; both spellings emit the same park
+sequence.</p>
+<blockquote>
 <p><strong>Signalling the Arm is a separate step.</strong> The park does not raise an interrupt. If the
 Arm needs to know the program finished, issue <a href="instructions.html#int_trigger"><code>E_INT_TRIGGER</code></a> before parking —
 <code>E_INT_TRIGGER(0)</code> is the idiomatic "done" signal, since the common interrupt output
@@ -928,11 +933,6 @@ parameter block before using it.</p>
 error for a destination above <code>R7</code> but does not return, so the nine-instruction sequence is
 still generated — with a destination whose semantics the sequence does not respect. Same
 shape as the undefined-label case: a diagnostic you have to read, not a stop.</p>
-<p><strong>The park pseudo-instruction currently cannot be called.</strong> The public header declares
-<code>void E_END();</code>, the implementation defines <code>void E__END()</code>. Nothing in the repository calls
-either, so the mismatch has gone unexercised: <code>E_END()</code> fails to link, and <code>E__END()</code> has no
-prototype. Until header and source agree on one spelling, write the eight-instruction
-sequence inline — it is listed in full <a href="#park">above</a>.</p>
 <p><strong>Your program function runs twice.</strong> Anything with a side effect outside the instruction
 stream happens twice, and anything that varies between the two calls corrupts label
 resolution. Keep the function pure.</p>
@@ -998,11 +998,11 @@ right instruction for a loop that never returns.</p>
 
       <li>src/bunny_build__psuedo_instr.c E_LABEL/E_DCD/E_DCD_VAL; AN14650 §4.2.15.2 shows the historical E_DCD label-table idiom <span class="small-note">(bunny_build__instr.h / .c encoders, AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28))</span></li>
 
-      <li>src/bunny_build__psuedo_instr.c E_LOAD_32IMM and E__END; AN14650 §4.2.4 for why a 32-bit load must be synthesized from 11-bit immediates <span class="small-note">(bunny_build__instr.h / .c encoders, AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28))</span></li>
+      <li>src/bunny_build__psuedo_instr.c E_LOAD_32IMM and E_END/E__END; AN14650 §4.2.4 for why a 32-bit load must be synthesized from 11-bit immediates <span class="small-note">(bunny_build__instr.h / .c encoders, AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28))</span></li>
 
-      <li>src/bunny_build__psuedo_instr.c E__END(); CFM value 0xDB6DB600 decoded against the bit-slice event encoding in isa/ezh_b/arch.toml [bit_slice_cfg] <span class="small-note">(bunny_build__instr.h / .c encoders)</span></li>
+      <li>src/bunny_build__psuedo_instr.c E_END()/E__END(); CFM value 0xDB6DB600 decoded against the bit-slice event encoding in isa/ezh_b/arch.toml [bit_slice_cfg] <span class="small-note">(bunny_build__instr.h / .c encoders)</span></li>
 
-      <li>src/bunny_build__instr.c (undefined-label fallback, 0x1FFFFF branch mask); src/bunny_build__psuedo_instr.c (E_LOAD_32IMM stack use, E_END/E__END declaration mismatch) <span class="small-note">(bunny_build__instr.h / .c encoders)</span></li>
+      <li>src/bunny_build__instr.c (undefined-label fallback, 0x1FFFFF branch mask); src/bunny_build__psuedo_instr.c (E_LOAD_32IMM stack use, E_END/E__END park helper spellings) <span class="small-note">(bunny_build__instr.h / .c encoders)</span></li>
 
       <li>test/lpc55s69__ezh_hello_gpio/source/ezh_app.c, reproduced from this repository <span class="small-note">(bunny_build__instr.h / .c encoders)</span></li>
 
