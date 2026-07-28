@@ -53,7 +53,7 @@ depends_on = ["inventory-sources"]
 
 [[steps]]
 id = "pattern-library"
-title = "Cookbook chapter: run-and-stop, multi-app dispatch, vector-table idioms, continuous DMA/IRQ capture, debug recipes and DSP patterns from the mined samples"
+title = "Cookbook chapter: the two main EZH patterns (continuous engines; command/execute/stop with E__END), pseudo-instruction idioms, multi-app dispatch, vector-table/event idioms, debug recipes and DSP patterns from the mined samples"
 status = "active"
 depends_on = ["inventory-sources", "sample-mining"]
 
@@ -72,7 +72,7 @@ depends_on = ["isa-schema"]
 [[steps]]
 id = "build-static-html"
 title = "Produce the generated static HTML doc set kept in bunny_build"
-status = "pending"
+status = "done"
 depends_on = ["verify-encodings", "instruction-prose", "architecture-overview", "assembler-guide", "pattern-library", "choose-doc-toolchain"]
 
 [[steps]]
@@ -117,7 +117,7 @@ status = "met"
 [[exit_criteria]]
 id = "static-html-published"
 title = "Static HTML doc set generates reproducibly from the ISA db and lives in the bunny_build repo"
-status = "pending"
+status = "met"
 
 [[exit_criteria]]
 id = "design-doc-intent-audit"
@@ -146,7 +146,7 @@ status = "pending"
 
 [[exit_criteria]]
 id = "cookbook-chapter"
-title = "Cookbook covers the mined sample corpus patterns with runnable, provenance-clean examples"
+title = "Cookbook covers the mined sample corpus patterns with pattern-grounded, provenance-clean examples; curated runnable examples remain in bunny_build examples/tests"
 status = "pending"
 
 [[exit_criteria]]
@@ -205,7 +205,8 @@ Primary: `C:\eli\ezh\doc_project\` — Arch B spec PreRel0.6 (+"cleaned" variant
 content-identical minus front matter), `fsl_ezh_armclang.h`, `ezh_tb_package.sv`,
 two training decks, **AN14650 = public SmartDMA Cookbook Rev 1.0 (May 2025)** — the
 citation-safe public source covering architecture, registers, and all 29 instruction
-groups (§5). Old code samples: archive only, not a focus.
+groups (§5). Old code samples are pattern evidence, not the curated runnable-example
+surface; the intentionally simple runnable examples live in bunny_build examples/tests.
 
 ## Documentation organization (decided 2026-07-22)
 

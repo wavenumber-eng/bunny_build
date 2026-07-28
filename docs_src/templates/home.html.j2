@@ -1,0 +1,31 @@
+<section class="hero">
+  <h1>EZH Architecture B</h1>
+  <p>{{ summary }}</p>
+  <div class="status-strip" aria-label="Corpus status">
+    <div class="stat">
+      <span class="stat-label">Opcodes</span>
+      <span class="stat-value">{{ opcode_count }}</span>
+    </div>
+    <div class="stat">
+      <span class="stat-label">Expanded Mnemonics</span>
+      <span class="stat-value">{{ mnemonic_count }}</span>
+    </div>
+    <div class="stat">
+      <span class="stat-label">Reviewed Chapters</span>
+      <span class="stat-value">{{ chapter_count }}</span>
+    </div>
+    <div class="stat">
+      <span class="stat-label">Search Mode</span>
+      <span class="stat-value">Static</span>
+    </div>
+  </div>
+</section>
+
+<section class="tile-grid" aria-label="Documentation sections">
+  {% for tile in tiles %}
+  <a class="tile" href="{{ tile.href }}">
+    <h2>{{ tile.title }}</h2>
+    <p>{{ tile.description }}</p>
+  </a>
+  {% endfor %}
+</section>

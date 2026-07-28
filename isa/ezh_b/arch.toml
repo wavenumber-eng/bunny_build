@@ -81,7 +81,7 @@ desc = "Stack pointer"
 [registers.PC]
 value = 0xd
 class = "control"
-desc = "Program counter; writing PC branches - ordinary unless the op sets flags (S), which requests a scheduled branch instead of setting flags. What a PC source read yields (the pipeline runs two instructions ahead) is on the adjudication list"
+desc = "Program counter; writing PC branches - ordinary unless the op sets flags (S), which requests a scheduled branch instead of setting flags. A PC source read yields the pipeline fetch position; the architecture chapter documents the current +8-byte model and bench-confirmation note"
 
 [registers.GPI]
 value = 0xe

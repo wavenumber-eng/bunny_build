@@ -16,7 +16,7 @@ from the ISA db and lives in the bunny_build repo.
 
 Facts driving the choice:
 
-- The instruction-reference pages are ~100% generated content: encodings,
+- The instruction reference is ~100% generated content: encodings,
   bitfield layouts, modifier matrices, mnemonic expansions, timing, and
   restrictions all come from the db, which is mechanically verified against
   the fsl header and the bunny_build encoders. Hand-maintained instruction
@@ -26,8 +26,9 @@ Facts driving the choice:
   generated reference.
 - Provenance discipline: NXP-confidential sources inform but are never
   copied; rendered citations must come from public sources (AN14650). The db
-  already records per-section provenance ids; the renderer must carry them
-  through.
+  already records per-section provenance ids; the renderer must filter them
+  structurally so non-public ids, titles, and audit notes never reach the
+  shipped HTML.
 - Ecosystem: Python 3.12 + uv, TOML, stdlib-lean tools, and a house style of
   mechanical verification (validate / verify_encodings / verify_fsl /
   expand_mnemonics are all CI-able checkers).
@@ -40,31 +41,35 @@ Facts driving the choice:
 ## Decision
 
 A **custom Python generator in the bunny_build repo** (`isa/tools/
-gen_docs.py`, landing fully in `build-static-html`), rendering the ISA db
+gen_docs.py`), rendering the ISA db
 plus Markdown prose to self-contained static HTML in `docs/html/`:
 
 - **Templates: Jinja2.** The only real templating dependency; pure Python,
   uv-managed, universally understood.
-- **Prose: Markdown files** (architecture overview, pattern library) rendered
-  with `python-markdown` and wrapped in the same layout as generated pages.
+- **Prose: Markdown files** (architecture overview, assembler guide, cookbook)
+  rendered with `python-markdown` and wrapped in the same layout as generated pages.
   Prose pages may cross-link opcode pages by name (`[[E_MOV]]`-style link
   resolution against the db's expanded mnemonic set).
 - **Bitfield diagrams: inline SVG generated from the slice data.** The slice
   model was designed for this (isa-adr-0001); the same walk that emits C
   shift/mask expressions and Verilog part-selects emits `<rect>`/`<text>`
   rows. No image assets, no diagram tool dependency.
-- **Structure:** one page per base opcode (forms, encodings, modifier matrix,
-  expanded mnemonic list, timing, restrictions, provenance), an index with
-  the full mnemonic-to-page table, and the prose chapters. One shared
-  hand-written CSS file, inlined at build time.
+- **Structure:** one generated instruction-reference page
+  (`instructions.html`) with one expandable panel per base opcode (forms,
+  encodings, modifier matrix, expanded mnemonic list, timing, restrictions,
+  provenance), a home page, and the prose chapters. Deep links target opcode
+  panels (for example `instructions.html#mov`). One shared hand-written CSS
+  file is inlined at build time.
 - **Reproducibility contract:** the generator is deterministic (stable
   ordering, no timestamps in output). `gen_docs.py --check` regenerates and
   diffs against the committed `docs/html/` tree — doc drift becomes a CI
   failure exactly like encoding drift. Generated output is committed only
   together with this check.
-- **Provenance rendering:** each rendered section carries its source id;
-  sections whose only source is non-public render the synthesized prose with
-  no quotation, and AN14650-sourced sections cite section numbers.
+- **Provenance rendering:** rendered citations are built only from sources
+  whose `public = true` in `arch.toml`. Non-public source ids may remain in
+  structured metadata for creator review, but their ids, titles, and private
+  audit notes are not renderable data. A public-output scan is part of the
+  generator check path.
 
 ## Alternatives considered
 
@@ -88,16 +93,15 @@ plus Markdown prose to self-contained static HTML in `docs/html/`:
 ## Consequences
 
 - Two pure-Python dependencies enter the dev group (`jinja2`, `markdown`);
-  everything else remains stdlib.
+  the search library is a vendored browser asset with its license committed.
 - The doc generator becomes ISA-db consumer #1 (the ordering in isa-adr-0001),
   and its `--check` mode joins the verifier suite in CI.
-- Search ships as a small client-side page-title/mnemonic filter over the
-  index table in v1 (the expanded mnemonic list makes exact-name lookup the
-  common case); full-text search is deferred until the prose volume warrants
-  it.
+- Search is implemented in `build-static-html`, after the pages and anchors
+  are stable. It remains fully static: the generator emits deterministic
+  `search_index.js` data, and the site loads vendored MiniSearch from the
+  committed output tree. No CDN, backend, or `fetch()` requirement is allowed,
+  so the docs still work from `file://`.
 - The simulator page embeds later as one more static page plus a WASM asset —
   no toolchain interaction.
-- A spike (`isa/tools/gen_docs_spike.py`, stdlib-only) proves the pipeline
-  end-to-end — mov.toml to a styled opcode page with an inline-SVG bitfield
-  diagram — and is superseded by the real generator when `build-static-html`
-  lands.
+- The old spike (`isa/tools/gen_docs_spike.py`, stdlib-only) is retained only
+  as an archived proof of the bitfield/rendering path.

@@ -1,0 +1,14 @@
+<article class="prose">
+  {{ chapter.html | safe }}
+
+  {% if chapter.public_provenance %}
+  <section class="provenance-block" aria-label="Public provenance">
+    <h2>Public Provenance</h2>
+    <ul>
+      {% for item in chapter.public_provenance %}
+      <li>{{ item.detail }}{% if item.sources %} <span class="small-note">({{ item.sources | join(", ") }})</span>{% endif %}</li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+</article>

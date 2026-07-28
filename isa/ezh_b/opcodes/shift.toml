@@ -27,9 +27,9 @@ is what makes shift-and-accumulate work. In the post-shift ALU families
 (ADD/SUB/ADC/SBC/AND/OR/XOR with a fused shift) the left operand is src1
 instead, so the result is src1 put through the post-shift and any N
 inversion. Same rule, different operand, because the families order the
-shifter and the ALU differently. (hardware analysis, advisory: a
-fused ADC/SBC with a nonzero shift amount takes its carry-in from the
-shift stage, not the CA flag.)
+shifter and the ALU differently. For fused ADC/SBC with a nonzero shift
+amount, treat the carry-in as coming from the shift stage rather than the
+CA flag unless a bench test says otherwise.
 """
 restrictions = [
   "S with destination PC does not set flags (schedules branch instead)",

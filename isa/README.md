@@ -28,7 +28,9 @@ isa/
     expand_mnemonics.py  # mnemonic patterns -> exact 1502-name reproduction
     pc_model.py          # PC-relative arithmetic model + self-test vs the sources
     lint_chapter.py      # prose-chapter contract checks (docs_src/*.md)
-    gen_docs_spike.py    # doc-generator spike (superseded by build-static-html)
+    check_public_docs.py # generated-output confidentiality scan (docs/html/)
+    gen_docs.py          # deterministic static HTML site generator
+    gen_docs_spike.py    # archived doc-generator spike
 ```
 
 ## Core model
@@ -149,7 +151,8 @@ fails.
   doc: front matter parses and carries required keys; every `[[E_NAME]]`
   cross-link resolves against the expanded mnemonic set; every section has a
   `[[provenance]]` entry and no entry names a missing section; no broken
-  intra-page anchors; **no non-public source id appears in body text**; every
+  intra-page anchors; **no non-public source id or title appears in body text
+  or renderable provenance detail**; every
   `[[unverified]]` entry carries a status from `{open, corroborated, resolved}`.
   It also checks that every `E_PER_READ`/`E_PER_WRITE` operand is a symbol
   `include/ezh_arch.h` actually defines — published NXP listings spell several
@@ -163,3 +166,10 @@ fails.
   body" get checked without doing the arithmetic by hand; it is on by default
   because leaving it opt-in once already let a wrong claim survive a review that
   the tool could refute. `--quiet` suppresses it.
+
+- Use `uv run python isa/tools/gen_docs.py` to regenerate `docs/html/`. Before
+  publishing or committing regenerated output, run
+  `uv run python isa/tools/gen_docs.py --check`; it rebuilds the site in a
+  temporary directory, runs the ISA verifier suite, lints every chapter, scans
+  the public artifact for non-public source markers, and fails if committed
+  output is stale.

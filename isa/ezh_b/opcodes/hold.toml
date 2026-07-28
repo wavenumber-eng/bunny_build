@@ -49,7 +49,7 @@ detail = "all four COND_*_NRA macros (lines 3277-3296) have a space before the p
 
 [[provenance]]
 source = "sv_tb"
-detail = "ADVISORY: e_boolean decodes plain-HOLD via bit 15, NRA bit 18 (RA write to reg 15 executes only when clear), LV bit 19 (16- vs 4-byte table stride), ACC bit 9, acceleration bits [31:24]; reads the table register ONLY from [23:20] - the [13:10] replica is never consumed (decode significance of the replica is on the adjudication list)"
+detail = "Review note: e_boolean decodes plain-HOLD via bit 15, NRA bit 18 (RA write to reg 15 executes only when clear), LV bit 19 (16- vs 4-byte table stride), ACC bit 9, acceleration bits [31:24]; reads the table register ONLY from [23:20] - the [13:10] replica is never consumed, so decode significance of the replica still needs confirmation"
 
 [[provenance]]
 source = "spec_b_06"

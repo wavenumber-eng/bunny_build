@@ -18,7 +18,7 @@ detail = "include/bunny_build.h, src/bunny_build.c: the library surface and the 
 [[provenance]]
 section = "history"
 sources = ["an14650", "spec_b_06"]
-detail = "AN14650 §4.1.1-4.1.3 (IDE support, scatter file, macros as pseudo-instructions); Arch B spec revision history and E_GOTO section for the branch-to-label problem. Tooling history recorded in the ezh-instruction-set-docs plan body"
+detail = "AN14650 §4.1.1-4.1.3 (IDE support, scatter file, macros as pseudo-instructions). Tooling history recorded in the ezh-instruction-set-docs plan body"
 
 [[provenance]]
 section = "two-pass"
@@ -126,9 +126,8 @@ same compiler, from the same tree, as the Arm code that boots it.
 
 ## Why this exists {#history}
 
-There was never real EZH tooling. The original "assembler" was the EZH creator hacking the
-Keil Arm compiler's inline assembler with C macros — each `E_*` macro emitting a literal
-word into the instruction stream.
+There was never real EZH tooling. The original "assembler" was a Keil Arm inline-assembler
+macro layer: each `E_*` macro emitted a literal word into the instruction stream.
 
 That worked, with one structural problem: **it was single-pass**. A macro emitting a branch
 had to know the target address at the point it expanded, and it did not, so branch-to-label

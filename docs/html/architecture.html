@@ -1,0 +1,2375 @@
+<!doctype html>
+<html lang="en" data-theme="dark" data-font="sans">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>EZH Architecture B — Architecture Overview | EZH Architecture B</title>
+    <style>:root {
+  color-scheme: dark;
+  --bg: #101316;
+  --panel: #171b20;
+  --panel-2: #20262d;
+  --text: #f2f5f8;
+  --muted: #a8b3bf;
+  --line: #39434d;
+  --line-strong: #586777;
+  --accent: #4cc9f0;
+  --accent-2: #f2c94c;
+  --accent-3: #ff6b6b;
+  --ok: #5dd39e;
+  --warn: #f2c94c;
+  --code-bg: #0b0f14;
+  --code-text: #dbeafe;
+  --focus: rgba(76, 201, 240, 0.22);
+  --panel-translucent: rgba(23, 27, 32, 0.82);
+  --shadow: rgba(0, 0, 0, 0.28);
+  --mono: "JetBrains Mono", "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  --sans: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f6f8fb;
+  --panel: #ffffff;
+  --panel-2: #eef3f7;
+  --text: #1c242d;
+  --muted: #5d6875;
+  --line: #cbd5df;
+  --line-strong: #93a4b5;
+  --accent: #0969da;
+  --accent-2: #9a6700;
+  --accent-3: #c93c37;
+  --ok: #1f7a4d;
+  --warn: #9a6700;
+  --code-bg: #eef3f7;
+  --code-text: #1f2937;
+  --focus: rgba(9, 105, 218, 0.18);
+  --panel-translucent: rgba(255, 255, 255, 0.88);
+  --shadow: rgba(31, 45, 61, 0.14);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: linear-gradient(180deg, rgba(76, 201, 240, 0.08), transparent 18rem), var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+html[data-font="mono"] body {
+  font-family: var(--mono);
+}
+
+a {
+  color: var(--accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+a:hover {
+  color: var(--accent-2);
+}
+
+code,
+pre,
+kbd {
+  font-family: var(--mono);
+}
+
+code {
+  color: var(--code-text);
+}
+
+pre {
+  margin: 1rem 0;
+  padding: 1rem;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--code-bg);
+  color: var(--code-text);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.site-shell {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+}
+
+.site-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
+  gap: 1rem;
+  align-items: start;
+  padding: 1.1rem 0 0.75rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.brand {
+  display: grid;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.brand-mark {
+  width: 3rem;
+  height: 3rem;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.brand-title {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: clamp(1rem, 1.7vw, 1.35rem);
+  font-weight: 700;
+}
+
+.brand-subtitle {
+  margin: 0;
+  color: var(--muted);
+  max-width: 62ch;
+}
+
+.top-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.45rem;
+}
+
+.icon-button {
+  width: 2.3rem;
+  height: 2.3rem;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.icon-button:hover {
+  border-color: var(--accent);
+}
+
+.search-box {
+  position: relative;
+  margin-top: 0.7rem;
+}
+
+.search-input {
+  width: 100%;
+  height: 2.7rem;
+  padding: 0 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--code-bg);
+  color: var(--text);
+  outline: none;
+}
+
+.search-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--focus);
+}
+
+.search-results {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.35rem);
+  right: 0;
+  left: 0;
+  max-height: min(70vh, 520px);
+  overflow: auto;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: 0 16px 36px var(--shadow);
+}
+
+.search-result {
+  display: block;
+  padding: 0.72rem 0.8rem;
+  border-bottom: 1px solid var(--line);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.search-result:last-child {
+  border-bottom: 0;
+}
+
+.search-result:hover,
+.search-result:focus {
+  background: var(--panel-2);
+  color: var(--text);
+}
+
+.search-result-title {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.9rem;
+}
+
+.search-result-meta {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.nav-link {
+  padding: 0.42rem 0.65rem;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.86rem;
+  text-decoration: none;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  border-color: var(--line);
+  background: var(--panel);
+  color: var(--text);
+}
+
+.main {
+  padding: 1.4rem 0 3rem;
+}
+
+.hero {
+  display: grid;
+  gap: 1.1rem;
+  padding: 1.2rem 0 1.4rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.hero h1,
+.prose h1,
+.reference-heading h1 {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: clamp(1.8rem, 4vw, 3.3rem);
+  line-height: 1.08;
+  max-width: 18ch;
+}
+
+.hero p,
+.reference-heading p {
+  max-width: 74ch;
+  margin: 0;
+  color: var(--muted);
+  font-size: 1.03rem;
+}
+
+.status-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.7rem;
+  margin-top: 0.3rem;
+}
+
+.stat {
+  min-height: 6.6rem;
+  padding: 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-translucent);
+}
+
+.stat-label {
+  display: block;
+  color: var(--muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+}
+
+.stat-value {
+  display: block;
+  margin-top: 0.35rem;
+  font-family: var(--mono);
+  font-size: 1.15rem;
+}
+
+.tile-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin-top: 1.2rem;
+}
+
+.tile {
+  min-height: 11rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.tile:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.tile h2 {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 1rem;
+}
+
+.tile p {
+  margin: 0.55rem 0 0;
+  color: var(--muted);
+}
+
+.prose {
+  max-width: 880px;
+}
+
+.prose h1 {
+  margin-bottom: 0.8rem;
+}
+
+.prose h2 {
+  margin: 2rem 0 0.65rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 1.35rem;
+}
+
+.prose h3 {
+  margin: 1.45rem 0 0.45rem;
+  color: #f5c66d;
+  font-family: var(--mono);
+  font-size: 1.02rem;
+}
+
+.prose p,
+.prose li {
+  color: var(--text);
+}
+
+.prose blockquote {
+  margin: 1rem 0;
+  padding: 0.2rem 0 0.2rem 1rem;
+  border-left: 3px solid var(--accent-2);
+  color: var(--muted);
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.95rem;
+}
+
+.prose th,
+.prose td {
+  padding: 0.55rem;
+  border: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.prose th {
+  background: var(--panel);
+  color: var(--accent-2);
+  text-align: left;
+}
+
+.provenance-block {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.provenance-block h2 {
+  margin: 0 0 0.55rem;
+  border-top: 0;
+  padding-top: 0;
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.reference-heading {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 1.1rem;
+}
+
+.filter-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.55rem;
+  max-width: 760px;
+}
+
+.filter-input {
+  height: 2.55rem;
+  padding: 0 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--code-bg);
+  color: var(--text);
+  outline: none;
+}
+
+.filter-count {
+  min-width: 8.5rem;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.82rem;
+}
+
+.opcode-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.opcode-panel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-translucent);
+}
+
+.opcode-panel[open] {
+  border-color: var(--line-strong);
+}
+
+.opcode-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.9rem;
+  align-items: center;
+  min-height: 3.25rem;
+  padding: 0.72rem 0.9rem;
+  cursor: pointer;
+}
+
+.opcode-title {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: baseline;
+  min-width: 0;
+}
+
+.opcode-name {
+  font-family: var(--mono);
+  color: var(--accent-2);
+  font-weight: 700;
+}
+
+.opcode-meta {
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.45rem;
+  padding: 0 0.42rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+}
+
+.badge.public {
+  color: var(--ok);
+  border-color: var(--ok);
+}
+
+.badge.warn {
+  color: var(--warn);
+  border-color: var(--warn);
+}
+
+.opcode-body {
+  padding: 0 0.9rem 1rem;
+}
+
+.form-block {
+  padding: 0.85rem 0 0;
+  border-top: 1px solid var(--line);
+}
+
+.form-title {
+  margin: 0 0 0.5rem;
+  color: var(--accent-2);
+  font-family: var(--mono);
+  font-size: 0.93rem;
+}
+
+.bitfield {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  padding-bottom: 0.2rem;
+}
+
+.bitfield svg {
+  display: block;
+  min-width: 660px;
+  height: auto;
+}
+
+.mnemonic-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.7rem 0;
+  font-size: 0.9rem;
+}
+
+.mnemonic-table th,
+.mnemonic-table td {
+  padding: 0.48rem;
+  border: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.mnemonic-table th {
+  background: var(--panel-2);
+  color: var(--accent-2);
+  text-align: left;
+}
+
+.small-note {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.toc {
+  margin: 1rem 0 1.2rem;
+  padding: 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.toc ul {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.site-footer {
+  padding: 1rem 0 1.6rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.tip {
+  position: fixed;
+  z-index: 50;
+  max-width: min(360px, calc(100vw - 24px));
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--code-bg);
+  color: var(--text);
+  box-shadow: 0 12px 30px var(--shadow);
+  font-size: 0.85rem;
+  pointer-events: none;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+@media (max-width: 860px) {
+  .site-shell {
+    width: min(100% - 24px, 1180px);
+  }
+
+  .site-header {
+    grid-template-columns: 1fr;
+  }
+
+  .top-actions {
+    justify-content: flex-start;
+  }
+
+  .status-strip,
+  .tile-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-row {
+    grid-template-columns: 1fr;
+  }
+
+  .opcode-summary {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+    <script src="vendor/minisearch/minisearch-7.2.0.js"></script>
+    <script src="search_index.js"></script>
+  </head>
+  <body>
+    <div class="site-shell">
+      <header class="site-header">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">EZH</div>
+          <div>
+            <h1 class="brand-title">EZH Architecture B Instruction Set</h1>
+            <p class="brand-subtitle">Generated from the ISA database and reviewed prose chapters. Public output is filtered to public references only.</p>
+          </div>
+        </div>
+        <div>
+          <div class="top-actions">
+            <button class="icon-button" type="button" data-action="theme" title="Toggle theme" aria-label="Toggle theme">T</button>
+            <button class="icon-button" type="button" data-action="font" title="Toggle font" aria-label="Toggle font">Aa</button>
+          </div>
+          <div class="search-box">
+            <input id="site-search" class="search-input" type="search" autocomplete="off" placeholder="Search instructions, patterns, and chapters">
+            <div id="site-search-results" class="search-results" hidden></div>
+          </div>
+        </div>
+      </header>
+
+      <nav class="nav" aria-label="Primary">
+
+        <a class="nav-link" href="index.html">Home</a>
+
+        <a class="nav-link active" href="architecture.html">Architecture</a>
+
+        <a class="nav-link" href="instructions.html">Instructions</a>
+
+        <a class="nav-link" href="assembler.html">Assembler</a>
+
+        <a class="nav-link" href="cookbook.html">Cookbook</a>
+
+        <a class="nav-link" href="platform.html">Platform</a>
+
+        <a class="nav-link" href="simulator.html">Simulator</a>
+
+      </nav>
+
+      <main class="main">
+        <article class="prose">
+  <h1>Architecture Overview</h1>
+<p>EZH — "EZ Handler", shipped on more recent parts under the name <strong>SmartDMA</strong> — is a
+32-bit coprocessor that sits beside the Arm core and takes over the work Arm cores are
+bad at: reacting to an I/O edge in zero cycles, running the same tight loop a million
+times, streaming data through a format conversion on its way to a peripheral.</p>
+<blockquote>
+<p><strong>EZH and SmartDMA are the same thing.</strong> <em>SmartDMA</em> is the name NXP uses in official
+documentation, and it is the name in the silicon: the peripheral appears as <code>SMARTDMA0</code>,
+its trigger mux as <code>SMARTDMAARCHB_INMUX[n]</code>, its interrupt as <code>SMARTDMA_IRQn</code>, its pin
+function as <code>SMARTDMA_PIO</code>. <em>EZH</em> ("EZ Handler") is the original architecture name, and
+it is the one that survives in the things a programmer actually touches — the <code>E_*</code>
+instruction mnemonics, the <code>fsl_ezh_*</code> headers, the <code>EZHB_*</code> control registers.</p>
+<p>This documentation uses <strong>EZH</strong> when discussing the architecture and instruction set,
+and <strong>SmartDMA</strong> when discussing a specific part, because that is what a Reference
+Manual, an SDK header, or a config tool will call it. If you arrived here searching for
+one name, everything about the other applies.</p>
+</blockquote>
+<p>This chapter describes what the machine <em>is</em>. The <a href="instructions.html">instruction reference</a>
+describes what each opcode <em>does</em>, down to the bit; the <a href="assembler.html">assembler guide</a>
+describes how you write programs for it with bunny_build. Everything here is grounded in
+citable public material plus review notes kept in the chapter metadata; where public
+material leaves a question open, this chapter says so in place rather than guessing.</p>
+<h2 id="what-ezh-is">What EZH is</h2>
+<p>EZH is not a general-purpose CPU and is not trying to be one. It is a <em>cooperation</em> core:
+the Arm keeps the application, and EZH takes the tedious, repetitive, latency-critical
+edges of it. Its design targets are:</p>
+<ul>
+<li><strong>State machine control</strong> — hardware-assisted dispatch on I/O events.</li>
+<li><strong>Boolean detection</strong> — combinational monitoring of up to eight event sources with no
+  interrupt entry cost at all.</li>
+<li><strong>DMA emulation, and better</strong> — plain DMA moves bytes; EZH can <em>transform</em> them in
+  flight (the canonical example is RGB565 → RGB888 on the way to a display interface).</li>
+<li><strong>Protocol emulation over I/O</strong> — USART, I²C, SPI, ISO7816, PWM, I3C.</li>
+<li><strong>Shift-based algorithms</strong> — CRC, SHA, multiplication, decimation filters.</li>
+<li><strong>Streaming and general I/O handling</strong> — register-mapped GPIO, single-cycle.</li>
+<li><strong>Interrupt load reduction</strong> — EZH services the interrupt first and only escalates to
+  the Arm when the Arm is actually needed.</li>
+</ul>
+<p>The structural advantages over a small Arm core (the comparison AN14650 draws is against
+a Cortex-M0+) come from four decisions:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>EZH</th>
+<th>Cortex-M0+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Architecture</td>
+<td>Modified Harvard, dual AHB (instruction + data)</td>
+<td>Von Neumann, single system bus</td>
+</tr>
+<tr>
+<td>Event latency</td>
+<td>Bit-slice detection, no cycle penalty</td>
+<td>ISR entry ~15 cycles at zero wait states</td>
+</tr>
+<tr>
+<td>I/O access</td>
+<td>Register-mapped (<code>GPO</code>/<code>GPI</code>/<code>GPD</code>) with dedicated opcodes</td>
+<td>Memory-mapped over AHB, one extra cycle per access</td>
+</tr>
+<tr>
+<td>Loops</td>
+<td>Zero-overhead hardware loop</td>
+<td>Decrement-compare-branch, one cycle penalty</td>
+</tr>
+</tbody>
+</table>
+<p>Add to that a 32-bit instruction word — far more room than 16-bit Thumb — which is what
+buys conditional execution on nearly every opcode, fused pre/post barrel shifts, and
+inversion, all in a single cycle.</p>
+<h2 id="system-context">EZH in the system</h2>
+<p>EZH is an AHB <strong>controller</strong> (bus master), not a peripheral slave, on two independent
+ports. Its control registers, in contrast, are slaves on the APB, at a per-part base
+address:</p>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>EZH control register base</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LPC5410x</td>
+<td><code>0x4004_C000</code></td>
+</tr>
+<tr>
+<td>LPC54114 / LPC51U68</td>
+<td><code>0x4001_D000</code></td>
+</tr>
+<tr>
+<td>LPC55(S)6x / LPC55(S)2x / LPC55(S)3x</td>
+<td><code>0x4001_D000</code></td>
+</tr>
+<tr>
+<td>i.MX RT500</td>
+<td><code>0x4002_7000</code></td>
+</tr>
+<tr>
+<td>MCXNx4x / MCXN23x</td>
+<td><code>0x4003_3000</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>That table is the published list, not the current one.</strong> It reproduces AN14650's, which
+predates a good part of the portfolio — the MCXA line alone adds parts across the 1xx
+through 5xx series, and presence is not uniform even within a series (MCXA173/174/176
+carry the block; MCXA156 does not). On TrustZone parts each entry is also really a pair:
+MCXN947's is <code>0x5003_3000</code> secure, <code>0x4003_3000</code> non-secure. The
+<a href="platform.html">platform guide</a> carries the derived, complete list.</p>
+</blockquote>
+<p>The <a href="platform.html">platform guide</a> carries the full per-part picture — pin mux options,
+IRQ numbers, INPUTMUX trigger maps. Four pieces of system plumbing must be right before
+any EZH program runs:</p>
+<p><strong>Clock and reset.</strong> Both live in the system control module. The EZH clock must be
+enabled before you touch an EZH control register, let alone start the core.</p>
+<p><strong>Pin mux.</strong> EZH drives up to 32 I/O pins directly, when those pins select the EZH
+alternate function: FUNC 4 on LPC5410x/LPC5411x/LPC51U68, FUNC 15 on
+LPC55(S)3x/LPC55(S)6x/i.MX RT500, FUNC 7 on MCXNx4x.</p>
+<p><strong>Trigger mux.</strong> The eight Boolean bit-slice inputs are wired through the system
+INPUTMUX (<code>EZH_INPUTMUX[0..7]</code>), exactly like DMA triggers. Anything the INPUTMUX can
+reach — GPIO pins, peripheral interrupt lines, timer match events — can drive a bit-slice.</p>
+<p><strong>Bus priority.</strong> EZH shares the AHB matrix with the Arm core. At equal priority, EZH
+memory accesses can be starved; raising the EZH instruction and data ports in the
+<code>AHBMATPRIO</code> register of SYSCON/SYSCTL is the standard fix and is what the reference
+boot sequence does.</p>
+<p>Starting the core is then: write the (4-byte aligned) program address to <code>EZHB_BOOT</code>,
+write the parameter-block pointer to <code>EZHB_ARM2EZH</code>, and set the ignition bit in
+<code>EZHB_CTRL</code>. The full register block is in <a href="#arm-ezh">Arm ↔ EZH interaction</a>.</p>
+<h3>The word at the boot address is not executed</h3>
+<p><strong>Begin every EZH program with an <a href="instructions.html#nop"><code>E_NOP</code></a>.</strong> The instruction word sitting at
+<code>EZHB_BOOT</code> is discarded — execution effectively begins one word later. This applies at
+<em>boot</em> only; code reached by a branch, a vector dispatch, or a breakpoint substitution
+loses nothing.</p>
+<p>The evidence is consistent across four independent directions:</p>
+<ul>
+<li>Training material states it directly, attributing it to alignment.</li>
+<li>The checked fetch model agrees: it seeds its fetch queue at
+  <code>boot_addr + 4</code>, so the word at <code>boot_addr</code> is never fetched for execution.</li>
+<li><strong>111 of 114</strong> EZH programs in the historical sample corpus open with <a href="instructions.html#nop"><code>E_NOP</code></a> —
+  either literally or through a prologue macro that begins with one.</li>
+<li>The exceptions prove the rule rather than breaking it. The two programs that skip the
+  leading <a href="instructions.html#nop"><code>E_NOP</code></a> are not boot entries: one is a breakpoint <em>vector</em> target (reached by
+  address substitution) and one is dispatched to. AN14650 shows both halves of this pair
+  in a single example — its boot-entry routine opens with <a href="instructions.html#nop"><code>E_NOP</code></a>, its breakpoint
+  handler opens straight into <a href="instructions.html#str"><code>E_PUSH</code></a>.</li>
+<li>One sample settles it outright: it places a <strong>data constant</strong> in the boot word (a
+  buffer pointer, via a <code>DCD</code> directive) and branches from the second word. Executing
+  that word would run a RAM address as an instruction. The program works.</li>
+</ul>
+<p>That last idiom is worth knowing: the discarded word is free real estate. Most code
+spends it on an <a href="instructions.html#nop"><code>E_NOP</code></a>; the boot word can equally hold a constant the program is going
+to want anyway.</p>
+<blockquote>
+<p>Still formally on the bench list — no public source states it, and none of the above is
+silicon. But the convention is safe regardless: an opening <a href="instructions.html#nop"><code>E_NOP</code></a> costs nothing if
+the word turns out to be executed after all.</p>
+</blockquote>
+<h2 id="dual-bus">Dual-bus architecture</h2>
+<p>EZH has two independent AHB controller interfaces:</p>
+<ul>
+<li><strong>Inst-AHB</strong> — fetches opcodes. Nothing else.</li>
+<li><strong>Data-AHB</strong> — everything else: literals, memory, peripherals, anywhere on the chip.</li>
+</ul>
+<p>The interesting decision is that <em>data literals come over the data bus</em>, where an Arm core
+would fetch them over the instruction bus from a literal pool. Three things fall out of
+that, and all three shape how you write EZH code:</p>
+<ol>
+<li><strong>The program counter mechanism stays trivial.</strong> Because the instruction bus only ever
+   fetches instructions, sequentially, it is <em>always</em> exactly two instructions ahead of
+   the decode/execute stage. No literal pool perturbs it, so the relationship never has to
+   be recomputed.</li>
+<li><strong>The pipeline does not have to be flushed on a branch.</strong> Since the correlation between
+   fetch and decode is fixed and known, the hardware knows exactly how many extra opcodes
+   it fetched, which makes it <em>safe to let them execute</em> instead of discarding them. This
+   is what the <a href="#pipeline">scheduled branch</a> is, and it is a direct consequence of putting
+   literals on the data bus.</li>
+<li><strong>Data accesses can be scheduled independently.</strong> Every read and write goes through one
+   unit (DFETCH), which can queue work whose address, offset, or data has not arrived yet
+   — so the core keeps executing while memory traffic drains. See
+   <a href="#dfetch">data access acceleration</a>.</li>
+</ol>
+<h2 id="pipeline">Instruction pipeline and branching</h2>
+<p>Instruction fetch is an AHB read, so it carries the two-cycle address/data latency AHB
+imposes. Decode and execute happen together in a single cycle, starting from the clock
+edge that registers the read data. In steady-state linear execution that pipelining is
+invisible: one instruction retires per cycle.</p>
+<p>It becomes visible at branches, and EZH offers three branch mechanisms with three
+different costs.</p>
+<h3>Ordinary branch — 3 cycles</h3>
+<p>When a branch executes, the instruction bus has already fetched the next two instructions.
+An ordinary branch discards them and refills from the new address:</p>
+<pre><code>I-AHB address    A0    A1    A2    Ax    Ax+1  Ax+2
+I-AHB data             D0    D1    D2    Dx    Dx+1
+Executing                    E0    ---   ---   Ex
+                             ^branch  two flushed cycles
+</code></pre>
+<p>One cycle for the branch itself plus two dead cycles while the pipeline refills: <strong>three
+cycles</strong>, and the two already-fetched instructions (<code>D1</code>, <code>D2</code>) are thrown away.</p>
+<h3>Scheduled branch — 1 cycle</h3>
+<p>A scheduled branch reclaims those two cycles by <em>not</em> flushing. The two instructions
+already in flight execute normally while the pipeline refills from the branch target:</p>
+<pre><code>I-AHB address    A0    A1    A2    Ax    Ax+1  Ax+2
+I-AHB data             D0    D1    D2    Dx    Dx+1
+Executing                    E0    E1    E2    Ex
+                             ^branch  both execute
+</code></pre>
+<p>The branch costs <strong>one cycle</strong>. The price is that the two instructions after the branch
+still run — that is not a hazard to be worked around, it is the feature. They are the
+<em>branch delay slots</em>, and idiomatic EZH code fills them with useful work.</p>
+<p>There are three ways to request one:</p>
+<ul>
+<li><strong><a href="instructions.html#goto"><code>E_GOTO</code></a> under the <code>UNS</code> condition</strong> — unconditionally scheduled.</li>
+<li><strong><a href="instructions.html#goto"><code>E_GOTO</code></a> under the <code>NZS</code> condition</strong> — scheduled if the <code>NZ</code> flag is set.</li>
+<li><strong>Any flag-setting ALU operation whose destination is <code>PC</code>.</strong> Writing <code>PC</code> branches;
+  writing <code>PC</code> <em>with</em> the <code>S</code> (set-flags) modifier makes it scheduled. The <code>S</code> bit is
+  reinterpreted here — no flags are set, because the destination is <code>PC</code>.</li>
+</ul>
+<pre><code>E_COND_GOTO(UNS, target)   ; scheduled: the next two instructions execute
+E_PUSH(R0)                 ; executed
+E_PUSH(R1)                 ; executed
+E_PUSH(R2)                 ; NOT executed - beyond the two-instruction shadow
+
+E_GOTO(target2)            ; ordinary: the next two are flushed
+E_PUSH(R3)                 ; NOT executed
+</code></pre>
+<p>The <code>UNS</code> and <code>NZS</code> condition codes are the same encodings as the <code>SPO</code> and <code>SNE</code>
+<a href="#flags">algorithmic flags</a> — the meaning depends on the opcode they qualify.</p>
+<h3>Tight loop — 0 cycles</h3>
+<p>The third mechanism removes the branch entirely. <a href="instructions.html#tight_loop"><code>E_TIGHT_LOOP</code></a> hands the loop bounds
+and iteration count to the <a href="#supervisor">execution supervisor</a>, which rewrites the fetch
+address in hardware:</p>
+<pre><code>I-AHB address    A0    A1    A2    A0    A1    A2
+I-AHB data             D0    D1    D2    D0    D1
+Executing                    E0    E1    E2    E0
+                                               ^no gap
+</code></pre>
+<p><strong>Zero cycles.</strong> The loop repeats seamlessly with no branch instruction and no bubble.</p>
+<h2 id="two-ahead">Living with a pipeline that runs two ahead</h2>
+<p>The two-instruction lookahead is not an implementation detail you can ignore — it is
+visible in the programmer's model in at least eight places. Collected here, because
+every one of them is a place where otherwise-correct code goes wrong.</p>
+<p><strong>1. Reading <code>PC</code> gives you the current instruction's address + 8 bytes.</strong> Instructions
+are 32 bits, so +8 bytes is exactly the two instruction words the pipeline is ahead by.
+<code>PC</code> is an ordinary readable source register and what you read is the fetch position, so
+all PC-relative address math carries that two-word bias:</p>
+<p>These two are <em>alternatives</em> at the same address, not a sequence — each shows what a
+different immediate yields from the same starting point:</p>
+<pre><code>E_ADD_IMM(R4, PC, -4)   ; R4 = address of the NEXT instruction
+E_ADD_IMM(R4, PC, 0)    ; R4 = address of the one after that
+</code></pre>
+<blockquote>
+<p><strong>Mind the units — they are not the same across instructions.</strong> The ALU immediate
+forms (<code>imm12s</code>: <code>E_ADD_IMM</code>, <code>E_SUB_IMM</code>, …) take a <strong>raw byte</strong> offset, so one
+instruction is <code>4</code>. The load/store offset (<code>offset8s</code>: <a href="instructions.html#ldr"><code>E_LDR</code></a>, <a href="instructions.html#str"><code>E_STR</code></a> and
+relatives) is <strong>scaled by access size</strong>, so for a word access one instruction is <code>1</code>.
+The two idioms below step the same distance:</p>
+<p><code>E_ADD_IMM(R4, PC, -4)   ; -4 BYTES  = back one instruction
+E_LDR(PC, R4, 1)        ;  1 WORD   = forward one instruction</code></p>
+<p>This is why label tables are indexed <code>0, 1, 2, …</code> with <a href="instructions.html#ldr"><code>E_LDR</code></a> but set up with a
+byte-denominated <code>E_ADD_IMM(Rn, PC, -4)</code>. Older listings make the distinction visible
+by spelling the byte constant as a product — <code>E_ADD_IMM(R4, PC, 2*4)</code> means two
+instructions.</p>
+</blockquote>
+<p>This is exactly why the standard label-table idiom opens with <code>E_ADD_IMM(Rn, PC, -4)</code>
+immediately followed by the table: <code>-4</code> bytes lands on the first table entry. Every checked
+worked example is consistent with a <code>+8</code>-byte read, and AN14650 states plainly that the PC
+is two instructions ahead — but no public source states the constant outright, so it is on
+the bench list for confirmation.</p>
+<p><strong>2. Writing <code>PC</code> branches; writing it with <code>S</code> branches <em>scheduled</em>.</strong> The set-flags bit
+is reinterpreted rather than setting flags. This makes computed branches cheap:
+<code>E_ADD_IMMS(PC, PC, 8)</code> schedules a branch four instructions ahead of the current one
+(<code>PC</code> already reads +8 bytes, and the immediate adds 8 more, so +16 bytes = four words).</p>
+<p><strong>3. An ordinary branch throws away two fetched instructions; a scheduled branch runs
+them.</strong> Covered above — this <em>is</em> the mechanism.</p>
+<p><strong>4. A vectored hold flushes two instructions unless you accelerate it.</strong>
+<a href="instructions.html#hold"><code>E_VECTORED_HOLD</code></a> discards the two instructions after it, which is pure latency in an
+event handler. <a href="instructions.html#hold"><code>E_ACC_VECTORED_HOLD</code></a> takes a mask of which vectors should keep them, so
+for the accelerated events those two instructions execute while the branch to the handler
+is still in flight. See <a href="#boolean-detection">Boolean detection</a>.</p>
+<p><strong>5. Large vector table entries are four instructions because of this.</strong> A scheduled
+branch plus its two unflushed instructions is three; the fourth slot is what lets an entry
+hold a full single-cycle branch to the rest of a longer handler.</p>
+<p><strong>6. The instruction after <a href="instructions.html#tight_loop"><code>E_TIGHT_LOOP</code></a> executes exactly once.</strong> The loop body starts
+<em>two</em> instructions after the <a href="instructions.html#tight_loop"><code>E_TIGHT_LOOP</code></a>, because of the lookahead. That one-shot
+slot is genuinely useful — it is where loop-invariant setup goes:</p>
+<pre><code>E_LOAD_IMM(R0, 15)          ; 15 -&gt; 16 total iterations
+E_ADD_IMM(R1, PC, 8)        ; R1 = first instruction PAST the loop body
+E_TIGHT_LOOP(R1, R0)        ; arm the supervisor
+E_BSET_IMM(GPD, GPD, 0)     ; runs ONCE, on loop entry
+E_BTOG_IMM(GPO, GPO, 0)     ; loop body: runs 16 times
+</code></pre>
+<p>Note both pipeline effects in one snippet. The end-address register is computed with
+<code>E_ADD_IMM(R1, PC, 8)</code>: <code>PC</code> reads +8 bytes from that instruction and the immediate adds
+8 more, so <code>R1</code> lands <strong>four instructions further on</strong> — which, counting from the
+<code>E_ADD_IMM</code>, is the instruction immediately after the one-instruction body. That is what
+the supervisor wants: the first address <em>past</em> the loop. And the instruction between
+<a href="instructions.html#tight_loop"><code>E_TIGHT_LOOP</code></a> and the body is the one-shot.</p>
+<p><strong>7. The captured return address depends on whether the branch was scheduled.</strong> When a
+branch saves <code>RA</code>, the saved value is <em>not</em> simply "the next instruction". For an ordinary
+branch <code>RA</code> is the following instruction; for a <strong>scheduled</strong> branch <code>RA</code> is four bytes
+further on — past the two delay-slot instructions. It has to be: returning to the
+instruction immediately after a scheduled branch would re-execute the two instructions
+that already ran in the shadow. See <a href="#stack-ra">Stack and return address</a>.</p>
+<p><strong>8. Breakpoints inside a branch shadow are not reconstructable.</strong> If you set a breakpoint
+on one of the two instructions following a scheduled branch, the breakpoint fires
+correctly, but returning to it re-enters the shadow with the pending branch already lost.
+See <a href="#breakpoint">Breakpoint support</a>.</p>
+<h2 id="dfetch">Data access acceleration</h2>
+<p>EZH treats its register file as a cache in front of the data bus. The DFETCH unit holds
+one posted transaction, so a load or store does not stall the core: execution continues
+past it while the access drains.</p>
+<p>DFETCH will queue <strong>incomplete</strong> requests. A read whose address or offset is itself still
+in flight queues successfully; a write whose data has not yet landed in the source register
+queues successfully. Returning read data is forwarded straight into the queue at the same
+time as it is written back to the register, so a dependent queued access does not have to
+wait for the register write to become visible. DFETCH also carries its own adder, so
+address-plus-offset is computed without occupying the main ALU.</p>
+<p>Execution stalls in exactly two cases:</p>
+<ol>
+<li>An instruction <strong>reads</strong> a register whose data has not come back yet.</li>
+<li>An instruction <strong>writes</strong> a register that is the destination of an outstanding read.</li>
+</ol>
+<p>The second rule exists for determinism, not correctness of the read: without it, a late
+read return could overwrite a value written by a later instruction. Blocking makes
+ordering predictable rather than timing-dependent.</p>
+<p>The practical consequence is that load-use distance matters a great deal. Batch the loads,
+then consume them:</p>
+<pre><code>; drains without stalling
+E_LDR_POST(R2, R0, 1)
+E_LDR_POST(R3, R0, 1)
+E_LDR_POST(R4, R0, 1)
+E_LDR_POST(R5, R0, 1)
+E_FEND_LSR(R2, R2, 0)
+E_PER_WRITE(R2, 0x32200)
+E_FEND_LSR(R3, R3, 0)
+E_PER_WRITE(R3, 0x32204)
+...
+
+; stalls on every load: R2 is consumed immediately
+E_LDR_POST(R2, R0, 1)
+E_FEND_LSR(R2, R2, 0)
+E_PER_WRITE(R2, 0x32200)
+E_LDR_POST(R3, R0, 1)
+...
+</code></pre>
+<p>Both sequences are correct. The first one is meaningfully faster, and the difference is
+entirely in the scheduling.</p>
+<h2 id="registers">Register file</h2>
+<p>Sixteen 32-bit registers, addressed by a 4-bit field. There is no separate "special
+register" access path — <code>PC</code>, <code>SP</code>, <code>GPO</code> and the rest are operands to ordinary
+instructions, which is where a lot of EZH's density comes from.</p>
+<table>
+<thead>
+<tr>
+<th>Reg</th>
+<th>Enc</th>
+<th>Access</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>R0</code>–<code>R7</code></td>
+<td><code>0x0</code>–<code>0x7</code></td>
+<td>RW</td>
+<td>General purpose</td>
+</tr>
+<tr>
+<td><code>GPO</code></td>
+<td><code>0x8</code></td>
+<td>RW</td>
+<td>GPIO output: bit <em>n</em> drives EZH pin <em>n</em> (1 = high)</td>
+</tr>
+<tr>
+<td><code>GPD</code></td>
+<td><code>0x9</code></td>
+<td>RW</td>
+<td>GPIO direction: bit <em>n</em>, 1 = output, 0 = input</td>
+</tr>
+<tr>
+<td><code>CFS</code></td>
+<td><code>0xa</code></td>
+<td>RW</td>
+<td>Boolean detector <strong>source</strong> config: 8×3-bit slice input selects, plus live slice-input status</td>
+</tr>
+<tr>
+<td><code>CFM</code></td>
+<td><code>0xb</code></td>
+<td>RW</td>
+<td>Boolean detector <strong>event</strong> config: 8×3-bit slice event selects, plus 8 OR-enable bits</td>
+</tr>
+<tr>
+<td><code>SP</code></td>
+<td><code>0xc</code></td>
+<td>RW</td>
+<td>Stack pointer</td>
+</tr>
+<tr>
+<td><code>PC</code></td>
+<td><code>0xd</code></td>
+<td>RW</td>
+<td>Program counter — reads two instructions ahead, writes branch</td>
+</tr>
+<tr>
+<td><code>GPI</code></td>
+<td><code>0xe</code></td>
+<td>RO</td>
+<td>GPIO input: bit <em>n</em> reflects EZH pin <em>n</em>. Also the <strong>discard destination</strong></td>
+</tr>
+<tr>
+<td><code>RA</code></td>
+<td><code>0xf</code></td>
+<td>RW</td>
+<td>Return address</td>
+</tr>
+</tbody>
+</table>
+<p>Three notes that matter in practice:</p>
+<p><strong><code>GPI</code> is the bit bucket.</strong> EZH has no compare or test instruction, because it does not
+need one: any flag-setting operation with <code>GPI</code> as its destination computes, sets flags,
+and discards the result. <code>E_BTST_IMMS(GPI, GPI, 3)</code> is a bit test; a subtract with <code>S</code> into
+<code>GPI</code> is a compare. This is the CMP/TST idiom, and it is why the instruction set looks like
+it is missing something it is not.</p>
+<p><strong>Unused I/O registers are free scratch.</strong> If no pin is muxed to EZH, <code>GPO</code> and <code>GPD</code> hold
+no meaning and are usable as two extra general-purpose registers. Likewise <code>CFM</code>, <code>CFS</code> and
+<code>GPI</code> when the Boolean detector is unused. On a register-starved machine this is not a
+curiosity — it is a routine technique.</p>
+<p><strong><code>SP</code> must be initialised even if you never push.</strong> This is stated flatly by the sources
+and is worth respecting; the reference boot sequence loads it from the Arm-supplied
+parameter block as its first real act.</p>
+<h2 id="flags">Flags and conditional execution</h2>
+<p>Almost every EZH instruction can be made conditional. The condition field selects one of
+sixteen codes, drawn from three quite different pools.</p>
+<h3>ALU flags</h3>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Arm equivalent</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>EU</code></td>
+<td>(none)</td>
+<td>Execute unconditionally</td>
+</tr>
+<tr>
+<td><code>ZE</code></td>
+<td><code>EQ</code></td>
+<td>Result zero</td>
+</tr>
+<tr>
+<td><code>NZ</code></td>
+<td><code>NE</code></td>
+<td>Result non-zero</td>
+</tr>
+<tr>
+<td><code>PO</code></td>
+<td><code>PL</code>/<code>GE</code></td>
+<td>Positive (result ≥ 0)</td>
+</tr>
+<tr>
+<td><code>NE</code></td>
+<td><code>MI</code></td>
+<td>Negative (result &lt; 0)</td>
+</tr>
+<tr>
+<td><code>AZ</code></td>
+<td><code>GT</code></td>
+<td>Above zero (result &gt; 0)</td>
+</tr>
+<tr>
+<td><code>ZB</code></td>
+<td><code>LE</code></td>
+<td>Zero or below (result ≤ 0)</td>
+</tr>
+<tr>
+<td><code>CA</code></td>
+<td><code>CS</code></td>
+<td>Carry set</td>
+</tr>
+<tr>
+<td><code>NC</code></td>
+<td><code>CC</code></td>
+<td>Carry not set</td>
+</tr>
+<tr>
+<td><code>CZ</code></td>
+<td>(none)</td>
+<td>Carry set <strong>and</strong> zero</td>
+</tr>
+</tbody>
+</table>
+<pre><code>E_ADDS(R1, R2, R3)        ; R1 = R2 + R3, set flags
+E_COND_LDR(ZE, R1, R2)    ; if zero, load from [R2]
+E_COND_LDR(NZ, R1, R3)    ; if non-zero, load from [R3]
+E_COND_GOTO(AZ, start)    ; if above zero, branch back
+</code></pre>
+<p>Three rules govern when flags move:</p>
+<ul>
+<li><strong>Flags only update on an <code>S</code>-suffixed instruction.</strong> Everything else leaves them alone,
+  which means flag state survives across branches, holds, and data accesses. You can set
+  flags, do a load, and branch on the flags afterwards.</li>
+<li><strong>Carry moves only for operations that can carry.</strong> <code>ADD</code>, <code>SUB</code>, <code>ADC</code>, <code>SBC</code> and the
+  shift/rotate stages affect it. A logical operation with <code>S</code> — <code>E_ORS</code>, <code>E_ANDS</code> — updates
+  zero and negative but leaves carry untouched.</li>
+<li><strong>A set of instructions cannot set flags at all</strong>, regardless: every data-bus read or
+  write (<a href="instructions.html#ldr"><code>E_LDR</code></a>, <a href="instructions.html#str"><code>E_STR</code></a>, <a href="instructions.html#per_read"><code>E_PER_READ</code></a>, <a href="instructions.html#per_write"><code>E_PER_WRITE</code></a> and their relatives), plus
+  <a href="instructions.html#nop"><code>E_NOP</code></a>, <a href="instructions.html#int_trigger"><code>E_INT_TRIGGER</code></a>, <a href="instructions.html#goto"><code>E_GOTO</code></a>, <a href="instructions.html#gosub"><code>E_GOSUB</code></a>, <a href="instructions.html#modify_gpo_byte"><code>E_MODIFY_GPO_BYTE</code></a>,
+  <a href="instructions.html#tight_loop"><code>E_TIGHT_LOOP</code></a>, <a href="instructions.html#hold"><code>E_HOLD</code></a>, <a href="instructions.html#hold"><code>E_VECTORED_HOLD</code></a>, <a href="instructions.html#nop"><code>E_HEART_RYTHM</code></a>,
+  <a href="instructions.html#nop"><code>E_SYNCH_ALL_TO_BEAT</code></a> and <a href="instructions.html#nop"><code>E_WAIT_FOR_BEAT</code></a>.</li>
+</ul>
+<p>And the special case worth repeating: <strong>when the destination is <code>PC</code>, <code>S</code> does not set
+flags — it requests a scheduled branch.</strong></p>
+<pre><code>E_ORS(R2, R1, R3)          ; OR, store in R2, set flags
+E_COND_ORS(PO, PC, R1, R3) ; if PO: OR, then SCHEDULED branch to the result
+E_COND_OR(PO, PC, R1, R3)  ; if PO: OR, then ORDINARY branch to the result
+</code></pre>
+<h3>Algorithmic flags: <code>SPO</code> and <code>SNE</code></h3>
+<p><code>SPO</code> and <code>SNE</code> are shadow copies of <code>PO</code> and <code>NE</code> with one crucial difference: they only
+latch from instructions that were themselves <em>conditioned</em> on <code>SPO</code> or <code>SNE</code>. An ordinary
+<code>S</code> instruction updates <code>PO</code>/<code>NE</code> and leaves the algorithmic pair alone. That is what lets
+you interleave unrelated flag-setting work into a shift-based algorithm and resume the
+algorithm afterwards with its own state intact.</p>
+<p>Their effect, when used as a condition on a fused shift + ALU instruction, is:</p>
+<blockquote>
+<p><strong>The shift always executes. The ALU stage is cancelled when the flag is set.</strong></p>
+</blockquote>
+<p>So <code>SPO</code> means "when the algorithmic-positive flag is set, do the shift <em>only</em>"; <code>SNE</code> is
+the same with the negative sense. This is the "shift-only-when-positive / -negative"
+naming, and it is easy to read backwards — AN14650's own summary bullet states it the
+other way round, but AN14650's own worked example and the verified encodings agree with the
+rule above:</p>
+<pre><code>E_LOAD_IMM(R1, 1)
+E_LOAD_IMMS(R0, 1)                   ; R0 = 1  (PO=1, SPO=0)
+E_COND_LSL_ORS(SPO, R0, R0, R1, 1)   ; SPO==0 -&gt; shift AND OR -&gt; R0 = 3
+                                     ; result positive -&gt; SPO latches 1
+E_LOAD_IMMS(R0, 1)                   ; R0 = 1  (PO=1, SPO unchanged - not conditioned on SPO)
+E_COND_LSL_ORS(SPO, R0, R0, R1, 31)  ; SPO==1 -&gt; shift ONLY  -&gt; R0 = 0x8000_0000
+                                     ; result negative -&gt; SPO latches 0
+</code></pre>
+<p>The point of all this is shift-based algorithms, where a shift happens every iteration and
+an accumulate happens only on some of them. Binary multiplication is the archetype — the
+entire 16×16 multiply core is one instruction inside a tight loop:</p>
+<pre><code>E_LOAD_IMM(R3, 15)                     ; 16 iterations
+E_ADD_IMM(R4, PC, 2*4)                 ; end of loop body
+E_TIGHT_LOOP(R4, R3)
+E_COND_LSLS(SPO, R0, R0, 16)           ; one-shot: position the multiplicand
+E_COND_LSL_ADDS(SPO, R0, R1, R0, 1)    ; the whole multiply, x16
+</code></pre>
+<p>Two restrictions:</p>
+<ul>
+<li><code>SPO</code>/<code>SNE</code> <strong>do not cancel the <code>N</code> inversion</strong> if the instruction carries one. In
+  <code>E_COND_ADDN_LSL(SPO, R1, R2, R3, 24)</code> with <code>SPO</code> set, the add is cancelled but the
+  inversion is not — the result is <code>R2</code> inverted and shifted left by 24. Note which
+  operand survives: with the ALU stage cancelled, the value that flows on is the <em>first</em>
+  source, <code>R2</code>, not the addend. Treat this surviving-operand detail as reviewed behavior
+  that still deserves silicon confirmation.</li>
+<li>They are <strong>not general-purpose conditions.</strong> The architecture names the illegal cases
+  rather than the legal ones: using them on <a href="instructions.html#hold"><code>E_HOLD</code></a>, <a href="instructions.html#hold"><code>E_VECTORED_HOLD</code></a>, <a href="instructions.html#mov"><code>E_MOV</code></a>,
+  <a href="instructions.html#mov"><code>E_LOAD_IMM</code></a> or any data-bus access is undefined. They belong to the shift + ALU
+  datapath, and the plain arithmetic and logical mnemonics are part of that family —
+  <code>E_COND_ADDS(SPO, ...)</code> is legal, being a shift-by-zero encoding of the same form. The
+  rule to carry is "not on holds, moves, immediate loads, or memory", not "only on
+  instructions with a shift in the name".</li>
+</ul>
+<h3>Branch-control conditions: <code>UNS</code> and <code>NZS</code></h3>
+<p><code>UNS</code> and <code>NZS</code> share encodings with <code>SPO</code> and <code>SNE</code>. On <a href="instructions.html#goto"><code>E_GOTO</code></a> they mean "schedule
+this branch" — unconditionally, or when <code>NZ</code> is set. They are not flags and qualify
+nothing else. See <a href="#pipeline">scheduled branch</a>.</p>
+<h3>Boolean and external conditions</h3>
+<p>Four conditions read state from outside the ALU:</p>
+<ul>
+<li><strong><code>BS</code> / <code>NBS</code></strong> — the Boolean detector's logical combiner output is / is not asserted.</li>
+<li><strong><code>EX</code> / <code>NEX</code></strong> — the external flag is / is not set. The external flag is
+  <code>EZHB_CTRL</code> bit 1, writable by either the Arm or EZH itself; EZH has no instruction to
+  set or clear it directly, only to observe it. It is the general-purpose "the Arm is
+  telling me something" input.</li>
+</ul>
+<p>Testing <code>BS</code> on an ordinary conditional instruction is a <em>sampled</em> test, and it comes with
+a hazard. If <code>CFS</code> or <code>CFM</code> are being loaded from the data bus, nothing stalls the
+conditional evaluation — the decision is made when the instruction reaches decode,
+possibly with a stale detector configuration. <a href="instructions.html#hold"><code>E_HOLD</code></a> and <a href="instructions.html#hold"><code>E_VECTORED_HOLD</code></a> do not
+have this problem: they hold <code>BS</code> artificially low until any outstanding <code>CFS</code>/<code>CFM</code> reads
+have landed.</p>
+<p>There is a second, sharper trap. Conditioning a hold on <code>BS</code>:</p>
+<pre><code>E_COND_VECTORED_HOLD(BS, PC)
+</code></pre>
+<p>looks like "take a vector only if one is already pending" — but the flag is sampled at
+decode and the hold evaluates at least a cycle later. If the input goes away in between,
+the hold has already committed and waits for a vector that is no longer there. Don't do
+this unless the detector inputs are known to be stable.</p>
+<h2 id="alu-shifter">ALU, barrel shifter, and flip</h2>
+<p>The ALU does signed 32-bit add and subtract (with and without carry), and <code>AND</code>, <code>OR</code>,
+<code>XOR</code>. <a href="instructions.html#andor"><code>E_ANDOR</code></a> does an AND and an OR against two different registers in one cycle,
+which is a single-instruction read-modify-write for "clear these bits, set those".</p>
+<p>What makes the instruction set dense is that an ALU operation is only one stage of the
+datapath. A single instruction can chain, in one cycle:</p>
+<pre><code>flip -&gt; pre-shift -&gt; ALU -&gt; post-shift -&gt; invert -&gt; set flags
+</code></pre>
+<p>Mnemonics are written <strong>in pipeline order</strong>, which is how you read a name like
+<code>E_SUBN_LSLS</code>: subtract, invert, shift left, set flags.</p>
+<h3>Barrel shifter</h3>
+<p><code>LSL</code>, <code>LSR</code>, <code>ASR</code>, <code>ROR</code>, by an immediate of 0–31, fused into the same cycle as the ALU
+op — either before it (pre-shift, the <a href="instructions.html#shift"><code>E_LSL</code></a>/<a href="instructions.html#shift"><code>E_LSR</code></a>/<a href="instructions.html#shift"><code>E_ASR</code></a>/<a href="instructions.html#shift"><code>E_ROR</code></a> families) or
+after it (post-shift, the <code>_LSL</code> suffix on the arithmetic families).</p>
+<p>The shift amount can also come from the <strong>bottom byte of a register</strong> (the <a href="instructions.html#rshift"><code>E_RLSL</code></a>
+family), which allows amounts beyond 31. Those cases are defined:</p>
+<table>
+<thead>
+<tr>
+<th>Op</th>
+<th>Amount</th>
+<th>Result</th>
+<th>Carry</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>LSL</code></td>
+<td>32</td>
+<td>0</td>
+<td>bit 0</td>
+</tr>
+<tr>
+<td><code>LSR</code></td>
+<td>32</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>ASR</code></td>
+<td>32</td>
+<td>sign bit</td>
+<td>sign bit</td>
+</tr>
+<tr>
+<td><code>ROR</code></td>
+<td>32</td>
+<td>unchanged</td>
+<td>bit 31</td>
+</tr>
+<tr>
+<td><code>LSL</code></td>
+<td>≥ 33</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>LSR</code></td>
+<td>≥ 33</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>ASR</code></td>
+<td>≥ 33</td>
+<td>sign bit</td>
+<td>sign bit</td>
+</tr>
+<tr>
+<td><code>ROR</code></td>
+<td>≥ 33</td>
+<td>rotate by amount mod 32</td>
+<td>bit (amount mod 32)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>These ≥ 32 cases are on the bench-verification list. The documented behavior is
+consistent in reviewed material, but has not been confirmed on silicon.</p>
+</blockquote>
+<p>One more shifter quirk, from the condition table: with a register-sourced <code>LSL</code> by 1 under
+<code>SPO</code>/<code>SNE</code>, the carry is shifted into the LSB automatically — which is exactly what you
+want when tail-chaining a shift across two registers.</p>
+<h3>Flip and invert</h3>
+<p>Before the ALU, an operand can be byte-swapped (<code>FEND</code>, endianness flip) or bit-reversed
+(<code>FBIT</code>). After the ALU, the result can be inverted (<code>N</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th><code>FEND</code></th>
+<th><code>FBIT</code></th>
+<th><code>N</code> (invert)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0x01234567</code></td>
+<td><code>0x67452301</code></td>
+<td><code>0xE6A2C480</code></td>
+<td><code>0xFEDCBA98</code></td>
+</tr>
+<tr>
+<td><code>0x89ABCDEF</code></td>
+<td><code>0xEFCDAB89</code></td>
+<td><code>0xF7B3D591</code></td>
+<td><code>0x76543210</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>FEND</code> is why EZH is good at feeding big-endian peripherals from little-endian memory
+without a conversion pass — the swap is free, fused into an instruction that was happening
+anyway. <code>FBIT</code> serves bit-reversal-heavy algorithms (CRC, FFT addressing).</p>
+<p>Flip and invert also compose with immediate loads, which matters because
+<a href="instructions.html#mov"><code>E_LOAD_IMM</code></a> only carries an 11-bit signed immediate. Building a full 32-bit constant
+is a load-shift-OR sequence (or a load-invert), typically three or four instructions:</p>
+<pre><code>E_LOAD_SIMM(R0, 0xFA, 24)   ; R0 = 0xFA000000
+E_LOAD_SIMM(R1, 0xC6, 16)   ; R1 = 0x00C60000
+E_OR(R0, R0, R1)            ; R0 = 0xFAC60000
+E_LOAD_SIMM(R1, 0x88, 8)    ; R1 = 0x00008800
+E_OR(CFS, R0, R1)           ; CFS = 0xFAC68800
+</code></pre>
+<p>The assembler guide covers the <code>E_LOAD_32IMM</code> pseudo-instruction that bunny_build provides
+to hide this.</p>
+<h2 id="boolean-detection">Boolean detection</h2>
+<p>This is the part of EZH with no analogue in a conventional core, and it is the reason the
+event latency row in the comparison table says "no cycle penalty".</p>
+<h3>Bit-slices</h3>
+<p>Eight identical <strong>bit-slices</strong> each watch one signal and reduce it to a single bit. Each
+slice has:</p>
+<ul>
+<li>an <strong>input mux</strong>, selecting which of the eight bit-slice input signals this slice
+  watches — configured by <code>CFS[31:8]</code>, three bits per slice (slice <em>n</em> at bits
+  <code>[3n+10 : 3n+8]</code>);</li>
+<li>an <strong>event mux</strong>, selecting what counts as an event on that signal — configured by
+  <code>CFM[31:8]</code>, three bits per slice, same layout;</li>
+<li>two <strong>outputs</strong>: one to the logical combiner, one chained into the next slice. Which one
+  is live is set by the slice's <strong>OR-enable</strong> bit in <code>CFM[7:0]</code>.</li>
+</ul>
+<p><code>CFS[7:0]</code> reads back the live input status of the eight slices.</p>
+<p>The eight event-mux settings (the names are the ISA database's):</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Name</th>
+<th>Behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td><code>BS_1</code></td>
+<td>Always 1 regardless of input</td>
+</tr>
+<tr>
+<td>1</td>
+<td><code>BS_RISE</code></td>
+<td>1 on a rising edge — <strong>sticky</strong></td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>BS_FALL</code></td>
+<td>1 on a falling edge — <strong>sticky</strong></td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>BS_CHANGE</code></td>
+<td>1 on either edge — <strong>sticky</strong></td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>BS_SIG</code></td>
+<td>1 while the input is high (level)</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>BS_SIGN</code></td>
+<td>1 while the input is low (level)</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>BS_0</code></td>
+<td>Always 0 — <strong>this is how you disable a slice</strong></td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>BS_EVENT</code></td>
+<td>1 on either edge — <strong>not sticky</strong>, real-time</td>
+</tr>
+</tbody>
+</table>
+<p>The sticky/real-time distinction is the one to internalise. Settings 1–3 latch: once the
+edge fires, the slice stays asserted until you clear it, and <strong>the clear is any write to
+<code>CFM</code></strong>. Setting 7 is the same any-edge detection without the latch. Sticky is what you
+want for "did this happen while I was busy"; real-time is what you want for "is this
+happening now".</p>
+<p>Note the corollary: <strong>any write to <code>CFS</code> or <code>CFM</code> clears the <code>BS</code> flag</strong>, sticky slices
+included. Reconfiguring the detector is not a free operation.</p>
+<h3>The logical combiner: how terms are built</h3>
+<p>The chain between slices is what turns eight bits into a Boolean expression. Each slice
+either routes its result to the logical combiner (OR-enable = 1, ending a term) or ANDs it
+into the next slice (OR-enable = 0, continuing a term). The combiner ORs everything it
+receives:</p>
+<pre><code>LC = LC0 | LC1 | LC2 | LC3 | LC4 | LC5 | LC6 | LC7
+</code></pre>
+<p>So the OR-enable pattern <em>is</em> the expression's shape. With slices 0–7 watching events
+A, B, C, D, F, G, H, I and OR-enable set on slices 2, 3, 5 and 7:</p>
+<pre><code>(A &amp; B &amp; C) | D | (F &amp; G) | (H &amp; I)
+</code></pre>
+<p>The first slice's "from previous" input is tied to 1 so that a term can start anywhere,
+and the chain terminates at slice 7, whose result always reaches the combiner.</p>
+<p><code>LC</code> drives the <code>BS</code>/<code>NBS</code> conditions and gates the hold instructions.</p>
+<h3>Holding</h3>
+<p><a href="instructions.html#hold"><code>E_HOLD</code></a> stops execution until <code>LC</code> goes to 1. That is the whole mechanism — no
+interrupt, no vector, no save/restore:</p>
+<pre><code>E_LOAD_IMM(CFS, 0)          ; slice 0 watches input 0
+E_LOAD_IMM(CFM, 0x101)      ; slice 0 = rising edge, OR-enabled
+...
+E_HOLD                      ; park here until it fires
+E_PUSH(R0)                  ; resumes here
+</code></pre>
+<h3>Vectored holding</h3>
+<p><a href="instructions.html#hold"><code>E_VECTORED_HOLD</code></a> is the dispatching form: hold until <em>any</em> OR-term fires, then branch
+to the vector-table entry belonging to the term that fired. Conceptually it is
+"<code>HOLD</code> + <code>GOTO</code>/<code>GOSUB</code> to vector" — the closest analogue is Arm's <code>WFI</code> followed by
+interrupt dispatch, except there is no interrupt controller involved and the return
+address is saved in <code>RA</code> automatically (suppressible with the <code>NRA</code> option, as
+<a href="instructions.html#hold"><code>E_VECTORED_HOLD_NRA</code></a>).</p>
+<p>The table pointer is passed in a register — commonly <code>PC</code>, which places the table
+immediately after the hold. By default it has eight entries of one instruction each.</p>
+<p>Two dispatch rules, both easy to get wrong:</p>
+<p><strong>Which vector fires for an ANDed term: the <em>last</em> slice in the term.</strong> For
+<code>A + B + CD + EF + G</code> with A on slice 0, B on 1, C/D on 2/3, E/F on 4/5, G on 6:</p>
+<table>
+<thead>
+<tr>
+<th>Term fires</th>
+<th>Vector taken</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td>0</td>
+</tr>
+<tr>
+<td>B</td>
+<td>1</td>
+</tr>
+<tr>
+<td>C &amp; D</td>
+<td>3</td>
+</tr>
+<tr>
+<td>E &amp; F</td>
+<td>5</td>
+</tr>
+<tr>
+<td>G</td>
+<td>6</td>
+</tr>
+</tbody>
+</table>
+<p><strong>When several terms fire at once, the earlier term wins.</strong> Slice 0 outranks slice 7.</p>
+<p>Because dispatch is positional, every one of the eight entries must be populated — an
+unexpected trigger on an unused slice will still dispatch to its slot. Fill the unused
+ones with <a href="instructions.html#nop"><code>E_NOP</code></a> or a branch to a recovery path rather than leaving them to run into
+whatever follows.</p>
+<pre><code>E_VECTORED_HOLD(PC)
+E_NOP                    ; flushed
+E_NOP                    ; flushed
+; --- vector table ---
+E_NOP                    ; slice 0 - unused
+E_NOP                    ; slice 1 - unused
+E_GOTO(bs2_handler)      ; slice 2
+E_GOTO(bs3_handler)      ; slice 3
+E_NOP                    ; slice 4 - unused
+E_NOP                    ; slice 5 - unused
+E_NOP                    ; slice 6 - unused
+E_GOTO(bs7_handler)      ; slice 7
+</code></pre>
+<p>A handler for a sticky slice must clear the latch, which is any <code>CFM</code> write —
+conventionally <code>E_BSET_IMM(CFM, CFM, &lt;slice&gt;)</code>.</p>
+<h3>Accelerated and large-vector forms</h3>
+<p>The two <a href="instructions.html#nop"><code>E_NOP</code></a>s above are wasted cycles: the vectored hold flushes them. The
+accelerated form keeps them for selected vectors. <a href="instructions.html#hold"><code>E_ACC_VECTORED_HOLD</code></a> takes the table
+pointer <em>and</em> a mask of which vectors should execute the two shadow instructions:</p>
+<pre><code>label
+    E_ACC_VECTORED_HOLD(PC, 0x04)   ; accelerate vector 2 only
+    E_COND_GOTO(UNS, label)         ; runs if vector 2 fired: scheduled return
+    E_BTOG_IMM(GPO, GPO, 0)         ; runs if vector 2 fired: the actual work
+    ...
+</code></pre>
+<p>If vector 2 fires, those two instructions execute <em>while</em> the branch to the handler is in
+flight — a scheduled return to the hold plus one instruction of real work, before the
+handler is even reached. If any other vector fires, they are flushed as usual.</p>
+<p>The <strong>large vector table</strong> variants (<a href="instructions.html#hold"><code>E_VECTORED_HOLD_LV</code></a>,
+<a href="instructions.html#hold"><code>E_ACC_VECTORED_HOLD_LV</code></a>) give each entry four instructions instead of one. Four is not
+arbitrary: a scheduled branch plus two unflushed instructions is three, so the fourth slot
+is exactly enough for a single-cycle branch onward to a longer handler.</p>
+<blockquote>
+<p><strong>Unverified — dispatch latency.</strong> The specification puts the minimum at four cycles for
+an accelerated hold (one to detect and compute the vector, two accelerated instructions,
+one in the vector entry). AN14650 quotes roughly six cycles from trigger to hold release
+for all four vectored-hold variants. The two figures measure different intervals and are
+not necessarily in conflict; both are on the bench list.</p>
+</blockquote>
+<h2 id="pending-trap">Pending trap</h2>
+<p>The pending trap is a latching layer between the pin inputs and the bit-slices, and a back
+door that lets the Arm drive bit-slice state directly. It lives in <code>EZHB_PENDTRAP</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Bits</th>
+<th>Field</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>[23:16]</code></td>
+<td>Pending trap enable, one bit per slice</td>
+</tr>
+<tr>
+<td><code>[15:8]</code></td>
+<td>Status polarity</td>
+</tr>
+<tr>
+<td><code>[7:0]</code></td>
+<td>Request / status</td>
+</tr>
+</tbody>
+</table>
+<p>With the trap enabled, bits <code>[7:0]</code> latch input transitions: a bit goes 0 → 1 when its
+input goes 0 → 1 and stays there until cleared by software, even if the input falls back.
+Setting the polarity byte to <code>0xFF</code> inverts the sense, so the latch captures falling edges
+instead.</p>
+<p>The third use is the interesting one: because the bit-slices see the <em>trap</em> bits rather
+than the raw pins when the trap is enabled, writing those bits from the Arm synthesises
+bit-slice events in software.</p>
+<table>
+<thead>
+<tr>
+<th>Trap bit <code>[7:0]</code></th>
+<th>Presented to the bit-slice as</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0</code></td>
+<td>Low level</td>
+</tr>
+<tr>
+<td><code>1</code></td>
+<td>High level</td>
+</tr>
+<tr>
+<td><code>0</code> → <code>1</code></td>
+<td>Rising edge</td>
+</tr>
+<tr>
+<td><code>1</code> → <code>0</code></td>
+<td>Falling edge</td>
+</tr>
+</tbody>
+</table>
+<p>So the Arm can fire an EZH vector by writing a register — an Arm → EZH doorbell that lands
+on the same dispatch path as a real pin event. The trap is disabled by default.</p>
+<h2 id="gpio">GPIO</h2>
+<p>Up to 32 pins are wired directly into the register file: <code>GPO</code> (output), <code>GPD</code>
+(direction, 1 = output), <code>GPI</code> (input, read-only). No AHB transaction, no peripheral
+access — a pin write is a register write, single cycle. This is the single largest source
+of EZH's advantage in bit-banged protocol work.</p>
+<p>Because they are ordinary registers, the whole instruction set applies:
+<code>E_BSET_IMM(GPO, GPO, 21)</code>, <code>E_BCLR_IMM(GPD, GPD, 19)</code>, <code>E_BTOG_IMM(GPO, GPO, 0)</code>, and
+<code>E_BTST_IMMS(GPI, GPI, 19)</code> to test an input into the flags.</p>
+<p>On top of that, <a href="instructions.html#modify_gpo_byte"><code>E_MODIFY_GPO_BYTE</code></a> applies a clear mask, a set mask and a toggle mask to
+the bottom byte of <code>GPO</code> — three read-modify-writes in one cycle. That is the instruction
+for driving a parallel bus.</p>
+<p>(Note that the older sources sometimes call this opcode <code>E_GPO_BYTE_MODIFY</code>; the mnemonic
+that exists is <a href="instructions.html#modify_gpo_byte"><code>E_MODIFY_GPO_BYTE</code></a>.)</p>
+<h2 id="heartbeat">Heartbeat timer</h2>
+<p>A 16-bit auto-reloading down-counter that "beats" each time it reaches zero. The reload
+value is set by <a href="instructions.html#nop"><code>E_HEART_RYTHM</code></a> (or <a href="instructions.html#nop"><code>E_HEART_RYTHM_IMM</code></a>); any use of the opcode
+replaces the reload value, loads the counter, and starts counting on the next cycle. The
+default reload is 0, meaning a beat every cycle — and in that state the counter is
+clock-gated, so the default costs nothing.</p>
+<p>Two ways to use it:</p>
+<p><strong><a href="instructions.html#nop"><code>E_WAIT_FOR_BEAT</code></a></strong> — halt until the next beat. Alignment on demand, for the
+instruction that must happen on the grid:</p>
+<pre><code>E_HEART_RYTHM_IMM(7500)     ; at 150 MHz: ~20 kHz beat
+E_BSET_IMM(GPO, GPO, 21)
+E_WAIT_FOR_BEAT
+E_BCLR_IMM(GPO, GPO, 21)
+E_WAIT_FOR_BEAT             ; ~10 kHz square wave (one beat per half period)
+</code></pre>
+<blockquote>
+<p><strong>Off-by-one, unresolved.</strong> A reload of 0 beats every cycle, which implies the period is
+<code>reload + 1</code> cycles and puts the example above at 19,997 Hz rather than 20,000 — you
+would load 7499 for exactly 20 kHz. Published examples use the round number and quote
+the round frequency, so either they are approximating or the period is <code>reload</code> with 0
+special-cased. The difference is 0.013% and irrelevant to most uses, but it matters for
+long-running bit-banged protocols where the error accumulates. Measure before relying on
+an exact rate.</p>
+</blockquote>
+<p><strong><a href="instructions.html#nop"><code>E_SYNCH_ALL_TO_BEAT</code></a></strong> — switch modes so that <em>every</em> instruction executes only on a
+beat. It takes a 1-bit immediate, so the mode is a toggle rather than a one-way door:
+turn it on for the timing-critical stretch and back off afterwards to run at full speed.
+This buys two things:</p>
+<ul>
+<li><strong>Power.</strong> The core runs slower by the rhythm factor. If EZH is faster than the task
+  needs, this converts the surplus into savings.</li>
+<li><strong>Snap-to-grid determinism.</strong> The mode is implemented by stalling the execute stage, so
+  between beats the core still fetches, decodes, and drains outstanding data transactions.
+  Instruction timing becomes deterministic <em>even when running from memory shared with
+  another AHB controller</em> — the bus contention hides inside the slack. For sampled I/O
+  this is the difference between a jittery bit-bang and a clean one.</li>
+</ul>
+<h2 id="supervisor">Execution supervisor</h2>
+<p>The execution supervisor is the hardware that makes <a href="instructions.html#tight_loop"><code>E_TIGHT_LOOP</code></a> free. It tracks a
+loop's end address and iteration count and rewrites the fetch address when the end is
+reached — no branch instruction, no bubble (see <a href="#pipeline">tight loop</a>).</p>
+<p><a href="instructions.html#tight_loop"><code>E_TIGHT_LOOP</code></a> takes an end-address register and a count register:</p>
+<pre><code>E_LOAD_IMM(R0, 15)          ; count
+E_ADD_IMM(R1, PC, 8)        ; end address = first instruction past the body
+E_TIGHT_LOOP(R1, R0)
+E_BSET_IMM(GPD, GPD, 0)     ; one-shot (see the two-ahead section)
+E_BTOG_IMM(GPO, GPO, 0)     ; body
+</code></pre>
+<p>Three properties worth committing to memory:</p>
+<ul>
+<li><strong>The body executes <code>1 + count</code> times.</strong> A count of 15 gives 16 iterations.</li>
+<li><strong>The setup registers are free after arming.</strong> The supervisor captures the values; <code>R0</code>
+  and <code>R1</code> above can be overwritten inside the loop body without disturbing it.</li>
+<li><strong>The instruction immediately after <a href="instructions.html#tight_loop"><code>E_TIGHT_LOOP</code></a> runs once</strong>, on entry — the loop
+  body starts one instruction later. This is the pipeline lookahead showing through, and
+  it is a useful slot rather than a wart.</li>
+</ul>
+<h2 id="stack-ra">Stack and return address</h2>
+<p>There is no automatic stack management. <code>SP</code> is a register the software maintains;
+<a href="instructions.html#str"><code>E_PUSH</code></a> and <a href="instructions.html#ldr"><code>E_POP</code></a> are aliases over <a href="instructions.html#str"><code>E_STR</code></a> and <a href="instructions.html#ldr"><code>E_LDR</code></a> with the pointer
+hardcoded to <code>SP</code> and the growth direction fixed <strong>upward</strong>.</p>
+<p>What the hardware <em>does</em> do automatically is save the return address into <code>RA</code>:</p>
+<ul>
+<li><strong><a href="instructions.html#gosub"><code>E_GOSUB</code></a></strong> always writes <code>RA</code>.</li>
+<li><strong><a href="instructions.html#hold"><code>E_VECTORED_HOLD</code></a></strong> writes <code>RA</code> unless the <code>NRA</code> option is used.</li>
+<li><strong><a href="instructions.html#goto"><code>E_GOTO</code></a> with the <code>L</code> option</strong> (<a href="instructions.html#goto"><code>E_GOTO_REGL</code></a>) writes <code>RA</code>.</li>
+</ul>
+<p><strong>The saved value accounts for the delay slots.</strong> An ordinary branch saves the address of
+the instruction that follows it. A <em>scheduled</em> branch saves that address plus four — the
+instruction after the two delay slots — because the two shadow instructions have already
+executed by the time the handler returns, and re-running them would be wrong. This is the
+"return with offset" behaviour the architecture advertises, and it means returning through
+<code>RA</code> is correct in both cases without the caller knowing which kind of branch got it there.
+(Behaviour follows the checked model; still pending bench confirmation.)</p>
+<p><code>RA</code> is a single register, so nested calls must preserve it themselves:</p>
+<pre><code>main
+    E_LOAD_IMM(R0, 0xDD)
+    E_GOSUB(f1)             ; RA = return into main
+endfc
+    E_GOSUB(endfc)          ; park
+
+f1
+    ...
+    E_PUSH(RA)              ; preserve before clobbering
+    E_GOSUB(f2)             ; RA = return into f1
+    E_POP(RA)
+    E_GOTO_REG(RA)          ; return to main
+
+f2
+    ...
+    E_GOTO_REG(RA)          ; return to f1
+</code></pre>
+<h2 id="breakpoint">Breakpoint support</h2>
+<p>EZH has a hardware breakpoint, driven entirely from two control registers and usable
+without a debugger — it is really a "call out to my own code at this address" facility,
+which is what makes it good for self-diagnosis on a core that has no other visibility.</p>
+<ul>
+<li><code>EZHB_BREAK_ADDR</code> — the instruction address to break on.</li>
+<li><code>EZHB_BREAK_VECT</code> — the handler address.</li>
+</ul>
+<p>The mechanism is a substitution in the fetch path: when the instruction bus would fetch
+<code>EZHB_BREAK_ADDR</code>, EZH substitutes <code>EZHB_BREAK_VECT</code>. Two consequences follow directly:</p>
+<ol>
+<li><strong>If the instruction would have been flushed, the breakpoint does not fire.</strong> This is
+   the correct behaviour — a breakpoint should trip on execution, not on prefetch — and it
+   comes out of the design for free.</li>
+<li><strong>The instruction at <code>EZHB_BREAK_ADDR</code> never executes.</strong> It is replaced, not preceded.
+   So point <code>EZHB_BREAK_ADDR</code> at an <a href="instructions.html#nop"><code>E_NOP</code></a> you inserted for the purpose; otherwise you
+   have silently deleted an instruction from your program.</li>
+</ol>
+<p>The handler returns by reading <code>EZHB_BREAK_ADDR</code> back with <a href="instructions.html#per_read"><code>E_PER_READ</code></a>, adding 4, and
+branching:</p>
+<pre><code>; handler at EZHB_BREAK_VECT - dump registers where the Arm can see them
+E_PUSH(R4)
+E_PUSH(R5)
+E_PUSH(R6)
+E_PUSH(R7)
+E_PER_READ(R0, EZHBREAKADDR)
+E_ADD_IMM(R0, R0, 4)
+E_GOTO_REG(R0)                  ; resume after the break site
+</code></pre>
+<p>The register-address symbols above are bunny_build's (<code>include/ezh_arch.h</code>):
+<code>EZHBREAKADDR</code>, <code>EZHBREAKVECT</code>, <code>ARM2EZH</code>, <code>EZH2ARM</code>. Published NXP listings spell some
+of them with an extra underscore (<code>EZH_BREAKADDR</code>, <code>EZH_ARM2EZH</code>); those names do not
+exist in this codebase.</p>
+<blockquote>
+<p><strong>Two different things get called "base".</strong> bunny_build's
+<code>LPC_EZH_ARCH_B_CON_BASE</code> points at <code>EZHB_BOOT</code>, <em>not</em> at the start of the peripheral —
+the vendor block has 0x20 of reserved space ahead of it. So bunny_build's offsets run
+<strong>0x20 lower</strong> than the peripheral-relative offsets in the register table above:
+<code>EZHBREAKADDR</code> is <code>CON_BASE + 0x10</code>, the same register the table lists at <code>0x30</code>.
+Cross-reference the two without noticing and every offset is off by 0x20.</p>
+</blockquote>
+<p><strong>A tight loop wins over a breakpoint at the same address.</strong> If the address the execution
+supervisor is about to rewrite is also the breakpoint address, the loop rewrite happens
+first and the breakpoint does not fire — the substitution never gets the chance, because
+the address was replaced before the comparison. Setting a breakpoint on the last
+instruction of a <a href="instructions.html#tight_loop"><code>E_TIGHT_LOOP</code></a> body is therefore not a reliable way to catch each
+iteration. (Ordering follows the checked model; still pending bench confirmation.)</p>
+<blockquote>
+<p><strong>Do not place a breakpoint inside a scheduled branch's shadow.</strong> It fires correctly, but
+on return the pending branch is gone: you re-execute the shadow instructions and then
+fall through instead of branching. Recovering from this requires copying the shadow
+elsewhere and re-entering through the original branch — possible, but not worth it. See
+<a href="#two-ahead">two-ahead</a>.</p>
+</blockquote>
+<h2 id="emergency">Error and emergency mode</h2>
+<p>Emergency mode exists to shut a system down in a controlled way, not to recover from a
+fault. Three things can enter it:</p>
+<ul>
+<li>the external emergency input asserting,</li>
+<li>an <code>ERROR</code> response on <strong>either</strong> AHB bus (suppressible: <code>EZHB_CTRL</code> bit 2 makes EZH
+  ignore AHB errors),</li>
+<li>a software request, via <code>EZHB_EMER_SEL</code> bit 9, with the software-emergency mechanism
+  enabled by bit 8.</li>
+</ul>
+<p>On entry, EZH branches at the next possible instruction cycle to <code>EZHB_EMER_VECT</code>. From
+there nothing is restricted — the emergency handler is ordinary code and can do anything.</p>
+<p>What makes it <em>emergency</em> mode is that it is <strong>one-way</strong>. Once entered, it cannot be left
+except by resetting EZH, either by dropping the ignition bit in <code>EZHB_CTRL</code> or by resetting
+the block. Subsequent emergency assertions and AHB errors have no further effect.</p>
+<p><strong>On the <code>EZHB_EMER_SEL</code> bit 8 confusion.</strong> AN14650's register table describes bit 8 as
+enabling the software emergency mechanism, but the <code>EZH_SetEmergencyMode</code> listing in the
+same document <em>clears</em> bit 8 on its enable path and sets it on its disable path. The two
+contradict each other. NXP's own machine-readable register description for the part
+settles it: the field is named <strong><code>EN</code></strong>, alongside <code>RQ</code> for the bit 9 request. The
+register table is right and the code listing is inverted — <strong>write 1 to bit 8 to enable
+software emergency.</strong></p>
+<blockquote>
+<p>Strictly, the vendor data gives the field name and description but no enumerated
+values, so active-high is inferred from NXP's own naming convention rather than stated.
+That convention is consistent and visible in this very register block: inverted-sense
+bits get negative names — <code>EZHB_CTRL</code> bit 2 is <code>ERRDIS</code>, "Error Disable" — while
+positive-sense bits are <code>EN</code>, <code>START</code>, <code>RQ</code>, <code>BUFEN</code>, <code>SYNCEN</code>. Confirm on the bench if
+it matters to your shutdown path.</p>
+</blockquote>
+<h2 id="arm-ezh">Arm ↔ EZH interaction</h2>
+<p>Everything the Arm can say to EZH, and everything EZH can say back, goes through the APB
+control register block and a small number of dedicated paths. This section collects all of
+them.</p>
+<h3>The EZHB control register block</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Off</th>
+<th>Acc</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>EZHB_BOOT</code></td>
+<td><code>0x20</code></td>
+<td>RW</td>
+<td><code>ADDR[31:2]</code> boot address. The low two bits are not part of the field — 4-byte alignment is structural, not a convention</td>
+</tr>
+<tr>
+<td><code>EZHB_CTRL</code></td>
+<td><code>0x24</code></td>
+<td>RW</td>
+<td><code>WKEY[31:16]</code> key <code>0xC0DE</code>, required on every write · <code>SYNCEN[4]</code> AHB synchronisation, must be 1 · <code>BUFEN[3]</code> bufferable AHB writes · <code>ERRDIS[2]</code> error disable — set to ignore AHB errors, clear and an error raises emergency · <code>EXF[1]</code> external flag, drives <code>EX</code>/<code>NEX</code> · <code>START[0]</code> ignition</td>
+</tr>
+<tr>
+<td><code>EZHB_PC</code></td>
+<td><code>0x28</code></td>
+<td>RO</td>
+<td>EZH program counter — observable from the Arm</td>
+</tr>
+<tr>
+<td><code>EZHB_SP</code></td>
+<td><code>0x2C</code></td>
+<td>RO</td>
+<td>EZH stack pointer — observable from the Arm</td>
+</tr>
+<tr>
+<td><code>EZHB_BREAK_ADDR</code></td>
+<td><code>0x30</code></td>
+<td>RW</td>
+<td><code>ADDR[31:2]</code> breakpoint address</td>
+</tr>
+<tr>
+<td><code>EZHB_BREAK_VECT</code></td>
+<td><code>0x34</code></td>
+<td>RW</td>
+<td><code>VEC[31:2]</code> breakpoint handler</td>
+</tr>
+<tr>
+<td><code>EZHB_EMER_VECT</code></td>
+<td><code>0x38</code></td>
+<td>RW</td>
+<td><code>VEC[31:2]</code> emergency handler</td>
+</tr>
+<tr>
+<td><code>EZHB_EMER_SEL</code></td>
+<td><code>0x3C</code></td>
+<td>RW</td>
+<td><code>RQ[9]</code> software emergency request · <code>EN[8]</code> software emergency enable</td>
+</tr>
+<tr>
+<td><code>EZHB_ARM2EZH</code></td>
+<td><code>0x40</code></td>
+<td>RW</td>
+<td><code>GP[31:2]</code> general purpose — conventionally the parameter-block pointer · <code>IE[1:0]</code> EZH→Arm interrupt enable/mode</td>
+</tr>
+<tr>
+<td><code>EZHB_EZH2ARM</code></td>
+<td><code>0x44</code></td>
+<td>RW</td>
+<td><code>GP[31:0]</code> general purpose; writing it interrupts the Arm when <code>IE == 0b10</code></td>
+</tr>
+<tr>
+<td><code>EZHB_PENDTRAP</code></td>
+<td><code>0x48</code></td>
+<td>RW</td>
+<td><code>EN[23:16]</code> · <code>POL[15:8]</code> · <code>STATUS[7:0]</code> — see <a href="#pending-trap">pending trap</a></td>
+</tr>
+</tbody>
+</table>
+<p>Field names above are NXP's own, from the vendor register description. On MCX parts the
+peripheral is named <code>SMARTDMA0</code> rather than <code>EZH</code>, and its INPUTMUX registers are named
+<code>SMARTDMAARCHB_INMUX[n]</code> — "Arch B" in the silicon's own register naming.</p>
+<p>The <code>0xC0DE</code> key in the upper half of <code>EZHB_CTRL</code> is required on <strong>every</strong> write — a
+read-modify-write that preserves the top half will silently do nothing.</p>
+<blockquote>
+<p><strong>Core versus wrapper — worth knowing when you go looking for answers.</strong> The <code>EZHB_*</code>
+block is not part of the EZH core. It is the NXP peripheral wrapper built around the
+core, which is why its base address, and sometimes its contents, vary by part. The
+architecture-level sources describe the core: they speak of an <em>emergency input signal</em>,
+an <em>external condition input</em>, a <em>breakpoint address fed in from the system</em> — never the
+registers that drive them. Those registers are documented only in per-chip Reference
+Manuals and application notes.</p>
+<p>The practical consequence: a question about instruction behaviour, flags, the pipeline
+or the bit-slices can be settled from architecture sources. A question about an <code>EZHB_*</code>
+register's bit polarity cannot — it needs the Reference Manual for your part, or a
+bench. Two of the open questions in this chapter fall on the wrapper side of that line.</p>
+</blockquote>
+<h3>Arm → EZH</h3>
+<p><strong>Boot and ignition.</strong> Write <code>EZHB_BOOT</code>, write <code>EZHB_ARM2EZH</code>, then set the ignition bit
+(with the key, and with AHB synchronisation enabled). Dropping ignition resets the core —
+this is also the only way out of emergency mode.</p>
+<p><strong>The parameter block.</strong> <code>EZHB_ARM2EZH[31:2]</code> conventionally holds a pointer to a struct
+of arguments; the low two bits are the interrupt-mode field, so EZH masks them off before
+use. This is how the Arm hands EZH its stack address, buffer pointers, and configuration:</p>
+<pre><code>E_PER_READ(R6, ARM2EZH)
+E_LSR(R6, R6, 2)             ; discard the mode bits
+E_LSL(R6, R6, 2)
+E_LDR(SP, R6, 0)             ; first member: the stack
+</code></pre>
+<p><strong>The external flag.</strong> <code>EZHB_CTRL</code> bit 1 is a one-bit mailbox the Arm can set and EZH can
+test with the <code>EX</code>/<code>NEX</code> conditions. EZH cannot set or clear it, only observe it.</p>
+<p><strong>The pending trap.</strong> With the trap enabled, the Arm can write <code>EZHB_PENDTRAP[7:0]</code> to
+synthesise bit-slice edges, firing an EZH vector directly. See
+<a href="#pending-trap">pending trap</a>.</p>
+<p><strong>Trigger sources.</strong> Anything routed into <code>EZH_INPUTMUX[0..7]</code> — peripheral interrupts,
+timer matches, GPIO — reaches the bit-slices without Arm involvement at all.</p>
+<p><strong>Breakpoints and emergency.</strong> <code>EZHB_BREAK_ADDR</code>/<code>EZHB_BREAK_VECT</code> and
+<code>EZHB_EMER_SEL[9]</code> are both Arm-side controls over EZH execution.</p>
+<p><strong>Observation.</strong> <code>EZHB_PC</code> and <code>EZHB_SP</code> are readable at any time — the minimum viable
+debugger.</p>
+<blockquote>
+<p><strong>Unverified — <code>TxEV</code>/<code>__SEV()</code>.</strong> No public source confirms that EZH can monitor the
+Arm's <code>TxEV</code> event signal raised by the <code>__SEV()</code> intrinsic. Treat direct
+<code>__SEV()</code>-driven wakeup as unproven until a Reference Manual or bench result settles it.</p>
+</blockquote>
+<h3>EZH → Arm</h3>
+<p>There are four mechanisms, and they are genuinely different — not variations on one.</p>
+<p><strong>1. <a href="instructions.html#int_trigger"><code>E_INT_TRIGGER</code></a> → the EZH NVIC slot.</strong> EZH has its own interrupt line into the
+NVIC. <a href="instructions.html#int_trigger"><code>E_INT_TRIGGER</code></a> fires a single-cycle pulse on it, and <strong>the common output always
+fires, regardless of the 24-bit argument</strong>. The argument selects only which of the 24
+<em>additional</em> hijack channels pulse alongside it (mechanism 2 below). This is the ordinary
+"I'm done, come look" signal. <a href="instructions.html#int_trigger"><code>E_INT_TRIGGER</code></a> is one of the very few opcodes that cannot
+be conditional — the 24-bit mask occupies the bits the condition field would use.</p>
+<blockquote>
+<p><strong><code>E_INT_TRIGGER(0)</code> is well-defined, and it is the idiomatic end-of-program signal.</strong>
+Zero selects no hijack channels, while the common interrupt still fires — exactly what
+a program wants when it is done and has no peripheral to impersonate. This is why the
+historical corpus ends programs with it.</p>
+<p>Be aware that AN14650 §4.2.14 states the argument must be a positive number greater
+than zero. That conflicts with AN14650's own instruction reference in §5.21 and with
+every program in the sample corpus.
+Read it as advice for the hijack case — where a zero mask would indeed be pointless —
+rather than a constraint on the instruction.</p>
+</blockquote>
+<p><strong>2. <a href="instructions.html#int_trigger"><code>E_INT_TRIGGER</code></a> → interrupt hijack.</strong> EZH also drives a wider interrupt output bus
+where each bit maps onto <em>another peripheral's</em> interrupt line. This lets EZH impersonate
+a peripheral toward the Cortex-M: <code>E_INT_TRIGGER(1 &lt;&lt; 3)</code> raises the third hijackable
+interrupt, and the Arm's existing handler for that peripheral runs. The hijack function
+must be enabled in SYSCON.</p>
+<blockquote>
+<p><strong>How many channels?</strong> The instruction encoding settles the upper bound: the immediate
+is a 24-bit field, so at most <strong>24</strong> channels are addressable from EZH code. Published
+descriptions of the output bus say 32 bits, fewer on some parts — that is the width of
+the hardware bus, not of the field an instruction can drive. Treat 24 as the number that
+matters when writing code, and expect the per-part count to be lower still.</p>
+</blockquote>
+<p><strong>3. <code>EZHB_EZH2ARM</code> handshake.</strong> When <code>EZHB_ARM2EZH[1:0] == 0b10</code>, <em>any</em> write to
+<code>EZHB_EZH2ARM</code> interrupts the Arm — and the written value is the payload. This is the
+mechanism for "here is the buffer I just filled", combining notification and data in one
+<a href="instructions.html#per_write"><code>E_PER_WRITE</code></a>.</p>
+<p><strong>4. Event out.</strong> The same <code>EZHB_ARM2EZH</code> mode field can select an event-out signal rather
+than an interrupt, for waking the Arm from <code>WFE</code> without an ISR.</p>
+<p>Interrupt enable is ordinary NVIC work on the Arm side; the EZH IRQ number is per-part and
+lives in the <a href="platform.html">platform guide</a>.</p>
+<blockquote>
+<p><strong>Unverified — EZH during Arm debug halt.</strong> No public source confirms whether EZH keeps
+executing while the Arm is halted at a debug breakpoint. If true this is important for
+debugging — the coprocessor does not stop when you stop. On the bench list.</p>
+</blockquote>
+<h2 id="open-questions">Known limits and open questions</h2>
+<p>Collected from the sections above, the claims in this chapter that are not yet settled by a
+public source, a bench result, or final review:</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Section</th>
+<th>Confidence</th>
+<th>Resolution path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TxEV</code>/<code>__SEV()</code> monitoring</td>
+<td><a href="#arm-ezh">Arm ↔ EZH</a></td>
+<td>No public corroboration yet</td>
+<td>RM or bench</td>
+</tr>
+<tr>
+<td>EZH runs while Arm is halted</td>
+<td><a href="#arm-ezh">Arm ↔ EZH</a></td>
+<td>No public corroboration yet</td>
+<td>Bench</td>
+</tr>
+<tr>
+<td>Vectored-hold dispatch latency</td>
+<td><a href="#boolean-detection">Boolean detection</a></td>
+<td>Two figures (4 vs ~6 cycles) that may measure different intervals</td>
+<td>Bench</td>
+</tr>
+<tr>
+<td>Heartbeat period: <code>reload</code> or <code>reload + 1</code></td>
+<td><a href="#heartbeat">heartbeat</a></td>
+<td>Published examples imply one, the reload-0 behaviour implies the other</td>
+<td>Bench</td>
+</tr>
+<tr>
+<td>Shift-by-register amounts ≥ 32</td>
+<td><a href="#alu-shifter">ALU and shifter</a></td>
+<td>Reviewed materials agree; never confirmed on silicon</td>
+<td>Bench</td>
+</tr>
+<tr>
+<td><code>E_INT_TRIGGER(0)</code> behaviour</td>
+<td><a href="#arm-ezh">Arm ↔ EZH</a></td>
+<td><strong>Resolved</strong> — the common interrupt behavior is consistent with AN14650 §5.21 and the corpus</td>
+<td>Closed; bench optional</td>
+</tr>
+<tr>
+<td><code>PC</code> source read = current + 8 bytes</td>
+<td><a href="#two-ahead">two-ahead</a></td>
+<td>Derived three ways, plus a database cross-check</td>
+<td>Bench, to confirm</td>
+</tr>
+<tr>
+<td>Boot word not executed</td>
+<td><a href="#system-context">system context</a></td>
+<td>Four independent directions agree, incl. a program that puts data there</td>
+<td>Bench, to confirm</td>
+</tr>
+<tr>
+<td><code>EZHB_EMER_SEL[8]</code> polarity</td>
+<td><a href="#emergency">emergency</a></td>
+<td><strong>Resolved</strong> from the vendor register description; active-high inferred from naming</td>
+<td>Bench, non-blocking</td>
+</tr>
+</tbody>
+</table>
+<p>The list is ordered by how much is genuinely unknown. The first four are open questions.
+The last five are settled to the point where a bench session would be confirming an
+answer rather than looking for one.</p>
+<p>The full bench list, including the encoding-level questions raised by the ISA database
+verification pass, is tracked in the <code>ezh-instruction-set-docs</code> plan.</p>
+
+
+  <section class="provenance-block" aria-label="Public provenance">
+    <h2>Public Provenance</h2>
+    <ul>
+
+      <li>AN14650 §1, §1.2, §1.3 <span class="small-note">(AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28))</span></li>
+
+      <li>AN14650 §2.1, §3.1, §4.1.6, §4.1.7, §4.1.8 <span class="small-note">(AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28))</span></li>
+
+      <li>AN14650 §4.2.1 <span class="small-note">(AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28))</span></li>
+
+      <li>AN14650 §4.2.15, §4.2.10 <span class="small-note">(AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28))</span></li>
+
+      <li>AN14650 §4.2.15.1 note, §4.2.10, §4.2.8; PC offsets re-derived from public worked examples <span class="small-note">(AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28), bunny_build__instr.h / .c encoders)</span></li>
+
+      <li>AN14650 §4.2.10 performance note <span class="small-note">(AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28))</span></li>
+
+      <li>AN14650 §3.2; register encodings from isa/ezh_b/arch.toml <span class="small-note">(AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28), bunny_build__instr.h / .c encoders)</span></li>
+
+      <li>AN14650 §4.2.5, §4.2.5.1, §4.2.5.2 <span class="small-note">(AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28))</span></li>
+
+      <li>AN14650 §4.2.2, §4.2.3, §4.2.4 <span class="small-note">(AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28))</span></li>
+
+      <li>AN14650 §3.2, §4.2.8 <span class="small-note">(AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28))</span></li>
+
+      <li>AN14650 §3.1 (EZHB_PENDTRAP), §4.2.9 <span class="small-note">(AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28))</span></li>
+
+      <li>AN14650 §3.2, §4.2.6, §4.1.7 <span class="small-note">(AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28))</span></li>
+
+      <li>AN14650 §4.2.7 <span class="small-note">(AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28))</span></li>
+
+      <li>AN14650 §4.2.10 <span class="small-note">(AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28))</span></li>
+
+      <li>AN14650 §4.2.11 <span class="small-note">(AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28))</span></li>
+
+      <li>AN14650 §4.2.12 <span class="small-note">(AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28))</span></li>
+
+      <li>AN14650 §3.1 (EZHB_EMER_SEL), §4.1.4, §4.2.13; nxp_chipdata MCXN947 SMARTDMA0 EMER_SEL: EN[8], RQ[9] - settles the AN&#39;s internal contradiction <span class="small-note">(AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28), NXP MCUXpresso Config Tools chip data (per part, fetched via nxp-monkey))</span></li>
+
+      <li>AN14650 §3.1, §4.1.4, §4.1.5, §4.1.9, §4.2.5.2.3, §4.2.14; nxp_chipdata MCXN947 SMARTDMA0 register block supplies the official field names (BOOTADR.ADDR[31:2]; CTRL START/EXF/ERRDIS/BUFEN/SYNCEN/WKEY; EMER_SEL EN/RQ; ARM2EZH IE/GP; PENDTRAP STATUS/POL/EN) and the SMARTDMAARCHB_INMUX[n] naming <span class="small-note">(AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28), NXP MCUXpresso Config Tools chip data (per part, fetched via nxp-monkey))</span></li>
+
+    </ul>
+  </section>
+
+</article>
+
+      </main>
+
+      <footer class="site-footer">
+        Generated from <code>isa/</code> and <code>docs_src/</code>. Non-public source identifiers and titles are excluded from rendered pages.
+      </footer>
+    </div>
+    <script>(function () {
+  const themeButton = document.querySelector("[data-action='theme']");
+  const fontButton = document.querySelector("[data-action='font']");
+  const root = document.documentElement;
+
+  function setTheme(next) {
+    root.dataset.theme = next;
+    try {
+      localStorage.setItem("ezh-theme", next);
+    } catch (_) {}
+  }
+
+  function setFont(next) {
+    root.dataset.font = next;
+    try {
+      localStorage.setItem("ezh-font", next);
+    } catch (_) {}
+  }
+
+  try {
+    const savedTheme = localStorage.getItem("ezh-theme");
+    const savedFont = localStorage.getItem("ezh-font");
+    if (savedTheme) setTheme(savedTheme);
+    if (savedFont) setFont(savedFont);
+  } catch (_) {}
+
+  if (themeButton) {
+    themeButton.addEventListener("click", function () {
+      setTheme(root.dataset.theme === "light" ? "dark" : "light");
+    });
+  }
+
+  if (fontButton) {
+    fontButton.addEventListener("click", function () {
+      setFont(root.dataset.font === "sans" ? "mono" : "sans");
+    });
+  }
+
+  function openHashTarget() {
+    const id = decodeURIComponent(window.location.hash || "").slice(1);
+    if (!id) return;
+    const target = document.getElementById(id);
+    if (!target) return;
+    let current = target.closest("details");
+    while (current) {
+      current.open = true;
+      current = current.parentElement ? current.parentElement.closest("details") : null;
+    }
+    window.setTimeout(function () {
+      target.scrollIntoView({ block: "start" });
+    }, 0);
+  }
+
+  window.addEventListener("hashchange", openHashTarget);
+  openHashTarget();
+
+  const filter = document.querySelector("[data-opcode-filter]");
+  const panels = Array.from(document.querySelectorAll("[data-opcode-panel]"));
+  const count = document.querySelector("[data-filter-count]");
+  if (filter && panels.length) {
+    const updateFilter = function () {
+      const query = filter.value.trim().toLowerCase();
+      let visible = 0;
+      panels.forEach(function (panel) {
+        const haystack = panel.getAttribute("data-search") || "";
+        const show = !query || haystack.includes(query);
+        panel.hidden = !show;
+        if (show) visible += 1;
+      });
+      if (count) {
+        count.textContent = visible + " / " + panels.length;
+      }
+    };
+    filter.addEventListener("input", updateFilter);
+    updateFilter();
+  }
+
+  const tip = document.createElement("div");
+  tip.className = "tip";
+  tip.hidden = true;
+  document.body.appendChild(tip);
+
+  document.addEventListener("pointerover", function (event) {
+    const target = event.target.closest("[data-tip]");
+    if (!target) return;
+    tip.textContent = target.getAttribute("data-tip") || "";
+    tip.hidden = false;
+  });
+
+  document.addEventListener("pointermove", function (event) {
+    if (tip.hidden) return;
+    const padding = 12;
+    const rect = tip.getBoundingClientRect();
+    let left = event.clientX + padding;
+    let top = event.clientY + padding;
+    if (left + rect.width > window.innerWidth) {
+      left = window.innerWidth - rect.width - padding;
+    }
+    if (top + rect.height > window.innerHeight) {
+      top = event.clientY - rect.height - padding;
+    }
+    tip.style.left = Math.max(padding, left) + "px";
+    tip.style.top = Math.max(padding, top) + "px";
+  });
+
+  document.addEventListener("pointerout", function (event) {
+    if (!event.target.closest("[data-tip]")) return;
+    tip.hidden = true;
+  });
+
+  const input = document.getElementById("site-search");
+  const results = document.getElementById("site-search-results");
+  if (!input || !results || !window.MiniSearch || !window.EZH_SEARCH) return;
+
+  const docs = window.EZH_SEARCH.documents || [];
+  const options = window.EZH_SEARCH.options || {};
+  const miniSearch = new window.MiniSearch({
+    fields: options.fields || ["title", "body", "mnemonics", "lookup", "tags"],
+    storeFields: options.storeFields || ["title", "url", "kind", "summary"],
+  });
+  miniSearch.addAll(docs);
+
+  function expandedQuery(raw) {
+    const aliases = window.EZH_SEARCH.aliases || {};
+    const terms = raw.trim().split(/\s+/).filter(Boolean);
+    const expanded = terms.slice();
+    terms.forEach(function (term) {
+      const key = term.toLowerCase();
+      if (aliases[key]) expanded.push(aliases[key]);
+    });
+    return expanded.join(" ");
+  }
+
+  function closeResults() {
+    results.hidden = true;
+    results.replaceChildren();
+  }
+
+  function renderSearch() {
+    const query = input.value.trim();
+    results.replaceChildren();
+    if (query.length < 2) {
+      closeResults();
+      return;
+    }
+
+    const upperQuery = query.toUpperCase();
+    const direct = docs.filter(function (doc) {
+      const names = ((doc.mnemonics || "") + " " + (doc.lookup || "")).toUpperCase().split(/\s+/);
+      return names.some(function (name) {
+        return name === upperQuery || name.startsWith(upperQuery);
+      });
+    });
+
+    const ranked = miniSearch.search(expandedQuery(query), options.searchOptions || {
+      prefix: true,
+      fuzzy: 0.18,
+      boost: { title: 3, mnemonics: 4, lookup: 5, tags: 2 },
+    });
+
+    const seen = new Set();
+    const found = [];
+    direct.concat(ranked).forEach(function (item) {
+      const key = item.id || item.url;
+      if (seen.has(key)) return;
+      seen.add(key);
+      found.push(item);
+    });
+    found.splice(8);
+
+    if (!found.length) {
+      const empty = document.createElement("div");
+      empty.className = "search-result";
+      empty.textContent = "No matches";
+      results.appendChild(empty);
+      results.hidden = false;
+      return;
+    }
+
+    found.forEach(function (item) {
+      const link = document.createElement("a");
+      link.className = "search-result";
+      link.href = item.url;
+
+      const title = document.createElement("span");
+      title.className = "search-result-title";
+      title.textContent = item.title;
+
+      const meta = document.createElement("span");
+      meta.className = "search-result-meta";
+      meta.textContent = [item.kind, item.summary].filter(Boolean).join(" - ");
+
+      link.append(title, meta);
+      results.appendChild(link);
+    });
+    results.hidden = false;
+  }
+
+  input.addEventListener("input", renderSearch);
+  input.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+      input.value = "";
+      closeResults();
+    }
+  });
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "/" && document.activeElement !== input) {
+      event.preventDefault();
+      input.focus();
+    }
+  });
+  document.addEventListener("click", function (event) {
+    if (!event.target.closest(".search-box")) closeResults();
+  });
+})();
+</script>
+  </body>
+</html>

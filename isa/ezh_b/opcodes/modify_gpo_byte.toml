@@ -18,7 +18,7 @@ one-extended, the OR/XOR masks zero-extended).
 """
 restrictions = [
   "No conditional variant: the AND mask byte occupies the cond field bits",
-  "Encoding flagged 'DOUBLE CHECK' by the original header author; unverified against hardware",
+  "Encoding remains marked for hardware confirmation",
 ]
 
 [timing]

@@ -13,12 +13,15 @@ defects fail loudly instead of relying on ad-hoc checking:
   6. Every [[unverified]] entry carries an explicit status from a known set, so
      a settled item can never render as an open hedge.
   7. Bare E_* tokens in the body that are neither real mnemonics nor declared
-     exceptions are reported - they are usually typos in a code example.
+     exceptions fail the run - they are usually typos in a code example.
+  8. Renderable provenance detail strings and [[unverified]] claim metadata do
+     not name non-public source ids, source titles, or known private source
+     filenames.
 
 Usage:
     uv run python isa/tools/lint_chapter.py [docs_src/*.md ...]
 
-Exits non-zero on any error. Warnings do not fail the run.
+Exits non-zero on any error.
 """
 
 from __future__ import annotations
@@ -89,9 +92,60 @@ def peripheral_symbols() -> set[str]:
     return set(re.findall(r"^\s*#\s*define\s+([A-Za-z_]\w*)", text, re.M))
 
 
-def non_public_sources() -> set[str]:
+NONPUBLIC_ALIASES = {
+    "spec_b_06": {
+        "Arch B spec",
+        "Architecture B specification",
+        "the architecture specification",
+        "EZHandler Arch B",
+        "PreRel0.6",
+        "creator's spec",
+        "creator review",
+        "creator confirmation",
+        "creator confirmation pending",
+        "creator to adjudicate",
+        "EZH creator",
+        "EZH creator to adjudicate",
+        "original header author",
+        "hardware analysis",
+        "hardware-adjudication",
+        "advisory",
+        "adjudication item",
+        "adjudication list",
+        "under adjudication",
+        "internal source",
+        "internal sources",
+        "internal deck",
+        "internal material",
+        "spec-grounded",
+    },
+    "fsl_header": {
+        "fsl_ezh_armclang.h",
+    },
+    "sv_tb": {
+        "sv_tb",
+        "ezh_tb_package.sv",
+    },
+}
+
+
+def non_public_markers() -> set[str]:
     arch = tomllib.loads((ROOT / "isa/ezh_b/arch.toml").read_text(encoding="utf-8"))
-    return {k for k, v in arch.get("sources", {}).items() if not v.get("public")}
+    markers: set[str] = set()
+    for key, meta in arch.get("sources", {}).items():
+        if meta.get("public"):
+            continue
+        markers.add(key)
+        title = meta.get("title")
+        if title:
+            markers.add(title)
+        markers.update(NONPUBLIC_ALIASES.get(key, set()))
+    return markers
+
+
+def marker_hits(text: str, markers: set[str]) -> list[str]:
+    lowered = text.lower()
+    return sorted(marker for marker in markers if marker.lower() in lowered)
 
 
 #: Operands of these forms are register-address symbols, not numbers.
@@ -141,6 +195,13 @@ def lint(path: Path, names: set[str], nonpublic: set[str]) -> tuple[list[str], l
         errors.append(f"{path}: section '{anchor}' has no [[provenance]] entry")
     for anchor in sorted(prov_sections - ids):
         errors.append(f"{path}: [[provenance]] names unknown section '{anchor}'")
+    for entry in meta.get("provenance", []):
+        detail = entry.get("detail", "")
+        for marker in marker_hits(detail, nonpublic):
+            errors.append(
+                f"{path}: [[provenance]] section '{entry.get('section', '<unknown>')}' "
+                f"detail names non-public source marker '{marker}'"
+            )
 
     # Unverified entries.
     for entry in meta.get("unverified", []):
@@ -161,6 +222,12 @@ def lint(path: Path, names: set[str], nonpublic: set[str]) -> tuple[list[str], l
         for field in ("claim", "basis", "resolve_by"):
             if not entry.get(field):
                 errors.append(f"{path}: [[unverified]] '{ident}' missing '{field}'")
+                continue
+            for marker in marker_hits(str(entry[field]), nonpublic):
+                errors.append(
+                    f"{path}: [[unverified]] '{ident}' field '{field}' "
+                    f"names non-public source marker '{marker}'"
+                )
 
     # Cross-links.
     linked = re.findall(r"\[\[([^\]]+)\]\]", body)
@@ -174,19 +241,18 @@ def lint(path: Path, names: set[str], nonpublic: set[str]) -> tuple[list[str], l
             errors.append(f"{path}: broken intra-page anchor '#{anchor}'")
 
     # Confidential source containment.
-    for sid in sorted(nonpublic):
-        if sid in body:
-            errors.append(
-                f"{path}: non-public source id '{sid}' appears in body text "
-                "(provenance belongs in front matter)"
-            )
+    for sid in marker_hits(body, nonpublic):
+        errors.append(
+            f"{path}: non-public source marker '{sid}' appears in body text "
+            "(provenance belongs in front matter)"
+        )
 
     # Bare E_* tokens outside link syntax.
     stripped = re.sub(r"\[\[[^\]]+\]\]", "", body)
     for token in sorted(set(re.findall(r"\bE_[A-Z0-9_]+", stripped))):
         if token in names or token in ALLOWED_NON_MNEMONICS:
             continue
-        warnings.append(f"{path}: bare token '{token}' is not a known mnemonic")
+        errors.append(f"{path}: bare token '{token}' is not a known mnemonic")
 
     # Register-address symbols passed to E_PER_READ / E_PER_WRITE.
     symbols = peripheral_symbols()
@@ -234,6 +300,13 @@ def code_blocks(body: str) -> list[str]:
         if current is not None:
             current.append(line)
     return blocks
+
+
+def fence_errors(path: Path, body: str) -> list[str]:
+    count = sum(1 for line in body.splitlines() if line.startswith("```"))
+    if count % 2:
+        return [f"{path}: unterminated fenced code block"]
+    return []
 
 
 _IMM_EXPR = re.compile(r"^-?\d+(?:\s*\*\s*\d+)*$")
@@ -305,10 +378,16 @@ def main() -> int:
     paths = [Path(a) for a in args] if args else sorted((ROOT / "docs_src").glob("*.md"))
     if not paths:
         print("no chapters found in docs_src/")
-        return 0
+        return 1
+
+    missing = [p for p in paths if not p.exists()]
+    for path in missing:
+        print(f"FAIL  {path}: file not found")
+    if missing:
+        return 1
 
     names = mnemonic_set()
-    nonpublic = non_public_sources()
+    nonpublic = non_public_markers()
 
     total_err = 0
 
@@ -321,6 +400,7 @@ def main() -> int:
 
     for path in paths:
         errors, warnings = lint(path, names, nonpublic)
+        errors.extend(fence_errors(path, path.read_text(encoding="utf-8")))
         total_err += len(errors)
         for w in warnings:
             print(f"WARN  {w}")

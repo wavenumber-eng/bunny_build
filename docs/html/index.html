@@ -1,0 +1,980 @@
+<!doctype html>
+<html lang="en" data-theme="dark" data-font="sans">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Home | EZH Architecture B</title>
+    <style>:root {
+  color-scheme: dark;
+  --bg: #101316;
+  --panel: #171b20;
+  --panel-2: #20262d;
+  --text: #f2f5f8;
+  --muted: #a8b3bf;
+  --line: #39434d;
+  --line-strong: #586777;
+  --accent: #4cc9f0;
+  --accent-2: #f2c94c;
+  --accent-3: #ff6b6b;
+  --ok: #5dd39e;
+  --warn: #f2c94c;
+  --code-bg: #0b0f14;
+  --code-text: #dbeafe;
+  --focus: rgba(76, 201, 240, 0.22);
+  --panel-translucent: rgba(23, 27, 32, 0.82);
+  --shadow: rgba(0, 0, 0, 0.28);
+  --mono: "JetBrains Mono", "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  --sans: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f6f8fb;
+  --panel: #ffffff;
+  --panel-2: #eef3f7;
+  --text: #1c242d;
+  --muted: #5d6875;
+  --line: #cbd5df;
+  --line-strong: #93a4b5;
+  --accent: #0969da;
+  --accent-2: #9a6700;
+  --accent-3: #c93c37;
+  --ok: #1f7a4d;
+  --warn: #9a6700;
+  --code-bg: #eef3f7;
+  --code-text: #1f2937;
+  --focus: rgba(9, 105, 218, 0.18);
+  --panel-translucent: rgba(255, 255, 255, 0.88);
+  --shadow: rgba(31, 45, 61, 0.14);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: linear-gradient(180deg, rgba(76, 201, 240, 0.08), transparent 18rem), var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+html[data-font="mono"] body {
+  font-family: var(--mono);
+}
+
+a {
+  color: var(--accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+a:hover {
+  color: var(--accent-2);
+}
+
+code,
+pre,
+kbd {
+  font-family: var(--mono);
+}
+
+code {
+  color: var(--code-text);
+}
+
+pre {
+  margin: 1rem 0;
+  padding: 1rem;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--code-bg);
+  color: var(--code-text);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.site-shell {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+}
+
+.site-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
+  gap: 1rem;
+  align-items: start;
+  padding: 1.1rem 0 0.75rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.brand {
+  display: grid;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.brand-mark {
+  width: 3rem;
+  height: 3rem;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.brand-title {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: clamp(1rem, 1.7vw, 1.35rem);
+  font-weight: 700;
+}
+
+.brand-subtitle {
+  margin: 0;
+  color: var(--muted);
+  max-width: 62ch;
+}
+
+.top-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.45rem;
+}
+
+.icon-button {
+  width: 2.3rem;
+  height: 2.3rem;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.icon-button:hover {
+  border-color: var(--accent);
+}
+
+.search-box {
+  position: relative;
+  margin-top: 0.7rem;
+}
+
+.search-input {
+  width: 100%;
+  height: 2.7rem;
+  padding: 0 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--code-bg);
+  color: var(--text);
+  outline: none;
+}
+
+.search-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--focus);
+}
+
+.search-results {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.35rem);
+  right: 0;
+  left: 0;
+  max-height: min(70vh, 520px);
+  overflow: auto;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: 0 16px 36px var(--shadow);
+}
+
+.search-result {
+  display: block;
+  padding: 0.72rem 0.8rem;
+  border-bottom: 1px solid var(--line);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.search-result:last-child {
+  border-bottom: 0;
+}
+
+.search-result:hover,
+.search-result:focus {
+  background: var(--panel-2);
+  color: var(--text);
+}
+
+.search-result-title {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.9rem;
+}
+
+.search-result-meta {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.nav-link {
+  padding: 0.42rem 0.65rem;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.86rem;
+  text-decoration: none;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  border-color: var(--line);
+  background: var(--panel);
+  color: var(--text);
+}
+
+.main {
+  padding: 1.4rem 0 3rem;
+}
+
+.hero {
+  display: grid;
+  gap: 1.1rem;
+  padding: 1.2rem 0 1.4rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.hero h1,
+.prose h1,
+.reference-heading h1 {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: clamp(1.8rem, 4vw, 3.3rem);
+  line-height: 1.08;
+  max-width: 18ch;
+}
+
+.hero p,
+.reference-heading p {
+  max-width: 74ch;
+  margin: 0;
+  color: var(--muted);
+  font-size: 1.03rem;
+}
+
+.status-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.7rem;
+  margin-top: 0.3rem;
+}
+
+.stat {
+  min-height: 6.6rem;
+  padding: 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-translucent);
+}
+
+.stat-label {
+  display: block;
+  color: var(--muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+}
+
+.stat-value {
+  display: block;
+  margin-top: 0.35rem;
+  font-family: var(--mono);
+  font-size: 1.15rem;
+}
+
+.tile-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin-top: 1.2rem;
+}
+
+.tile {
+  min-height: 11rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.tile:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.tile h2 {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 1rem;
+}
+
+.tile p {
+  margin: 0.55rem 0 0;
+  color: var(--muted);
+}
+
+.prose {
+  max-width: 880px;
+}
+
+.prose h1 {
+  margin-bottom: 0.8rem;
+}
+
+.prose h2 {
+  margin: 2rem 0 0.65rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 1.35rem;
+}
+
+.prose h3 {
+  margin: 1.45rem 0 0.45rem;
+  color: #f5c66d;
+  font-family: var(--mono);
+  font-size: 1.02rem;
+}
+
+.prose p,
+.prose li {
+  color: var(--text);
+}
+
+.prose blockquote {
+  margin: 1rem 0;
+  padding: 0.2rem 0 0.2rem 1rem;
+  border-left: 3px solid var(--accent-2);
+  color: var(--muted);
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.95rem;
+}
+
+.prose th,
+.prose td {
+  padding: 0.55rem;
+  border: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.prose th {
+  background: var(--panel);
+  color: var(--accent-2);
+  text-align: left;
+}
+
+.provenance-block {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.provenance-block h2 {
+  margin: 0 0 0.55rem;
+  border-top: 0;
+  padding-top: 0;
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.reference-heading {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 1.1rem;
+}
+
+.filter-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.55rem;
+  max-width: 760px;
+}
+
+.filter-input {
+  height: 2.55rem;
+  padding: 0 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--code-bg);
+  color: var(--text);
+  outline: none;
+}
+
+.filter-count {
+  min-width: 8.5rem;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.82rem;
+}
+
+.opcode-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.opcode-panel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-translucent);
+}
+
+.opcode-panel[open] {
+  border-color: var(--line-strong);
+}
+
+.opcode-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.9rem;
+  align-items: center;
+  min-height: 3.25rem;
+  padding: 0.72rem 0.9rem;
+  cursor: pointer;
+}
+
+.opcode-title {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: baseline;
+  min-width: 0;
+}
+
+.opcode-name {
+  font-family: var(--mono);
+  color: var(--accent-2);
+  font-weight: 700;
+}
+
+.opcode-meta {
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.45rem;
+  padding: 0 0.42rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+}
+
+.badge.public {
+  color: var(--ok);
+  border-color: var(--ok);
+}
+
+.badge.warn {
+  color: var(--warn);
+  border-color: var(--warn);
+}
+
+.opcode-body {
+  padding: 0 0.9rem 1rem;
+}
+
+.form-block {
+  padding: 0.85rem 0 0;
+  border-top: 1px solid var(--line);
+}
+
+.form-title {
+  margin: 0 0 0.5rem;
+  color: var(--accent-2);
+  font-family: var(--mono);
+  font-size: 0.93rem;
+}
+
+.bitfield {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  padding-bottom: 0.2rem;
+}
+
+.bitfield svg {
+  display: block;
+  min-width: 660px;
+  height: auto;
+}
+
+.mnemonic-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.7rem 0;
+  font-size: 0.9rem;
+}
+
+.mnemonic-table th,
+.mnemonic-table td {
+  padding: 0.48rem;
+  border: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.mnemonic-table th {
+  background: var(--panel-2);
+  color: var(--accent-2);
+  text-align: left;
+}
+
+.small-note {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.toc {
+  margin: 1rem 0 1.2rem;
+  padding: 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.toc ul {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.site-footer {
+  padding: 1rem 0 1.6rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.tip {
+  position: fixed;
+  z-index: 50;
+  max-width: min(360px, calc(100vw - 24px));
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--code-bg);
+  color: var(--text);
+  box-shadow: 0 12px 30px var(--shadow);
+  font-size: 0.85rem;
+  pointer-events: none;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+@media (max-width: 860px) {
+  .site-shell {
+    width: min(100% - 24px, 1180px);
+  }
+
+  .site-header {
+    grid-template-columns: 1fr;
+  }
+
+  .top-actions {
+    justify-content: flex-start;
+  }
+
+  .status-strip,
+  .tile-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-row {
+    grid-template-columns: 1fr;
+  }
+
+  .opcode-summary {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+    <script src="vendor/minisearch/minisearch-7.2.0.js"></script>
+    <script src="search_index.js"></script>
+  </head>
+  <body>
+    <div class="site-shell">
+      <header class="site-header">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">EZH</div>
+          <div>
+            <h1 class="brand-title">EZH Architecture B Instruction Set</h1>
+            <p class="brand-subtitle">Generated from the ISA database and reviewed prose chapters. Public output is filtered to public references only.</p>
+          </div>
+        </div>
+        <div>
+          <div class="top-actions">
+            <button class="icon-button" type="button" data-action="theme" title="Toggle theme" aria-label="Toggle theme">T</button>
+            <button class="icon-button" type="button" data-action="font" title="Toggle font" aria-label="Toggle font">Aa</button>
+          </div>
+          <div class="search-box">
+            <input id="site-search" class="search-input" type="search" autocomplete="off" placeholder="Search instructions, patterns, and chapters">
+            <div id="site-search-results" class="search-results" hidden></div>
+          </div>
+        </div>
+      </header>
+
+      <nav class="nav" aria-label="Primary">
+
+        <a class="nav-link active" href="index.html">Home</a>
+
+        <a class="nav-link" href="architecture.html">Architecture</a>
+
+        <a class="nav-link" href="instructions.html">Instructions</a>
+
+        <a class="nav-link" href="assembler.html">Assembler</a>
+
+        <a class="nav-link" href="cookbook.html">Cookbook</a>
+
+        <a class="nav-link" href="platform.html">Platform</a>
+
+        <a class="nav-link" href="simulator.html">Simulator</a>
+
+      </nav>
+
+      <main class="main">
+        <section class="hero">
+  <h1>EZH Architecture B</h1>
+  <p>A public static reference for EZH, the instruction-set surface of NXP SmartDMA. Encodings come from the checked ISA database; prose chapters explain the architecture, assembler, and recurring patterns.</p>
+  <div class="status-strip" aria-label="Corpus status">
+    <div class="stat">
+      <span class="stat-label">Opcodes</span>
+      <span class="stat-value">25</span>
+    </div>
+    <div class="stat">
+      <span class="stat-label">Expanded Mnemonics</span>
+      <span class="stat-value">1502</span>
+    </div>
+    <div class="stat">
+      <span class="stat-label">Reviewed Chapters</span>
+      <span class="stat-value">3</span>
+    </div>
+    <div class="stat">
+      <span class="stat-label">Search Mode</span>
+      <span class="stat-value">Static</span>
+    </div>
+  </div>
+</section>
+
+<section class="tile-grid" aria-label="Documentation sections">
+
+  <a class="tile" href="architecture.html">
+    <h2>Architecture</h2>
+    <p>Execution model, register file, flags, buses, branches, and supervisor behavior.</p>
+  </a>
+
+  <a class="tile" href="instructions.html">
+    <h2>Instruction Reference</h2>
+    <p>Expandable opcode panels with generated bitfields, forms, and mnemonic expansions.</p>
+  </a>
+
+  <a class="tile" href="assembler.html">
+    <h2>Assembler</h2>
+    <p>bunny_build as a two-pass C assembler with labels, directives, and pseudo-instructions.</p>
+  </a>
+
+  <a class="tile" href="cookbook.html">
+    <h2>Cookbook</h2>
+    <p>Corpus-backed patterns for continuous engines, command/execute/stop programs, and pseudo-instruction idioms.</p>
+  </a>
+
+  <a class="tile" href="platform.html">
+    <h2>Platform</h2>
+    <p>Part-specific SmartDMA setup material. This page is reserved for the platform-guide step.</p>
+  </a>
+
+  <a class="tile" href="simulator.html">
+    <h2>Simulator</h2>
+    <p>Interactive instruction experiments. This page is reserved for the simulator step.</p>
+  </a>
+
+</section>
+
+      </main>
+
+      <footer class="site-footer">
+        Generated from <code>isa/</code> and <code>docs_src/</code>. Non-public source identifiers and titles are excluded from rendered pages.
+      </footer>
+    </div>
+    <script>(function () {
+  const themeButton = document.querySelector("[data-action='theme']");
+  const fontButton = document.querySelector("[data-action='font']");
+  const root = document.documentElement;
+
+  function setTheme(next) {
+    root.dataset.theme = next;
+    try {
+      localStorage.setItem("ezh-theme", next);
+    } catch (_) {}
+  }
+
+  function setFont(next) {
+    root.dataset.font = next;
+    try {
+      localStorage.setItem("ezh-font", next);
+    } catch (_) {}
+  }
+
+  try {
+    const savedTheme = localStorage.getItem("ezh-theme");
+    const savedFont = localStorage.getItem("ezh-font");
+    if (savedTheme) setTheme(savedTheme);
+    if (savedFont) setFont(savedFont);
+  } catch (_) {}
+
+  if (themeButton) {
+    themeButton.addEventListener("click", function () {
+      setTheme(root.dataset.theme === "light" ? "dark" : "light");
+    });
+  }
+
+  if (fontButton) {
+    fontButton.addEventListener("click", function () {
+      setFont(root.dataset.font === "sans" ? "mono" : "sans");
+    });
+  }
+
+  function openHashTarget() {
+    const id = decodeURIComponent(window.location.hash || "").slice(1);
+    if (!id) return;
+    const target = document.getElementById(id);
+    if (!target) return;
+    let current = target.closest("details");
+    while (current) {
+      current.open = true;
+      current = current.parentElement ? current.parentElement.closest("details") : null;
+    }
+    window.setTimeout(function () {
+      target.scrollIntoView({ block: "start" });
+    }, 0);
+  }
+
+  window.addEventListener("hashchange", openHashTarget);
+  openHashTarget();
+
+  const filter = document.querySelector("[data-opcode-filter]");
+  const panels = Array.from(document.querySelectorAll("[data-opcode-panel]"));
+  const count = document.querySelector("[data-filter-count]");
+  if (filter && panels.length) {
+    const updateFilter = function () {
+      const query = filter.value.trim().toLowerCase();
+      let visible = 0;
+      panels.forEach(function (panel) {
+        const haystack = panel.getAttribute("data-search") || "";
+        const show = !query || haystack.includes(query);
+        panel.hidden = !show;
+        if (show) visible += 1;
+      });
+      if (count) {
+        count.textContent = visible + " / " + panels.length;
+      }
+    };
+    filter.addEventListener("input", updateFilter);
+    updateFilter();
+  }
+
+  const tip = document.createElement("div");
+  tip.className = "tip";
+  tip.hidden = true;
+  document.body.appendChild(tip);
+
+  document.addEventListener("pointerover", function (event) {
+    const target = event.target.closest("[data-tip]");
+    if (!target) return;
+    tip.textContent = target.getAttribute("data-tip") || "";
+    tip.hidden = false;
+  });
+
+  document.addEventListener("pointermove", function (event) {
+    if (tip.hidden) return;
+    const padding = 12;
+    const rect = tip.getBoundingClientRect();
+    let left = event.clientX + padding;
+    let top = event.clientY + padding;
+    if (left + rect.width > window.innerWidth) {
+      left = window.innerWidth - rect.width - padding;
+    }
+    if (top + rect.height > window.innerHeight) {
+      top = event.clientY - rect.height - padding;
+    }
+    tip.style.left = Math.max(padding, left) + "px";
+    tip.style.top = Math.max(padding, top) + "px";
+  });
+
+  document.addEventListener("pointerout", function (event) {
+    if (!event.target.closest("[data-tip]")) return;
+    tip.hidden = true;
+  });
+
+  const input = document.getElementById("site-search");
+  const results = document.getElementById("site-search-results");
+  if (!input || !results || !window.MiniSearch || !window.EZH_SEARCH) return;
+
+  const docs = window.EZH_SEARCH.documents || [];
+  const options = window.EZH_SEARCH.options || {};
+  const miniSearch = new window.MiniSearch({
+    fields: options.fields || ["title", "body", "mnemonics", "lookup", "tags"],
+    storeFields: options.storeFields || ["title", "url", "kind", "summary"],
+  });
+  miniSearch.addAll(docs);
+
+  function expandedQuery(raw) {
+    const aliases = window.EZH_SEARCH.aliases || {};
+    const terms = raw.trim().split(/\s+/).filter(Boolean);
+    const expanded = terms.slice();
+    terms.forEach(function (term) {
+      const key = term.toLowerCase();
+      if (aliases[key]) expanded.push(aliases[key]);
+    });
+    return expanded.join(" ");
+  }
+
+  function closeResults() {
+    results.hidden = true;
+    results.replaceChildren();
+  }
+
+  function renderSearch() {
+    const query = input.value.trim();
+    results.replaceChildren();
+    if (query.length < 2) {
+      closeResults();
+      return;
+    }
+
+    const upperQuery = query.toUpperCase();
+    const direct = docs.filter(function (doc) {
+      const names = ((doc.mnemonics || "") + " " + (doc.lookup || "")).toUpperCase().split(/\s+/);
+      return names.some(function (name) {
+        return name === upperQuery || name.startsWith(upperQuery);
+      });
+    });
+
+    const ranked = miniSearch.search(expandedQuery(query), options.searchOptions || {
+      prefix: true,
+      fuzzy: 0.18,
+      boost: { title: 3, mnemonics: 4, lookup: 5, tags: 2 },
+    });
+
+    const seen = new Set();
+    const found = [];
+    direct.concat(ranked).forEach(function (item) {
+      const key = item.id || item.url;
+      if (seen.has(key)) return;
+      seen.add(key);
+      found.push(item);
+    });
+    found.splice(8);
+
+    if (!found.length) {
+      const empty = document.createElement("div");
+      empty.className = "search-result";
+      empty.textContent = "No matches";
+      results.appendChild(empty);
+      results.hidden = false;
+      return;
+    }
+
+    found.forEach(function (item) {
+      const link = document.createElement("a");
+      link.className = "search-result";
+      link.href = item.url;
+
+      const title = document.createElement("span");
+      title.className = "search-result-title";
+      title.textContent = item.title;
+
+      const meta = document.createElement("span");
+      meta.className = "search-result-meta";
+      meta.textContent = [item.kind, item.summary].filter(Boolean).join(" - ");
+
+      link.append(title, meta);
+      results.appendChild(link);
+    });
+    results.hidden = false;
+  }
+
+  input.addEventListener("input", renderSearch);
+  input.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+      input.value = "";
+      closeResults();
+    }
+  });
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "/" && document.activeElement !== input) {
+      event.preventDefault();
+      input.focus();
+    }
+  });
+  document.addEventListener("click", function (event) {
+    if (!event.target.closest(".search-box")) closeResults();
+  });
+})();
+</script>
+  </body>
+</html>

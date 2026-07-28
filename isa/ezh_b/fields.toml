@@ -170,13 +170,12 @@ kind = "register"
 desc = "Shift-amount register, R0-R7 only (register-shift family)"
 slices = [{ instr = "26:24", value = "2:0" }]
 
-# 3-bit register address: E_ANDOR's OR-source register. Width follows the
-# sv_tb decode (advisory: extract_src3 masks [26:24]); both headers emit the
-# argument unmasked, so a 4-bit [27:24] field is possible — width is on the
-# adjudication list for the EZH creator.
+# 3-bit register address: E_ANDOR's OR-source register. The checked decode
+# masks [26:24]; both headers emit the argument unmasked, so a 4-bit [27:24]
+# field is possible and still needs hardware confirmation.
 [fields.or_reg3]
 kind = "register"
-desc = "OR-source register, R0-R7 only per hardware analysis (E_ANDOR)"
+desc = "OR-source register, R0-R7 in the current E_ANDOR model"
 slices = [{ instr = "26:24", value = "2:0" }]
 
 # ---------------------------------------------------------------------------

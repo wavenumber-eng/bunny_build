@@ -21,13 +21,13 @@ th { background: #eef2f7; }
 
 <h1>Design: ISA documentation generator</h1>
 
-<p><strong>Status:</strong> design accepted (ADR
-<code>isa-adr-0002</code>); implementation lands in the
-<code>build-static-html</code> plan step.
+<p><strong>Status:</strong> implemented by <code>isa/tools/gen_docs.py</code>
+in the <code>build-static-html</code> plan step; ADR
+<code>isa-adr-0002</code> accepted.
 <strong>Decision record:</strong>
 <code>docs/isa/adr/isa-adr-0002-custom-static-html-doc-generator-driven-by-the-isa-database.md</code>.
-<strong>Working spike:</strong> <code>isa/tools/gen_docs_spike.py</code>
-(stdlib-only; superseded by the generator described here).</p>
+<strong>Archived spike:</strong> <code>isa/tools/gen_docs_spike.py</code>
+(stdlib-only proof of the bitfield/rendering path).</p>
 
 <h2>Purpose and scope</h2>
 
@@ -50,19 +50,22 @@ provenance.</td></tr>
 <tr><td><code>docs_src/*.md</code></td>
 <td>Prose chapters: architecture overview, assembler guide, cookbook,
 platform guide. Each carries a <code>+++</code> TOML front-matter block
-(see Provenance rendering). First one landed:
-<code>docs_src/architecture.md</code>.</td></tr>
+(see Provenance rendering). Current drafts:
+<code>docs_src/architecture.md</code>, <code>docs_src/assembler.md</code>,
+and <code>docs_src/cookbook.md</code>.</td></tr>
 <tr><td><code>docs_src/templates/*.html.j2</code></td><td>Jinja2 page
 templates.</td></tr>
 <tr><td><code>docs_src/style.css</code></td><td>Single stylesheet, inlined
 into every page at build time (self-contained output).</td></tr>
+<tr><td><code>docs_src/vendor/minisearch/</code></td><td>Vendored
+MiniSearch 7.2.0 browser asset and license for offline search.</td></tr>
 </table>
 
 <p><strong>Output:</strong> <code>docs/html/</code> — the instruction
 reference is ONE page (per direction, 2026-07-22): the index carries every
 base opcode as a collapsed, expandable panel inline (header: name, opcode
 value, mnemonic count) — no separate per-opcode pages. Deep links
-(<code>index.html#mov</code>) and search results auto-expand the target
+(<code>instructions.html#mov</code>) and search results auto-expand the target
 panel via a hash handler. Prose chapters remain their own pages. Fully
 self-contained: no CDN fonts, scripts, or images; diagrams are inline SVG.
 Output is deterministic (stable ordering, no timestamps) and committed to
@@ -86,12 +89,11 @@ with a passing check.</p>
 chapter contract described under Provenance rendering &mdash; front matter
 keys, cross-link resolution, provenance coverage, anchor integrity,
 confidential-source containment, and <code>[[unverified]]</code> status
-validity &mdash; and runs the <code>pc_model.py</code> self-test. Wire it into
-the generator&rsquo;s <code>--check</code> path when
-<code>build-static-html</code> lands, and into CI alongside the encoding
-verifiers: a chapter that fails linting must not reach generation, because
-these are exactly the defects that survive a careful human read (an
-unresolved mnemonic, a section whose provenance was never recorded, a
+validity &mdash; and runs the <code>pc_model.py</code> self-test. The generator
+runs it before rendering, and <code>gen_docs.py --check</code> runs it
+alongside the encoding verifiers: a chapter that fails linting must not reach
+generation, because these are exactly the defects that survive a careful human
+read (an unresolved mnemonic, a section whose provenance was never recorded, a
 confidential source id pasted into prose).</p>
 
 <p>The PC-relative resolver (<code>--pc</code>) is deliberately
@@ -190,7 +192,14 @@ diff: every <code>[[E_NAME]]</code> token resolves against the expanded
 mnemonic set; every body section has a <code>[[provenance]]</code> entry;
 no <code>[[provenance]]</code>/<code>[[unverified]]</code> entry names a
 section that does not exist; no intra-page anchor is broken; no non-public
-source id appears in body text.</p>
+source id appears in body text; and no renderable provenance detail names a
+non-public source id or title.</p>
+
+<p><strong>Generated-output confidentiality scan.</strong> After rendering,
+the generator check path runs a public-output scanner over
+<code>docs/html/</code>. It fails on non-public source ids, non-public source
+titles, confidential banners, and private source filenames. This is separate
+from the chapter linter because the final artifact is the publication boundary.</p>
 
 <h2>Styling</h2>
 
@@ -232,7 +241,8 @@ tokens so they follow the theme; fixed-bit values render in
 <p>Long term the generated <code>docs/html/</code> tree is published with
 GitHub Pages (custom domain planned). The self-contained/no-CDN constraint
 means the committed tree is the deployable artifact as-is; Pages just serves
-it. Publishing workflow lands with <code>build-static-html</code>.</p>
+it. The publishing workflow now has a deterministic artifact and
+<code>--check</code> gate.</p>
 
 <h2>Site organization (decided 2026-07-22)</h2>
 
@@ -251,12 +261,14 @@ bunny_build programming world.</p>
 
 <h2>Search</h2>
 
-<p>Client-side, fully static, precomputed by the generator at build time —
-no backend at any point (GitHub Pages stays plain hosting). The generator
-already holds everything searchable in structured form; it emits one
-deterministic index asset and a small hand-written lookup script (SCM-styled
-search panel on every page, <code>/</code> focuses it). Three tiers, all
-precomputed in Python:</p>
+<p>Search is implemented as part of <code>build-static-html</code>, after the
+page names, anchors, and generated content are stable. It remains client-side
+and fully static: the generator emits deterministic
+<code>search_index.js</code> data, and the site loads vendored MiniSearch 7.2.0
+from the committed output tree. No backend, CDN, or runtime network access is
+allowed.</p>
+
+<p>The search contract for the generator:</p>
 
 <ol>
 <li><strong>EZH / SmartDMA synonymy (required)</strong> — the two names refer
@@ -270,15 +282,14 @@ them as synonyms in both directions, and the same applies to the
 <li><strong>Exact/prefix mnemonic lookup</strong> — a
 <code>name &rarr; page#anchor</code> map over all 1502 expanded mnemonics
 (plus register, condition, and field names). Typing
-<code>E_COND_LDRB</code> lands on the ldr page instantly. Supersedes the
-index-filter promise in ADR isa-adr-0002.</li>
-<li><strong>Fuzzy matching</strong> — trigram &rarr; posting-list index
-built at generation time; the client intersects query trigrams and scores
-the candidate set (prefix &gt; substring &gt; trigram overlap), so
-<code>vectred hold</code> still finds the hold page.</li>
-<li><strong>Full text</strong> — an inverted token index over prose,
-restrictions, and (later) architecture chapters, weighted
-title &gt; mnemonic &gt; restriction &gt; body.</li>
+<code>E_COND_LDRB</code> lands on <code>instructions.html#ldr</code>
+instantly.</li>
+<li><strong>Library-backed ranked search</strong> — MiniSearch handles
+tokenization, fuzzy matching, prefix matching, and scoring; project code shapes
+the generated index and presents results.</li>
+<li><strong>Full-site index</strong> — include opcode names, expanded
+mnemonics, registers, conditions, fields, restrictions, timing notes, and the
+prose chapters. Weight title, heading, and mnemonic hits above body text.</li>
 </ol>
 
 <p><strong>Constraints:</strong> the index ships as a JS file
@@ -286,10 +297,8 @@ title &gt; mnemonic &gt; restriction &gt; body.</li>
 JSON via <code>fetch()</code> — <code>fetch</code> is blocked on
 <code>file://</code>, and the docs must work opened straight from disk.
 Output is deterministic (sorted keys, no timestamps) so <code>--check</code>
-covers the index like every page. Expected size for this corpus is tens to
-low-hundreds of KB. No search library: third-party engines solve
-large-unstructured-corpus problems; this corpus is small and its structure
-is ours.</p>
+covers the index like every page. The library is vendored with its license
+text; no package-manager install happens at page load time.</p>
 
 <h2>Dependencies</h2>
 
@@ -297,18 +306,18 @@ is ours.</p>
 <tr><th>Package</th><th>Why</th></tr>
 <tr><td><code>jinja2</code></td><td>Page templates (pure Python).</td></tr>
 <tr><td><code>markdown</code></td><td>Prose chapters (pure Python).</td></tr>
+<tr><td><code>MiniSearch 7.2.0</code></td><td>Vendored browser-side search
+library; not a Python or runtime package-manager dependency.</td></tr>
 </table>
 
 <p>Both enter the <code>uv</code> dev dependency group; the generator is
-tooling, not a library dependency of bunny_build itself. Everything else is
-stdlib.</p>
+tooling, not a library dependency of bunny_build itself. The search library is
+handled separately: it is a vendored browser asset, with license text committed
+beside it.</p>
 
 <h2>Deferred</h2>
 
 <ul>
-<li>Client-side mnemonic filter on the index (small inline script over the
-name table; exact-name lookup is the common case given 1502 mnemonics).</li>
-<li>Full-text search — revisit when prose volume warrants it.</li>
 <li>Per-form machine-readable timing — the db carries cycles per opcode file
 (matching AN14650's granularity), with multi-form distinctions (NOP vs
 WAIT_FOR_BEAT, GOTO scheduled-vs-ordinary) in prose notes. Adequate for

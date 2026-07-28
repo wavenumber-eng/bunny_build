@@ -1,0 +1,1208 @@
+<!doctype html>
+<html lang="en" data-theme="dark" data-font="sans">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cookbook: Patterns and Idioms | EZH Architecture B</title>
+    <style>:root {
+  color-scheme: dark;
+  --bg: #101316;
+  --panel: #171b20;
+  --panel-2: #20262d;
+  --text: #f2f5f8;
+  --muted: #a8b3bf;
+  --line: #39434d;
+  --line-strong: #586777;
+  --accent: #4cc9f0;
+  --accent-2: #f2c94c;
+  --accent-3: #ff6b6b;
+  --ok: #5dd39e;
+  --warn: #f2c94c;
+  --code-bg: #0b0f14;
+  --code-text: #dbeafe;
+  --focus: rgba(76, 201, 240, 0.22);
+  --panel-translucent: rgba(23, 27, 32, 0.82);
+  --shadow: rgba(0, 0, 0, 0.28);
+  --mono: "JetBrains Mono", "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  --sans: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f6f8fb;
+  --panel: #ffffff;
+  --panel-2: #eef3f7;
+  --text: #1c242d;
+  --muted: #5d6875;
+  --line: #cbd5df;
+  --line-strong: #93a4b5;
+  --accent: #0969da;
+  --accent-2: #9a6700;
+  --accent-3: #c93c37;
+  --ok: #1f7a4d;
+  --warn: #9a6700;
+  --code-bg: #eef3f7;
+  --code-text: #1f2937;
+  --focus: rgba(9, 105, 218, 0.18);
+  --panel-translucent: rgba(255, 255, 255, 0.88);
+  --shadow: rgba(31, 45, 61, 0.14);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: linear-gradient(180deg, rgba(76, 201, 240, 0.08), transparent 18rem), var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+html[data-font="mono"] body {
+  font-family: var(--mono);
+}
+
+a {
+  color: var(--accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+a:hover {
+  color: var(--accent-2);
+}
+
+code,
+pre,
+kbd {
+  font-family: var(--mono);
+}
+
+code {
+  color: var(--code-text);
+}
+
+pre {
+  margin: 1rem 0;
+  padding: 1rem;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--code-bg);
+  color: var(--code-text);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.site-shell {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+}
+
+.site-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
+  gap: 1rem;
+  align-items: start;
+  padding: 1.1rem 0 0.75rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.brand {
+  display: grid;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.brand-mark {
+  width: 3rem;
+  height: 3rem;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.brand-title {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: clamp(1rem, 1.7vw, 1.35rem);
+  font-weight: 700;
+}
+
+.brand-subtitle {
+  margin: 0;
+  color: var(--muted);
+  max-width: 62ch;
+}
+
+.top-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.45rem;
+}
+
+.icon-button {
+  width: 2.3rem;
+  height: 2.3rem;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.icon-button:hover {
+  border-color: var(--accent);
+}
+
+.search-box {
+  position: relative;
+  margin-top: 0.7rem;
+}
+
+.search-input {
+  width: 100%;
+  height: 2.7rem;
+  padding: 0 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--code-bg);
+  color: var(--text);
+  outline: none;
+}
+
+.search-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--focus);
+}
+
+.search-results {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.35rem);
+  right: 0;
+  left: 0;
+  max-height: min(70vh, 520px);
+  overflow: auto;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: 0 16px 36px var(--shadow);
+}
+
+.search-result {
+  display: block;
+  padding: 0.72rem 0.8rem;
+  border-bottom: 1px solid var(--line);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.search-result:last-child {
+  border-bottom: 0;
+}
+
+.search-result:hover,
+.search-result:focus {
+  background: var(--panel-2);
+  color: var(--text);
+}
+
+.search-result-title {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.9rem;
+}
+
+.search-result-meta {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.nav-link {
+  padding: 0.42rem 0.65rem;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.86rem;
+  text-decoration: none;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  border-color: var(--line);
+  background: var(--panel);
+  color: var(--text);
+}
+
+.main {
+  padding: 1.4rem 0 3rem;
+}
+
+.hero {
+  display: grid;
+  gap: 1.1rem;
+  padding: 1.2rem 0 1.4rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.hero h1,
+.prose h1,
+.reference-heading h1 {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: clamp(1.8rem, 4vw, 3.3rem);
+  line-height: 1.08;
+  max-width: 18ch;
+}
+
+.hero p,
+.reference-heading p {
+  max-width: 74ch;
+  margin: 0;
+  color: var(--muted);
+  font-size: 1.03rem;
+}
+
+.status-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.7rem;
+  margin-top: 0.3rem;
+}
+
+.stat {
+  min-height: 6.6rem;
+  padding: 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-translucent);
+}
+
+.stat-label {
+  display: block;
+  color: var(--muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+}
+
+.stat-value {
+  display: block;
+  margin-top: 0.35rem;
+  font-family: var(--mono);
+  font-size: 1.15rem;
+}
+
+.tile-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin-top: 1.2rem;
+}
+
+.tile {
+  min-height: 11rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.tile:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.tile h2 {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 1rem;
+}
+
+.tile p {
+  margin: 0.55rem 0 0;
+  color: var(--muted);
+}
+
+.prose {
+  max-width: 880px;
+}
+
+.prose h1 {
+  margin-bottom: 0.8rem;
+}
+
+.prose h2 {
+  margin: 2rem 0 0.65rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 1.35rem;
+}
+
+.prose h3 {
+  margin: 1.45rem 0 0.45rem;
+  color: #f5c66d;
+  font-family: var(--mono);
+  font-size: 1.02rem;
+}
+
+.prose p,
+.prose li {
+  color: var(--text);
+}
+
+.prose blockquote {
+  margin: 1rem 0;
+  padding: 0.2rem 0 0.2rem 1rem;
+  border-left: 3px solid var(--accent-2);
+  color: var(--muted);
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.95rem;
+}
+
+.prose th,
+.prose td {
+  padding: 0.55rem;
+  border: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.prose th {
+  background: var(--panel);
+  color: var(--accent-2);
+  text-align: left;
+}
+
+.provenance-block {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.provenance-block h2 {
+  margin: 0 0 0.55rem;
+  border-top: 0;
+  padding-top: 0;
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.reference-heading {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 1.1rem;
+}
+
+.filter-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.55rem;
+  max-width: 760px;
+}
+
+.filter-input {
+  height: 2.55rem;
+  padding: 0 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--code-bg);
+  color: var(--text);
+  outline: none;
+}
+
+.filter-count {
+  min-width: 8.5rem;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.82rem;
+}
+
+.opcode-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.opcode-panel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-translucent);
+}
+
+.opcode-panel[open] {
+  border-color: var(--line-strong);
+}
+
+.opcode-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.9rem;
+  align-items: center;
+  min-height: 3.25rem;
+  padding: 0.72rem 0.9rem;
+  cursor: pointer;
+}
+
+.opcode-title {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: baseline;
+  min-width: 0;
+}
+
+.opcode-name {
+  font-family: var(--mono);
+  color: var(--accent-2);
+  font-weight: 700;
+}
+
+.opcode-meta {
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.45rem;
+  padding: 0 0.42rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+}
+
+.badge.public {
+  color: var(--ok);
+  border-color: var(--ok);
+}
+
+.badge.warn {
+  color: var(--warn);
+  border-color: var(--warn);
+}
+
+.opcode-body {
+  padding: 0 0.9rem 1rem;
+}
+
+.form-block {
+  padding: 0.85rem 0 0;
+  border-top: 1px solid var(--line);
+}
+
+.form-title {
+  margin: 0 0 0.5rem;
+  color: var(--accent-2);
+  font-family: var(--mono);
+  font-size: 0.93rem;
+}
+
+.bitfield {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  padding-bottom: 0.2rem;
+}
+
+.bitfield svg {
+  display: block;
+  min-width: 660px;
+  height: auto;
+}
+
+.mnemonic-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.7rem 0;
+  font-size: 0.9rem;
+}
+
+.mnemonic-table th,
+.mnemonic-table td {
+  padding: 0.48rem;
+  border: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.mnemonic-table th {
+  background: var(--panel-2);
+  color: var(--accent-2);
+  text-align: left;
+}
+
+.small-note {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.toc {
+  margin: 1rem 0 1.2rem;
+  padding: 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.toc ul {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.site-footer {
+  padding: 1rem 0 1.6rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.tip {
+  position: fixed;
+  z-index: 50;
+  max-width: min(360px, calc(100vw - 24px));
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--code-bg);
+  color: var(--text);
+  box-shadow: 0 12px 30px var(--shadow);
+  font-size: 0.85rem;
+  pointer-events: none;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+@media (max-width: 860px) {
+  .site-shell {
+    width: min(100% - 24px, 1180px);
+  }
+
+  .site-header {
+    grid-template-columns: 1fr;
+  }
+
+  .top-actions {
+    justify-content: flex-start;
+  }
+
+  .status-strip,
+  .tile-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-row {
+    grid-template-columns: 1fr;
+  }
+
+  .opcode-summary {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+    <script src="vendor/minisearch/minisearch-7.2.0.js"></script>
+    <script src="search_index.js"></script>
+  </head>
+  <body>
+    <div class="site-shell">
+      <header class="site-header">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">EZH</div>
+          <div>
+            <h1 class="brand-title">EZH Architecture B Instruction Set</h1>
+            <p class="brand-subtitle">Generated from the ISA database and reviewed prose chapters. Public output is filtered to public references only.</p>
+          </div>
+        </div>
+        <div>
+          <div class="top-actions">
+            <button class="icon-button" type="button" data-action="theme" title="Toggle theme" aria-label="Toggle theme">T</button>
+            <button class="icon-button" type="button" data-action="font" title="Toggle font" aria-label="Toggle font">Aa</button>
+          </div>
+          <div class="search-box">
+            <input id="site-search" class="search-input" type="search" autocomplete="off" placeholder="Search instructions, patterns, and chapters">
+            <div id="site-search-results" class="search-results" hidden></div>
+          </div>
+        </div>
+      </header>
+
+      <nav class="nav" aria-label="Primary">
+
+        <a class="nav-link" href="index.html">Home</a>
+
+        <a class="nav-link" href="architecture.html">Architecture</a>
+
+        <a class="nav-link" href="instructions.html">Instructions</a>
+
+        <a class="nav-link" href="assembler.html">Assembler</a>
+
+        <a class="nav-link active" href="cookbook.html">Cookbook</a>
+
+        <a class="nav-link" href="platform.html">Platform</a>
+
+        <a class="nav-link" href="simulator.html">Simulator</a>
+
+      </nav>
+
+      <main class="main">
+        <article class="prose">
+  <h1>Cookbook: Patterns and Idioms</h1>
+<p>The <a href="architecture.html">architecture chapter</a> describes the machine and the
+<a href="assembler.html">assembler guide</a> describes how to write for it. This chapter is the
+part you copy from.</p>
+<h2 id="how-to-read">How to read this chapter</h2>
+<p>Every pattern here comes from working code — a deduplicated corpus of 87 EZH programs
+across four codebases: NXP's sample material, bunny_build's own tests, teenage
+engineering's gibbon-d, and wavenumber's avc. The curated runnable examples stay in
+bunny_build examples/tests and remain deliberately small; this chapter mines the older and
+product code for the patterns those small examples introduce.</p>
+<p>The two dominant shapes are <strong>continuous engines</strong> (camera decode, key scan, protocol
+emulation) and <strong>command / execute / stop</strong> programs that signal the Arm and park with
+<code>E__END</code>. bunny_build's on-target assembly model adds a third recurring theme: you can
+build pseudo-instructions in C when a repeated sequence should become one
+programmer-facing operation.</p>
+<p>One number worth carrying: <strong>the algorithmic flags are used by exactly one program in the
+entire corpus, and register-sourced shifts by exactly one</strong> — both in the same NXP feature
+demonstration. Those are real architecture features with a single worked example anywhere.
+If you need them, the example below may be all there is.</p>
+<h2 id="boot-preamble">The boot preamble</h2>
+<p>Almost every EZH program starts the same way, and 68 of the 87 corpus programs use this
+sequence essentially verbatim:</p>
+<pre><code>E_NOP                        ; the boot word is discarded
+E_PER_READ(R6, ARM2EZH)      ; parameter block pointer
+E_LSR(R6, R6, 2)             ; strip the interrupt-mode bits [1:0]
+E_LSL(R6, R6, 2)
+E_LDR(SP, R6, 0)             ; member 0: the stack
+E_LDR(R7, R6, 1)             ; member 1: whatever you passed next
+</code></pre>
+<p>Three things are happening. The leading <a href="instructions.html#nop"><code>E_NOP</code></a> covers the
+<a href="architecture.html#system-context">discarded boot word</a>. The <code>LSR</code>/<code>LSL</code> pair masks off
+<code>EZHB_ARM2EZH[1:0]</code>, which the hardware uses for interrupt mode — pass a 4-byte-aligned
+pointer and those bits are yours to strip. And <code>SP</code> is loaded <em>first</em>, because
+<code>E_LOAD_32IMM</code> and anything using <a href="instructions.html#str"><code>E_PUSH</code></a> needs a working stack.</p>
+<p>Load the rest of your parameters by word offset from <code>R6</code>. The struct on the Arm side is
+just a <code>uint32_t</code> array as far as EZH is concerned.</p>
+<h2 id="signal-and-park">Signal and park</h2>
+<p>A program that has finished should stop without burning bus bandwidth. The corpus's
+standard terminator — present in seven distinct sources including third-party production
+code — is: raise an interrupt, then park forever.</p>
+<pre><code>E_INT_TRIGGER(0)             ; tell the Arm we are done
+E_LABEL(&quot;END_LOOP&quot;)
+    E_LOAD_IMM (CFS, 0)
+    E_LOAD_SIMM(R0, 0xDB, 24)
+    E_LOAD_SIMM(R1, 0x6D, 16)
+    E_LOAD_SIMM(R2, 0xB6,  8)
+    E_XOR(R0,  R0, R1)
+    E_XOR(CFM, R0, R2)       ; CFM = 0xDB6DB600: every slice &quot;always 0&quot;
+    E_HOLD()
+    E_GOTO(&quot;END_LOOP&quot;)
+</code></pre>
+<p>The <a href="assembler.html#park">assembler guide</a> decodes the <code>CFM</code> constant. The short version:
+all eight bit-slices are forced to constant zero, so the Boolean combiner can never assert
+and the <a href="instructions.html#hold"><code>E_HOLD</code></a> never releases. The core stops fetching entirely.</p>
+<p><code>E_INT_TRIGGER(0)</code> fires the common interrupt while selecting no hijack channels — see
+<a href="architecture.html#arm-ezh">the interrupt mechanisms</a>. If you want to hijack a specific
+peripheral's interrupt instead, pass its mask; avc's camera path uses <code>E_INT_TRIGGER(0xFFFFFF)</code>
+to fire everything.</p>
+<blockquote>
+<p>Order matters. Park first and the interrupt never issues, because the core has stopped.</p>
+</blockquote>
+<h2 id="multi-app">Multi-app dispatch</h2>
+<p>One EZH, several programs, chosen at run time. gibbon-d does this by assembling every
+program into one shared RAM pool and remembering where each landed:</p>
+<pre><code class="language-c">uint32_t ezh_ram[EZH_RAM_WORDS];
+uint32_t ezh_app_offset[EZH_APP_QTY];
+uint32_t last_idx = 0;
+
+ezh_app_offset[SPI_WRITE_APP] = last_idx;
+last_idx += bunny_build(&amp;ezh_ram[ezh_app_offset[SPI_WRITE_APP]],
+                        sizeof(ezh_ram), ezh_app__spi_wr);
+
+ezh_app_offset[SPI_READ_APP] = last_idx;
+last_idx += bunny_build(&amp;ezh_ram[ezh_app_offset[SPI_READ_APP]],
+                        sizeof(ezh_ram) - (last_idx * 4), ezh_app__spi_rd);
+</code></pre>
+<p><code>bunny_build()</code> returns the word count, so accumulating it gives the next free slot.
+Dispatch is then a lookup and a boot:</p>
+<pre><code class="language-c">void ezh__execute_command(uint8_t cmd, EZHPWM_Para *params)
+{
+    if (cmd &lt; EZH_APP_QTY) {
+        selected_program = &amp;ezh_ram[ezh_app_offset[cmd]];
+        EZH_init_and_boot(selected_program, params);
+    }
+}
+</code></pre>
+<p>This is the shape to reach for whenever EZH has more than one job. Note what it is <em>not</em>:
+there is no resident dispatcher program branching on a command word. Each app is
+independently assembled and independently booted, and the Arm chooses by pointing
+<code>EZHB_BOOT</code> somewhere different.</p>
+<p><strong>Watch the remaining-space argument.</strong> The first call above passes the whole pool size;
+the second correctly passes what is left. Getting that wrong turns a pool overflow into a
+silent overwrite of the previous app.</p>
+<h2 id="capture">Parameters are set up fresh on every run</h2>
+<p>EZH has no persistent descriptor chain. Each boot writes a new parameter-block pointer to
+<code>EZHB_ARM2EZH</code>, and the program re-reads it from the top — so the natural way to run
+repeated work is to re-boot with different parameters rather than to build a descriptor
+list once and let hardware walk it.</p>
+<p>avc's camera path is the clearest example: a per-frame entry point takes the destination
+buffer, and the frame program is booted afresh each time.</p>
+<pre><code class="language-c">void avc_camera__prepare_frame(uint16_t *buffer)
+{
+    /* buffer goes into the parameter block; EZH re-reads it on boot */
+}
+</code></pre>
+<p>That is a genuine difference from a classic DMA controller, and it cuts both ways. You give
+up hardware-walked scatter-gather; you gain a program that can decide anything at run time
+about what it is capturing, where it is putting it, and what it does to the data on the
+way. For variable-shape work — a format conversion, a protocol, a frame whose layout
+depends on a register you just read — that trade is usually worth it.</p>
+<h2 id="events">Waiting for events</h2>
+<p>Plain <a href="instructions.html#hold"><code>E_HOLD</code></a> blocks until a configured bit-slice fires:</p>
+<pre><code>E_LOAD_IMM(CFS, 0)           ; slice 0 watches input 0
+E_LOAD_IMM(CFM, 0x101)       ; slice 0 = rising edge, OR-enabled
+E_HOLD()
+</code></pre>
+<p><a href="instructions.html#hold"><code>E_VECTORED_HOLD</code></a> blocks until <em>any</em> enabled term fires and dispatches through a table.
+Populate every entry, even the ones you do not expect — dispatch is positional, and an
+unexpected trigger on an unused slice will still branch to its slot:</p>
+<pre><code>E_VECTORED_HOLD(PC)
+E_NOP                        ; flushed
+E_NOP                        ; flushed
+; --- table, one entry per slice ---
+E_NOP                        ; slice 0 unused
+E_GOTO(&quot;vsync&quot;)              ; slice 1
+E_GOTO(&quot;hsync&quot;)              ; slice 2
+E_NOP                        ; ...
+</code></pre>
+<p>A handler for a <em>sticky</em> slice must clear the latch, and any write to <code>CFM</code> does it —
+conventionally <code>E_BSET_IMM(CFM, CFM, &lt;slice&gt;)</code>.</p>
+<p>For key scanning, the corpus drives several slices from GPIO through the INPUTMUX and lets
+the vectored hold do the debounce-free dispatch — the whole point being that there is no
+interrupt entry cost to pay per key.</p>
+<h2 id="timing">Deterministic timing</h2>
+<p>Two mechanisms, and they compose. <code>E_WAIT_FOR_BEAT</code> aligns one instruction to the
+heartbeat; <code>E_SYNCH_ALL_TO_BEAT(1)</code> puts <em>every</em> instruction on the beat.</p>
+<p>The corpus's clock generator is three instructions inside a tight loop:</p>
+<pre><code>E_HEART_RYTHM_IMM(9)         ; a beat every 10 core cycles
+E_LOAD_IMM(R1, 1000)         ; 1001 iterations
+E_ADD_IMM(R0, PC, 8)
+E_TIGHT_LOOP(R0, R1)
+E_SYNCH_ALL_TO_BEAT(1)       ; one-shot: enter snap-to-grid mode
+E_MODIFY_GPO_BYTE(0xFF, 0, 0xFF)   ; toggle the low byte, every beat
+</code></pre>
+<p>The instruction after <a href="instructions.html#tight_loop"><code>E_TIGHT_LOOP</code></a> runs once — that is where the mode switch goes —
+and the loop body is the single byte-modify, executing on a beat boundary every time. The
+result is a jitter-free square wave on eight pins at once, with the core doing nothing
+else and no interrupt anywhere. <code>E_SYNCH_ALL_TO_BEAT</code> takes a 1-bit operand, so pass <code>0</code>
+to leave the mode again.</p>
+<p>This is the pattern for anything that must not jitter: bit-banged protocols, sampling,
+waveform generation.</p>
+<h2 id="data-movement">Moving and converting data</h2>
+<p>The DFETCH unit holds one posted transaction, so the shape of a copy loop matters. Batch
+the loads, then consume them:</p>
+<pre><code>E_LDR_POST(R2, R0, 1)        ; four loads issue back to back
+E_LDR_POST(R3, R0, 1)
+E_LDR_POST(R4, R0, 1)
+E_LDR_POST(R5, R0, 1)
+E_FEND_LSR(R2, R2, 0)        ; by now R2 has arrived
+E_PER_WRITE(R2, 0x32200)
+E_FEND_LSR(R3, R3, 0)
+E_PER_WRITE(R3, 0x32204)
+</code></pre>
+<p>Consuming each value immediately after its load stalls on every one. Both versions are
+correct; the batched one is meaningfully faster, and the difference is entirely in the
+scheduling. See <a href="architecture.html#dfetch">data access acceleration</a>.</p>
+<p>Conversion rides along for free. <code>FEND</code> byte-swaps and <code>FBIT</code> bit-reverses <em>before</em> the
+ALU, so feeding a big-endian peripheral from little-endian memory costs nothing extra —
+the swap fuses into an instruction that was happening anyway. The display-controller
+sources are built almost entirely from this: load a batch, convert in flight, write to a
+FIFO.</p>
+<h2 id="subroutines">Subroutines</h2>
+<p><a href="instructions.html#gosub"><code>E_GOSUB</code></a> saves the return address in <code>RA</code>, and <code>RA</code> is a single register — so nesting
+requires saving it yourself:</p>
+<pre><code>E_GOSUB(&quot;func_1&quot;)
+...
+E_LABEL(&quot;func_1&quot;)
+    E_PUSH(RA)               ; preserve before the nested call clobbers it
+    E_GOSUB(&quot;func_2&quot;)
+    E_POP(RA)
+    E_GOTO_REG(RA)           ; return
+E_LABEL(&quot;func_2&quot;)
+    E_GOTO_REG(RA)           ; leaf: no save needed
+</code></pre>
+<p>A leaf function needs no discipline at all. One level of nesting needs exactly the
+push/pop pair above. This is the whole of EZH's calling convention — there is no frame, no
+argument area, no callee-saved set. Registers are shared and you agree with yourself about
+who owns what.</p>
+<blockquote>
+<p>Do not close a plain loop with <a href="instructions.html#gosub"><code>E_GOSUB</code></a>. It overwrites <code>RA</code> every iteration; use
+<a href="instructions.html#goto"><code>E_GOTO</code></a> unless you actually want the return address.</p>
+</blockquote>
+<h2 id="protocol">Protocol emulation</h2>
+<p>gibbon-d drives an SPI PSRAM entirely from EZH, and the structure generalises to any
+bit-banged or FIFO-driven protocol:</p>
+<pre><code>E_LABEL(&quot;WRITE_BYTES_LOOP&quot;)
+    ...
+E_LABEL(&quot;NEXT_BYTE_OUT&quot;)
+    E_GOSUB(&quot;SPI_WR_BYTE&quot;)   ; one byte out, as a subroutine
+    ...
+E_LABEL(&quot;SPI_WR_BYTE&quot;)
+    ...                      ; FIFO write, wait, return
+</code></pre>
+<p>Two things make this work well. The byte-level operation is a subroutine, so the outer
+loop reads as the transaction and the inner one as the wire format. And the command
+structure — opcode plus address plus payload — comes in through the parameter block, so
+the same assembled program serves every command the device understands. EZH ends up
+performing small memory operations on behalf of the Arm through what is effectively a
+command queue.</p>
+<h2 id="debug">Debug recipes</h2>
+<p>EZH has no debugger, so the corpus uses two techniques.</p>
+<p><strong>Dump registers to memory the Arm can read.</strong> Point a register at a known buffer and
+store everything:</p>
+<pre><code>E_STR(R6, R0, 0)
+E_STR(R6, R1, 1)
+E_STR(R6, R2, 2)
+...
+</code></pre>
+<p>Then read the buffer from Arm code. Crude and completely effective.</p>
+<p><strong>Use the hardware breakpoint as a callout.</strong> Set <code>EZHB_BREAK_ADDR</code> to an <a href="instructions.html#nop"><code>E_NOP</code></a> you
+inserted for the purpose and <code>EZHB_BREAK_VECT</code> to a dump routine; the routine returns by
+reading the break address back and adding 4:</p>
+<pre><code>E_PUSH(R4)                   ; handler at EZHB_BREAK_VECT
+E_PUSH(R5)
+E_PER_READ(R0, EZHBREAKADDR)
+E_ADD_IMM(R0, R0, 4)
+E_GOTO_REG(R0)               ; resume after the break site
+</code></pre>
+<p>Point <code>EZHB_BREAK_ADDR</code> at a real instruction and you have silently deleted it — the
+substitution replaces, it does not precede. See
+<a href="architecture.html#breakpoint">breakpoint support</a>.</p>
+<h2 id="algorithmic">Shift-and-accumulate</h2>
+<p>The algorithmic conditions exist for algorithms where a shift happens every iteration and
+an ALU operation happens only on some of them. Binary multiplication is the archetype, and
+the entire 16×16 core is one instruction in a tight loop:</p>
+<pre><code>E_LOAD_IMM(R3, 15)                     ; 16 iterations
+E_ADD_IMM(R4, PC, 2*4)
+E_TIGHT_LOOP(R4, R3)
+E_COND_LSLS(SPO, R0, R0, 16)           ; one-shot: position the multiplicand
+E_COND_LSL_ADDS(SPO, R0, R1, R0, 1)    ; the whole multiply
+</code></pre>
+<p><code>SPO</code> cancels the fused ALU stage when the algorithmic-positive flag is set — the shift
+always happens, the add happens conditionally. <a href="architecture.html#flags">The flags section</a>
+covers the semantics, including which operand survives cancellation and the fact that an
+<code>N</code> inversion is <em>not</em> cancelled.</p>
+<p>This is the rarest pattern in the corpus: one program uses it, and that program is a
+feature demonstration rather than an application. If you are doing CRC, a filter, or
+fixed-point multiply on EZH, you are close to the edge of what has been tried — the
+architecture supports it well, but there is very little prior art to copy.</p>
+
+
+  <section class="provenance-block" aria-label="Public provenance">
+    <h2>Public Provenance</h2>
+    <ul>
+
+      <li>Corpus inventory and dedup method recorded in plan logs corpus-inventory-and-catalog and corpus-counts-deduplicated <span class="small-note">(bunny_build__instr.h / .c encoders)</span></li>
+
+      <li>AN14650 §4.2.12 shows the ARM2EZH/mask/SP sequence; 68 of 87 deduplicated corpus programs use it verbatim <span class="small-note">(AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28), bunny_build__instr.h / .c encoders)</span></li>
+
+      <li>Park block appears in seven distinct corpus sources (8x in the feature-demo file, 8x in a display-controller source, once in third-party production code) and is implemented as E__END in src/bunny_build__psuedo_instr.c <span class="small-note">(bunny_build__instr.h / .c encoders)</span></li>
+
+      <li>gibbon-d (teenage engineering) app/src/ezh_app.cpp: ezh_app_offset[] pool, sequential bunny_build() into shared ezh_ram, dispatch by offset in ezh__execute_command() <span class="small-note">(bunny_build__instr.h / .c encoders)</span></li>
+
+      <li>AN14650 §4.2.8 vectored-hold dispatch and table discipline; corpus: EZH_ButtonBitslice (key scan), EZH_PendingTrap, the camera interface&#39;s bit-slice dispatch <span class="small-note">(AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28), bunny_build__instr.h / .c encoders)</span></li>
+
+      <li>EZH_PWMClock in the feature-demo source: heartbeat + tight loop + E_SYNCH_ALL_TO_BEAT(1) + E_MODIFY_GPO_BYTE. AN14650 §4.2.7 for heartbeat semantics <span class="small-note">(bunny_build__instr.h / .c encoders, AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28))</span></li>
+
+      <li>AN14650 §4.2.10 performance note (batched loads vs immediate consumption); the display-controller sources are the largest worked examples <span class="small-note">(AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28), bunny_build__instr.h / .c encoders)</span></li>
+
+      <li>EZH_FunctionCall in the feature-demo source; AN14650 §4.2.11 for the RA discipline <span class="small-note">(bunny_build__instr.h / .c encoders, AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28))</span></li>
+
+      <li>gibbon-d ezh_app__spi_wr / ezh_app__spi_rd: byte loops, GOSUB subroutines, polling <span class="small-note">(bunny_build__instr.h / .c encoders)</span></li>
+
+      <li>avc (wavenumber) bv_camera__interface.c: OV5640 continuous capture, per-frame re-boot with a fresh buffer pointer, GPIO IRQ handlers <span class="small-note">(bunny_build__instr.h / .c encoders)</span></li>
+
+      <li>AN14650 §4.2.12 breakpoint pair; corpus EZH_SetRegisters / EZH_RegistersDump and the register-dump-to-buffer idiom <span class="small-note">(AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28), bunny_build__instr.h / .c encoders)</span></li>
+
+      <li>EZH_ConditionFlag - the only program in the deduplicated corpus using SPO/SNE. AN14650 §4.2.5.2.1 reproduces its shift-accumulate sequence <span class="small-note">(AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28), bunny_build__instr.h / .c encoders)</span></li>
+
+    </ul>
+  </section>
+
+</article>
+
+      </main>
+
+      <footer class="site-footer">
+        Generated from <code>isa/</code> and <code>docs_src/</code>. Non-public source identifiers and titles are excluded from rendered pages.
+      </footer>
+    </div>
+    <script>(function () {
+  const themeButton = document.querySelector("[data-action='theme']");
+  const fontButton = document.querySelector("[data-action='font']");
+  const root = document.documentElement;
+
+  function setTheme(next) {
+    root.dataset.theme = next;
+    try {
+      localStorage.setItem("ezh-theme", next);
+    } catch (_) {}
+  }
+
+  function setFont(next) {
+    root.dataset.font = next;
+    try {
+      localStorage.setItem("ezh-font", next);
+    } catch (_) {}
+  }
+
+  try {
+    const savedTheme = localStorage.getItem("ezh-theme");
+    const savedFont = localStorage.getItem("ezh-font");
+    if (savedTheme) setTheme(savedTheme);
+    if (savedFont) setFont(savedFont);
+  } catch (_) {}
+
+  if (themeButton) {
+    themeButton.addEventListener("click", function () {
+      setTheme(root.dataset.theme === "light" ? "dark" : "light");
+    });
+  }
+
+  if (fontButton) {
+    fontButton.addEventListener("click", function () {
+      setFont(root.dataset.font === "sans" ? "mono" : "sans");
+    });
+  }
+
+  function openHashTarget() {
+    const id = decodeURIComponent(window.location.hash || "").slice(1);
+    if (!id) return;
+    const target = document.getElementById(id);
+    if (!target) return;
+    let current = target.closest("details");
+    while (current) {
+      current.open = true;
+      current = current.parentElement ? current.parentElement.closest("details") : null;
+    }
+    window.setTimeout(function () {
+      target.scrollIntoView({ block: "start" });
+    }, 0);
+  }
+
+  window.addEventListener("hashchange", openHashTarget);
+  openHashTarget();
+
+  const filter = document.querySelector("[data-opcode-filter]");
+  const panels = Array.from(document.querySelectorAll("[data-opcode-panel]"));
+  const count = document.querySelector("[data-filter-count]");
+  if (filter && panels.length) {
+    const updateFilter = function () {
+      const query = filter.value.trim().toLowerCase();
+      let visible = 0;
+      panels.forEach(function (panel) {
+        const haystack = panel.getAttribute("data-search") || "";
+        const show = !query || haystack.includes(query);
+        panel.hidden = !show;
+        if (show) visible += 1;
+      });
+      if (count) {
+        count.textContent = visible + " / " + panels.length;
+      }
+    };
+    filter.addEventListener("input", updateFilter);
+    updateFilter();
+  }
+
+  const tip = document.createElement("div");
+  tip.className = "tip";
+  tip.hidden = true;
+  document.body.appendChild(tip);
+
+  document.addEventListener("pointerover", function (event) {
+    const target = event.target.closest("[data-tip]");
+    if (!target) return;
+    tip.textContent = target.getAttribute("data-tip") || "";
+    tip.hidden = false;
+  });
+
+  document.addEventListener("pointermove", function (event) {
+    if (tip.hidden) return;
+    const padding = 12;
+    const rect = tip.getBoundingClientRect();
+    let left = event.clientX + padding;
+    let top = event.clientY + padding;
+    if (left + rect.width > window.innerWidth) {
+      left = window.innerWidth - rect.width - padding;
+    }
+    if (top + rect.height > window.innerHeight) {
+      top = event.clientY - rect.height - padding;
+    }
+    tip.style.left = Math.max(padding, left) + "px";
+    tip.style.top = Math.max(padding, top) + "px";
+  });
+
+  document.addEventListener("pointerout", function (event) {
+    if (!event.target.closest("[data-tip]")) return;
+    tip.hidden = true;
+  });
+
+  const input = document.getElementById("site-search");
+  const results = document.getElementById("site-search-results");
+  if (!input || !results || !window.MiniSearch || !window.EZH_SEARCH) return;
+
+  const docs = window.EZH_SEARCH.documents || [];
+  const options = window.EZH_SEARCH.options || {};
+  const miniSearch = new window.MiniSearch({
+    fields: options.fields || ["title", "body", "mnemonics", "lookup", "tags"],
+    storeFields: options.storeFields || ["title", "url", "kind", "summary"],
+  });
+  miniSearch.addAll(docs);
+
+  function expandedQuery(raw) {
+    const aliases = window.EZH_SEARCH.aliases || {};
+    const terms = raw.trim().split(/\s+/).filter(Boolean);
+    const expanded = terms.slice();
+    terms.forEach(function (term) {
+      const key = term.toLowerCase();
+      if (aliases[key]) expanded.push(aliases[key]);
+    });
+    return expanded.join(" ");
+  }
+
+  function closeResults() {
+    results.hidden = true;
+    results.replaceChildren();
+  }
+
+  function renderSearch() {
+    const query = input.value.trim();
+    results.replaceChildren();
+    if (query.length < 2) {
+      closeResults();
+      return;
+    }
+
+    const upperQuery = query.toUpperCase();
+    const direct = docs.filter(function (doc) {
+      const names = ((doc.mnemonics || "") + " " + (doc.lookup || "")).toUpperCase().split(/\s+/);
+      return names.some(function (name) {
+        return name === upperQuery || name.startsWith(upperQuery);
+      });
+    });
+
+    const ranked = miniSearch.search(expandedQuery(query), options.searchOptions || {
+      prefix: true,
+      fuzzy: 0.18,
+      boost: { title: 3, mnemonics: 4, lookup: 5, tags: 2 },
+    });
+
+    const seen = new Set();
+    const found = [];
+    direct.concat(ranked).forEach(function (item) {
+      const key = item.id || item.url;
+      if (seen.has(key)) return;
+      seen.add(key);
+      found.push(item);
+    });
+    found.splice(8);
+
+    if (!found.length) {
+      const empty = document.createElement("div");
+      empty.className = "search-result";
+      empty.textContent = "No matches";
+      results.appendChild(empty);
+      results.hidden = false;
+      return;
+    }
+
+    found.forEach(function (item) {
+      const link = document.createElement("a");
+      link.className = "search-result";
+      link.href = item.url;
+
+      const title = document.createElement("span");
+      title.className = "search-result-title";
+      title.textContent = item.title;
+
+      const meta = document.createElement("span");
+      meta.className = "search-result-meta";
+      meta.textContent = [item.kind, item.summary].filter(Boolean).join(" - ");
+
+      link.append(title, meta);
+      results.appendChild(link);
+    });
+    results.hidden = false;
+  }
+
+  input.addEventListener("input", renderSearch);
+  input.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+      input.value = "";
+      closeResults();
+    }
+  });
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "/" && document.activeElement !== input) {
+      event.preventDefault();
+      input.focus();
+    }
+  });
+  document.addEventListener("click", function (event) {
+    if (!event.target.closest(".search-box")) closeResults();
+  });
+})();
+</script>
+  </body>
+</html>

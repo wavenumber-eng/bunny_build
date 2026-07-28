@@ -15,11 +15,11 @@ ALU operation against Roperand in either order - shift-then-operate
 execution order, and N inverts the ALU result. This is the variable-shift
 workhorse for bit-packing loops whose field widths are computed at run time.
 (Note: AN14650 5.12's description sentence says "byte or bit order flipping"
-- a copy-paste from 5.11; its own options list and both other sources agree
+- a copy-paste from 5.11; its own options list and the encoding model agree
 this family shifts by the lower 8 bits of a register.) Amounts of 32 and
-above are spec-silent; hardware analysis (advisory) applies rotate amounts modulo 32
-and saturates shifts - the value shifts fully out, with the carry capturing
-the last bit at exactly 32 and clearing beyond 32. On the adjudication list.
+above still need bench confirmation. The model used here rotates amounts
+modulo 32 and saturates shifts - the value shifts fully out, with the carry
+capturing the last bit at exactly 32 and clearing beyond 32.
 With SPO/SNE and an LSL by 1, the carry is automatically shifted into the
 LSB - the tailchaining idiom for chaining shift work across registers.
 SPO/SNE cancel only the fused ALU stage here (see the shift family for
@@ -29,14 +29,14 @@ within it: cancellation passes through the ALU's LEFT operand, which for
 shift-then-operate (E_RLSL_ADD) is the shifted src2, and for
 operate-then-shift (E_ADD_RLSL) is src1, which then still goes through the
 shift stage. Same rule as the immediate-shift and post-shift families -
-applied twice, because both orders live here. (hardware analysis, advisory: a fused ADC/SBC with
-a nonzero shift amount takes its carry-in from the shift stage, not the
-CA flag.)
+applied twice, because both orders live here. For fused ADC/SBC with a
+nonzero shift amount, treat the carry-in as coming from the shift stage rather
+than the CA flag unless a bench test says otherwise.
 """
 restrictions = [
   "S with destination PC does not set flags (schedules branch instead)",
   "Shift-amount register is a 3-bit field: R0-R7 only (bit 27 is the N modifier)",
-  "Shift amounts >= 32 are spec-silent: hardware analysis models mod-32 rotate and full shift-out with carry rules (adjudication item)",
+  "Shift amounts >= 32 follow the model described above, but still need bench confirmation",
 ]
 
 [timing]

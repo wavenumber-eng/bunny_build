@@ -24,10 +24,10 @@ hardware reference model ((src1 & src2) | src3) and AN14650's option list, which
 only conditional execution and set-flag.
 """
 restrictions = [
-  "Encoding flagged 'DOUBLE CHECK' by the original header author; unverified against hardware",
+  "Encoding remains marked for hardware confirmation",
   "No support for SPO/SNE condition flags",
   "S with destination PC does not set flags (schedules branch instead)",
-  "OR-source register limited to R0-R7 per hardware analysis (advisory; field width on the adjudication list)",
+  "OR-source register limited to R0-R7 in the current model; field width still needs hardware confirmation",
 ]
 
 [timing]
@@ -61,7 +61,7 @@ mnemonic = { pattern = "E_[COND_]ANDOR[S]", binds = ["cond", "s"] }
 fixed = [{ bits = "4:0", value = 0x16 }]
 operands = ["dest", "src1", "src2", "or_reg3"]
 modifiers = ["cond", "s"]
-notes = "Source register in src1 [17:14], AND operand register in src2 [23:20], OR-source register in or_reg3 [26:24]. Bits [28:27] are reserved-zero (they belonged to the presumed 5-bit rotate before the correction); whether hardware decodes 3 or 4 register bits is for the EZH creator to adjudicate."
+notes = "Source register in src1 [17:14], AND operand register in src2 [23:20], OR-source register in or_reg3 [26:24]. Bits [28:27] are reserved-zero; the current database models the OR-source register as R0-R7 pending hardware confirmation."
 
 [forms.encoding_reference]
 bunny_build = "E_ANDOR(dest,rsrc,rand,ror) = 0x16 + (dest<<10) + (rsrc<<14) + (rand<<20) + (ror<<24) + (EU<<5)"

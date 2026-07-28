@@ -23,7 +23,7 @@ detail = "AN14650 §4.2.12 shows the ARM2EZH/mask/SP sequence; 68 of 87 deduplic
 [[provenance]]
 section = "signal-and-park"
 sources = ["bunny_build", "spec_b_06"]
-detail = "Park block appears in seven distinct corpus sources (8x in the feature-demo file, 8x in a display-controller source, once in third-party production code) and is implemented as E__END in src/bunny_build__psuedo_instr.c. Spec E_INT_TRIGGER section for the common-interrupt-always-fires rule"
+detail = "Park block appears in seven distinct corpus sources (8x in the feature-demo file, 8x in a display-controller source, once in third-party production code) and is implemented as E__END in src/bunny_build__psuedo_instr.c"
 
 [[provenance]]
 section = "multi-app"
@@ -68,7 +68,7 @@ detail = "AN14650 §4.2.12 breakpoint pair; corpus EZH_SetRegisters / EZH_Regist
 [[provenance]]
 section = "algorithmic"
 sources = ["an14650", "spec_b_06", "bunny_build"]
-detail = "EZH_ConditionFlag - the only program in the deduplicated corpus using SPO/SNE. AN14650 §4.2.5.2.1 reproduces its shift-accumulate sequence; spec §4.5 for the 16x16 multiply"
+detail = "EZH_ConditionFlag - the only program in the deduplicated corpus using SPO/SNE. AN14650 §4.2.5.2.1 reproduces its shift-accumulate sequence"
 
 [[unverified]]
 id = "corpus-representativeness"
@@ -89,9 +89,15 @@ part you copy from.
 
 Every pattern here comes from working code — a deduplicated corpus of 87 EZH programs
 across four codebases: NXP's sample material, bunny_build's own tests, teenage
-engineering's gibbon-d, and wavenumber's avc. Where a pattern is rare in that corpus, this
-chapter says so, because that is useful information: it usually means the feature is
-under-documented rather than useless.
+engineering's gibbon-d, and wavenumber's avc. The curated runnable examples stay in
+bunny_build examples/tests and remain deliberately small; this chapter mines the older and
+product code for the patterns those small examples introduce.
+
+The two dominant shapes are **continuous engines** (camera decode, key scan, protocol
+emulation) and **command / execute / stop** programs that signal the Arm and park with
+`E__END`. bunny_build's on-target assembly model adds a third recurring theme: you can
+build pseudo-instructions in C when a repeated sequence should become one
+programmer-facing operation.
 
 One number worth carrying: **the algorithmic flags are used by exactly one program in the
 entire corpus, and register-sourced shifts by exactly one** — both in the same NXP feature

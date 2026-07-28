@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en" data-theme="dark" data-font="sans">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ title }} | EZH Architecture B</title>
+    <style>{{ style_css | safe }}</style>
+    <script src="vendor/minisearch/minisearch-7.2.0.js"></script>
+    <script src="search_index.js"></script>
+  </head>
+  <body>
+    <div class="site-shell">
+      <header class="site-header">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">EZH</div>
+          <div>
+            <h1 class="brand-title">EZH Architecture B Instruction Set</h1>
+            <p class="brand-subtitle">Generated from the ISA database and reviewed prose chapters. Public output is filtered to public references only.</p>
+          </div>
+        </div>
+        <div>
+          <div class="top-actions">
+            <button class="icon-button" type="button" data-action="theme" title="Toggle theme" aria-label="Toggle theme">T</button>
+            <button class="icon-button" type="button" data-action="font" title="Toggle font" aria-label="Toggle font">Aa</button>
+          </div>
+          <div class="search-box">
+            <input id="site-search" class="search-input" type="search" autocomplete="off" placeholder="Search instructions, patterns, and chapters">
+            <div id="site-search-results" class="search-results" hidden></div>
+          </div>
+        </div>
+      </header>
+
+      <nav class="nav" aria-label="Primary">
+        {% for item in nav %}
+        <a class="nav-link{% if item.id == active %} active{% endif %}" href="{{ item.href }}">{{ item.title }}</a>
+        {% endfor %}
+      </nav>
+
+      <main class="main">
+        {{ body | safe }}
+      </main>
+
+      <footer class="site-footer">
+        Generated from <code>isa/</code> and <code>docs_src/</code>. Non-public source identifiers and titles are excluded from rendered pages.
+      </footer>
+    </div>
+    <script>{{ app_js | safe }}</script>
+  </body>
+</html>

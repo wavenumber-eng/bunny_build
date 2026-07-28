@@ -35,7 +35,7 @@ detail = "E_GOTO*/E_GOTO_REG* two-pass label functions in src/bunny_build__instr
 
 [[provenance]]
 source = "an14650"
-detail = "section 5.22: 21-bit window immediate / 32-bit register target, SPO/UNS and SNE/NZS scheduled-branch conditions, 1-vs-3-cycle performance. Its RA PC-4/PC+4 spellings are internally swapped against its own descriptive sentence (defect candidate #5, tentatively resolved per source ranking: the descriptive sentence is correct - scheduled -> GOTO+12, ordinary -> GOTO+4; creator review pending)"
+detail = "section 5.22: 21-bit window immediate / 32-bit register target, SPO/UNS and SNE/NZS scheduled-branch conditions, 1-vs-3-cycle performance. Its RA PC-4/PC+4 spellings appear swapped against its own descriptive sentence; this documentation follows the re-derived PC model"
 
 [[provenance]]
 source = "spec_b_06"

@@ -10,8 +10,7 @@ mnemonics_base = ["E_LDR_REG", "E_LDR_REGB", "E_STR_REG", "E_STR_REGB"]
 prose = """
 Register-plus-register addressed memory access: LDR_REG reads and STR_REG
 writes at an address formed from Raddr and Roffset (bit 30 selects the
-direction; the exact offset arithmetic is under adjudication - see the
-restrictions), for walking
+direction; exact offset arithmetic still needs confirmation), for walking
 buffers whose stride lives in a register. Loads come in word, byte (B), and
 sign-extended byte (BS) forms; stores in word and byte. Performance matches
 the immediate-offset E_LDR and E_STR: the access is submitted in one cycle
@@ -19,10 +18,10 @@ and DFETCH lands read data in the background.
 """
 restrictions = [
   "No support for SPO/SNE condition flags",
-  "Reads using CFS as the pointer see the bottom 8 bits of CFS as 0x00 (spec E_LDR_REG restriction list and AN14650 5.26 agree; hardware analysis shows the live BS-input byte instead - resolved toward 0x00 on the 2026-07-25 ranking: the creator's spec outranks the advisory testbench, and AN independently agrees)",
+  "Reads using CFS as the pointer see the bottom 8 bits of CFS as 0x00; hardware behavior still needs final confirmation",
   "CFS cannot be the destination of a byte read",
   "S on byte loads means signed access (bit 21), not set-flags; no flag setting in this family",
-  "Offset semantics under adjudication: AN14650 5.26 says the offset size is one byte, hardware analysis adds the full 32-bit offset-register value - and reads the offset register through a 3-bit extractor while the encoders carry 4 bits [27:24]",
+  "Offset semantics need confirmation: AN14650 5.26 says the offset size is one byte; the current model adds the full 32-bit offset-register value and uses the 4-bit roffset field [27:24]",
   "Word accesses truncate the address to word alignment (bits [1:0] ignored)",
 ]
 

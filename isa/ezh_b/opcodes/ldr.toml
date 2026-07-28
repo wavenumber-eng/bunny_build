@@ -20,9 +20,9 @@ upward, so POP pre-decrements SP by one word.
 """
 restrictions = [
   "Post-increment of PC is not allowed",
-  "A pointer register that is also the read destination gets no address update - PRE or POST, the update is ignored (hardware analysis, advisory: writeback is also silently ignored when the pointer is PC)",
+  "A pointer register that is also the read destination gets no address update - PRE or POST, the update is ignored; writeback is also ignored when the pointer is PC",
   "No support for SPO/SNE condition flags",
-  "Reads using CFS as the pointer see the bottom 8 bits of CFS as 0x00 (spec E_LDR restriction list, added in spec rev 0.5 specifically to record it, and AN14650 5.24 agree; hardware analysis shows the live BS-input byte instead - resolved toward 0x00 on the 2026-07-25 ranking: the creator's spec outranks the advisory testbench, and AN independently agrees)",
+  "Reads using CFS as the pointer see the bottom 8 bits of CFS as 0x00; hardware behavior still needs final confirmation",
   "CFS cannot be the destination of a byte read",
   "S on byte loads means signed access (bit 21), not set-flags; loads never set flags",
   "PUSH/POP: byte and word stacking must not be mixed across non-word-aligned boundaries - SP bits [1:0] are ignored in word-access address calculation (AN14650 5.29)",

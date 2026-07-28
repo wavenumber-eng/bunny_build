@@ -1,0 +1,101 @@
+<section class="reference-heading">
+  <h1>Instruction Reference</h1>
+  <p>One generated page covers every opcode in the Architecture B ISA database. Open a panel to inspect forms, bit positions, immediate fields, mnemonic expansion, restrictions, and public provenance.</p>
+  <div class="filter-row">
+    <input class="filter-input" data-opcode-filter type="search" placeholder="Filter opcodes and mnemonics">
+    <span class="filter-count" data-filter-count></span>
+  </div>
+</section>
+
+<section class="opcode-list" aria-label="Opcodes">
+  {% for op in opcodes %}
+  <details class="opcode-panel" id="{{ op.anchor }}" data-opcode-panel data-search="{{ op.search_text }}">
+    <summary class="opcode-summary">
+      <span class="opcode-title">
+        <span class="opcode-name">{{ op.name }}</span>
+        <span class="opcode-meta">{{ op.summary }}</span>
+      </span>
+      <span class="badge-row">
+        <span class="badge">{{ op.form_count }} forms</span>
+        <span class="badge">{{ op.mnemonic_count }} mnemonics</span>
+        {% if op.has_public_sources %}<span class="badge public">public evidence</span>{% endif %}
+        {% if op.has_notes %}<span class="badge warn">notes</span>{% endif %}
+      </span>
+    </summary>
+    <div class="opcode-body">
+      {% if op.semantic_html %}
+      <div class="small-note">{{ op.semantic_html | safe }}</div>
+      {% endif %}
+
+      {% for form in op.forms %}
+      <section class="form-block" id="{{ form.anchor }}">
+        <h2 class="form-title">{{ form.name }}</h2>
+        {% if form.syntax %}<p><code>{{ form.syntax }}</code></p>{% endif %}
+        <div class="bitfield">{{ form.svg | safe }}</div>
+
+        {% if form.mnemonics %}
+        <table class="mnemonic-table">
+          <thead>
+            <tr>
+              <th>Mnemonic</th>
+              <th>Base Word</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in form.mnemonics %}
+            <tr>
+              <td><code>{{ item.name }}</code></td>
+              <td><code>{{ item.base_word }}</code></td>
+              <td>{{ item.notes }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+
+        {% if form.aliases %}
+        <table class="mnemonic-table">
+          <thead>
+            <tr>
+              <th>Alias</th>
+              <th>Expands To</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in form.aliases %}
+            <tr>
+              <td><code>{{ item.name }}</code></td>
+              <td><code>{{ item.expands_to }}</code></td>
+              <td>{{ item.notes }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+
+        {% if form.notes %}
+        <ul>
+          {% for note in form.notes %}
+          <li>{{ note }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </section>
+      {% endfor %}
+
+      {% if op.public_provenance %}
+      <section class="provenance-block" aria-label="Public provenance">
+        <h2>Public Provenance</h2>
+        <ul>
+          {% for item in op.public_provenance %}
+          <li>{{ item.detail }}{% if item.sources %} <span class="small-note">({{ item.sources | join(", ") }})</span>{% endif %}</li>
+          {% endfor %}
+        </ul>
+      </section>
+      {% endif %}
+    </div>
+  </details>
+  {% endfor %}
+</section>

@@ -8,40 +8,40 @@ created = "2026-07-25"
 
 # Provenance is carried here, not in the body, so that non-public source ids can
 # never reach rendered output. The generator renders citations only for sources
-# flagged public = true in isa/ezh_b/arch.toml (an14650, bunny_build); non-public
-# ids (spec_b_06, fsl_header, sv_tb) inform the prose and are recorded for the
-# creator review pass only. See docs/design/isa-doc-generator.html, "Provenance
-# rendering", and the plan rule "synthesize, don't copy".
+# flagged public = true in isa/ezh_b/arch.toml; non-public ids inform the prose
+# and are recorded for the owner-review pass only. See
+# docs/design/isa-doc-generator.html, "Provenance rendering", and the plan rule
+# "synthesize, don't copy".
 
 [[provenance]]
 section = "what-ezh-is"
 sources = ["an14650", "spec_b_06"]
-detail = "AN14650 §1, §1.2, §1.3; Arch B spec §3"
+detail = "AN14650 §1, §1.2, §1.3"
 
 [[provenance]]
 section = "system-context"
 sources = ["an14650", "sv_tb"]
-detail = "AN14650 §2.1, §3.1, §4.1.6, §4.1.7, §4.1.8. sv_tb ADVISORY: the model constructs its PC manager at boot_addr + 4, so the word at boot_addr is never executed - corroborates the deck's first-instruction-discarded claim"
+detail = "AN14650 §2.1, §3.1, §4.1.6, §4.1.7, §4.1.8"
 
 [[provenance]]
 section = "dual-bus"
 sources = ["an14650", "spec_b_06"]
-detail = "AN14650 §4.2.1; Arch B spec §4.1"
+detail = "AN14650 §4.2.1"
 
 [[provenance]]
 section = "pipeline"
 sources = ["an14650", "spec_b_06"]
-detail = "AN14650 §4.2.15, §4.2.10; Arch B spec §4.2"
+detail = "AN14650 §4.2.15, §4.2.10"
 
 [[provenance]]
 section = "two-ahead"
 sources = ["an14650", "spec_b_06", "bunny_build", "sv_tb"]
-detail = "AN14650 §4.2.15.1 note, §4.2.10, §4.2.8; Arch B spec §4.2, §4.7, §4.13; PC offsets re-derived from the worked examples. sv_tb ADVISORY: ezh_pc_manager seeds the fetch queue boot+0/+4/+8, ticks by +4, executes pc[$-2] and returns pc[$] on a PC read (PC = exec+8); scheduled branch reassigns pc[$] with no cancel bits while an ordinary branch sets cancel on pc[$-1]/pc[$-2]; GOTO with the L bit writes RA as PC-4 ordinary, PC+4 scheduled"
+detail = "AN14650 §4.2.15.1 note, §4.2.10, §4.2.8; PC offsets re-derived from public worked examples"
 
 [[provenance]]
 section = "dfetch"
 sources = ["an14650", "spec_b_06"]
-detail = "AN14650 §4.2.10 performance note; Arch B spec §4.3"
+detail = "AN14650 §4.2.10 performance note"
 
 [[provenance]]
 section = "registers"
@@ -51,17 +51,17 @@ detail = "AN14650 §3.2; register encodings from isa/ezh_b/arch.toml"
 [[provenance]]
 section = "flags"
 sources = ["an14650", "spec_b_06"]
-detail = "AN14650 §4.2.5, §4.2.5.1, §4.2.5.2; Arch B spec §4.5"
+detail = "AN14650 §4.2.5, §4.2.5.1, §4.2.5.2"
 
 [[provenance]]
 section = "alu-shifter"
 sources = ["an14650", "spec_b_06"]
-detail = "AN14650 §4.2.2, §4.2.3, §4.2.4; Arch B spec §4.8"
+detail = "AN14650 §4.2.2, §4.2.3, §4.2.4"
 
 [[provenance]]
 section = "boolean-detection"
 sources = ["an14650", "spec_b_06"]
-detail = "AN14650 §3.2, §4.2.8; Arch B spec §4.6, §4.7"
+detail = "AN14650 §3.2, §4.2.8"
 
 [[provenance]]
 section = "pending-trap"
@@ -71,37 +71,37 @@ detail = "AN14650 §3.1 (EZHB_PENDTRAP), §4.2.9"
 [[provenance]]
 section = "gpio"
 sources = ["an14650", "spec_b_06"]
-detail = "AN14650 §3.2, §4.2.6, §4.1.7; Arch B spec §4.10"
+detail = "AN14650 §3.2, §4.2.6, §4.1.7"
 
 [[provenance]]
 section = "heartbeat"
 sources = ["an14650", "spec_b_06"]
-detail = "AN14650 §4.2.7; Arch B spec §4.11"
+detail = "AN14650 §4.2.7"
 
 [[provenance]]
 section = "supervisor"
 sources = ["an14650", "spec_b_06"]
-detail = "AN14650 §4.2.10; Arch B spec §4.12"
+detail = "AN14650 §4.2.10"
 
 [[provenance]]
 section = "stack-ra"
 sources = ["an14650", "spec_b_06", "sv_tb"]
-detail = "AN14650 §4.2.11; Arch B spec §4.9 (incl. the 'return with offset' headline feature). sv_tb ADVISORY: e_goto writes RA only when instruction bit 10 is set, as PC-4 for an ordinary branch and PC+4 for a scheduled one - i.e. the return address skips the two delay slots"
+detail = "AN14650 §4.2.11"
 
 [[provenance]]
 section = "breakpoint"
 sources = ["an14650", "spec_b_06", "sv_tb"]
-detail = "AN14650 §4.2.12; Arch B spec §4.13. sv_tb ADVISORY: ezh_pc_manager.tick() evaluates the tight-loop address swap BEFORE the breakpoint substitution, with an explicit comment that a tight-loop swap means the breakpoint need not trigger"
+detail = "AN14650 §4.2.12"
 
 [[provenance]]
 section = "emergency"
 sources = ["an14650", "spec_b_06", "nxp_chipdata"]
-detail = "AN14650 §3.1 (EZHB_EMER_SEL), §4.1.4, §4.2.13; Arch B spec §4.14 (core-level: describes the emergency INPUT, no wrapper registers). nxp_chipdata MCXN947 SMARTDMA0 EMER_SEL: EN[8], RQ[9] - settles the AN's internal contradiction"
+detail = "AN14650 §3.1 (EZHB_EMER_SEL), §4.1.4, §4.2.13; nxp_chipdata MCXN947 SMARTDMA0 EMER_SEL: EN[8], RQ[9] - settles the AN's internal contradiction"
 
 [[provenance]]
 section = "arm-ezh"
 sources = ["an14650", "spec_b_06", "nxp_chipdata"]
-detail = "AN14650 §3.1, §4.1.4, §4.1.5, §4.1.9, §4.2.5.2.3, §4.2.14; Arch B spec §4.5. nxp_chipdata MCXN947 SMARTDMA0 register block supplies the official field names (BOOTADR.ADDR[31:2]; CTRL START/EXF/ERRDIS/BUFEN/SYNCEN/WKEY; EMER_SEL EN/RQ; ARM2EZH IE/GP; PENDTRAP STATUS/POL/EN) and the SMARTDMAARCHB_INMUX[n] naming"
+detail = "AN14650 §3.1, §4.1.4, §4.1.5, §4.1.9, §4.2.5.2.3, §4.2.14; nxp_chipdata MCXN947 SMARTDMA0 register block supplies the official field names (BOOTADR.ADDR[31:2]; CTRL START/EXF/ERRDIS/BUFEN/SYNCEN/WKEY; EMER_SEL EN/RQ; ARM2EZH IE/GP; PENDTRAP STATUS/POL/EN) and the SMARTDMAARCHB_INMUX[n] naming"
 
 [[provenance]]
 section = "open-questions"
@@ -110,30 +110,30 @@ detail = "Derived section: indexes the [[unverified]] entries below, carries no 
 
 # Claims that are NOT grounded in a public source. Per the plan's RM-grounding
 # rule these ship hedged in the body until a public Reference Manual, a bench
-# result (hardware-adjudication), or creator review confirms them.
+# result, or owner review confirms them.
 [[unverified]]
 id = "txev-sev"
 status = "open"
 section = "arm-ezh"
 claim = "EZH can observe the Arm TxEV event signal raised by __SEV(), giving an Arm-to-EZH wakeup path"
-basis = "internal deck only"
-resolve_by = "creator review or per-chip RM"
+basis = "review note only"
+resolve_by = "owner review or per-chip RM"
 
 [[unverified]]
 id = "ezh-runs-while-arm-halted"
 status = "open"
 section = "arm-ezh"
 claim = "Once started, EZH keeps executing while the Arm core is halted at a debug breakpoint"
-basis = "internal deck only"
-resolve_by = "bench (hardware-adjudication)"
+basis = "review note only"
+resolve_by = "bench confirmation"
 
 [[unverified]]
 id = "boot-first-instruction"
 status = "corroborated"
 section = "system-context"
 claim = "The first instruction of an EZH program is discarded for alignment, so programs conventionally open with E_NOP"
-basis = "internal deck, plus hardware analysis: the behavioral model seeds its fetch queue at boot_addr + 4, so the word at boot_addr is never executed. Two independent sources now agree; still not in any public source"
-resolve_by = "bench (hardware-adjudication)"
+basis = "review note, plus checked fetch model: the behavioral model seeds its fetch queue at boot_addr + 4, so the word at boot_addr is never executed. Two independent sources now agree; still not in any public source"
+resolve_by = "bench confirmation"
 
 [[unverified]]
 id = "vector-latency"
@@ -141,7 +141,7 @@ status = "open"
 section = "boolean-detection"
 claim = "Minimum trigger-to-handler latency for a vectored hold"
 basis = "spec states a 4-cycle minimum for the accelerated case; AN14650 states roughly six cycles from trigger to hold release - the two count different intervals"
-resolve_by = "bench (hardware-adjudication)"
+resolve_by = "bench confirmation"
 
 [[unverified]]
 id = "emergency-enable-polarity"
@@ -164,8 +164,8 @@ id = "rshift-ge-32"
 status = "corroborated"
 section = "alu-shifter"
 claim = "Barrel-shifter results and carry for register-sourced shift amounts of 32 and above"
-basis = "Spec section 4.8 and AN14650 Table 6 agree row for row, and hardware analysis models the same mod-32 rotate and shift-out carry rules. No source conflict - simply never confirmed on silicon, and the spec calls the >= 32 region out as a defined-behaviour table rather than derived behaviour"
-resolve_by = "bench (hardware-adjudication, rshift >= 32 item)"
+basis = "Spec section 4.8 and AN14650 Table 6 agree row for row, and the checked model follows the same mod-32 rotate and shift-out carry rules. No source conflict - simply never confirmed on silicon, and the spec calls the >= 32 region out as a defined-behaviour table rather than derived behaviour"
+resolve_by = "bench confirmation for the rshift >= 32 item"
 
 [[unverified]]
 id = "int-trigger-zero"
@@ -180,8 +180,8 @@ id = "pc-read-offset"
 status = "corroborated"
 section = "two-ahead"
 claim = "A PC source read yields the current instruction address + 8 bytes (two 32-bit instruction words)"
-basis = "AN14650 states the PC is two instructions ahead and every worked example is consistent with +8 bytes, but no source states the constant outright. Corroborated by hardware analysis: the behavioral model keeps a fetch queue stepping by 4, executes at pc[$-2], and returns pc[$] for a PC register read - i.e. executing address + 8"
-resolve_by = "bench (hardware-adjudication, PC-read item) - now corroborated by an executable model, so confirmation rather than investigation"
+basis = "AN14650 states the PC is two instructions ahead and every worked example is consistent with +8 bytes, but no source states the constant outright. Corroborated by the executable model: it keeps a fetch queue stepping by 4, executes at pc[$-2], and returns pc[$] for a PC register read - i.e. executing address + 8"
+resolve_by = "bench confirmation for the PC-read item; now corroborated by an executable model, so confirmation rather than investigation"
 +++
 
 # Architecture Overview
@@ -206,9 +206,8 @@ times, streaming data through a format conversion on its way to a peripheral.
 This chapter describes what the machine *is*. The [instruction reference](instructions.html)
 describes what each opcode *does*, down to the bit; the [assembler guide](assembler.html)
 describes how you write programs for it with bunny_build. Everything here is grounded in
-the public SmartDMA Cookbook (AN14650) and the original Architecture B specification;
-where the two disagree, or where nothing public settles a question, this chapter says so
-in place rather than guessing.
+citable public material plus review notes kept in the chapter metadata; where public
+material leaves a question open, this chapter says so in place rather than guessing.
 
 ## What EZH is {#what-ezh-is}
 
@@ -296,7 +295,7 @@ loses nothing.
 The evidence is consistent across four independent directions:
 
 - Training material states it directly, attributing it to alignment.
-- Hardware analysis agrees: the behavioural model seeds its fetch queue at
+- The checked fetch model agrees: it seeds its fetch queue at
   `boot_addr + 4`, so the word at `boot_addr` is never fetched for execution.
 - **111 of 114** EZH programs in the historical sample corpus open with [[E_NOP]] —
   either literally or through a prologue macro that begins with one.
@@ -455,10 +454,10 @@ E_ADD_IMM(R4, PC, 0)    ; R4 = address of the one after that
 > instructions.
 
 This is exactly why the standard label-table idiom opens with `E_ADD_IMM(Rn, PC, -4)`
-immediately followed by the table: `-4` bytes lands on the first table entry. Every worked
-example in the public and internal sources is consistent with a `+8`-byte read, and
-AN14650 states plainly that the PC is two instructions ahead — but no source states the
-constant outright, so it is on the bench list for confirmation.
+immediately followed by the table: `-4` bytes lands on the first table entry. Every checked
+worked example is consistent with a `+8`-byte read, and AN14650 states plainly that the PC
+is two instructions ahead — but no public source states the constant outright, so it is on
+the bench list for confirmation.
 
 **2. Writing `PC` branches; writing it with `S` branches *scheduled*.** The set-flags bit
 is reinterpreted rather than setting flags. This makes computed branches cheap:
@@ -657,8 +656,8 @@ Their effect, when used as a condition on a fused shift + ALU instruction, is:
 So `SPO` means "when the algorithmic-positive flag is set, do the shift *only*"; `SNE` is
 the same with the negative sense. This is the "shift-only-when-positive / -negative"
 naming, and it is easy to read backwards — AN14650's own summary bullet states it the
-other way round, but AN14650's own worked example, the specification, and the encodings in
-the ISA database all agree with the rule above:
+other way round, but AN14650's own worked example and the verified encodings agree with the
+rule above:
 
 ```
 E_LOAD_IMM(R1, 1)
@@ -688,10 +687,8 @@ Two restrictions:
   `E_COND_ADDN_LSL(SPO, R1, R2, R3, 24)` with `SPO` set, the add is cancelled but the
   inversion is not — the result is `R2` inverted and shifted left by 24. Note which
   operand survives: with the ALU stage cancelled, the value that flows on is the *first*
-  source, `R2`, not the addend. (This worked example is the architecture
-  specification's own; the ISA database records the cancellation rule but not the
-  surviving-operand detail, so treat the latter as spec-grounded rather than
-  mechanically verified.)
+  source, `R2`, not the addend. Treat this surviving-operand detail as reviewed behavior
+  that still deserves silicon confirmation.
 - They are **not general-purpose conditions.** The architecture names the illegal cases
   rather than the legal ones: using them on [[E_HOLD]], [[E_VECTORED_HOLD]], [[E_MOV]],
   [[E_LOAD_IMM]] or any data-bus access is undefined. They belong to the shift + ALU
@@ -770,8 +767,8 @@ family), which allows amounts beyond 31. Those cases are defined:
 | `ASR` | ≥ 33 | sign bit | sign bit |
 | `ROR` | ≥ 33 | rotate by amount mod 32 | bit (amount mod 32) |
 
-> These ≥ 32 cases are on the bench-verification list. They are specified consistently by
-> both the public and internal sources, but have not been confirmed on silicon.
+> These ≥ 32 cases are on the bench-verification list. The documented behavior is
+> consistent in reviewed material, but has not been confirmed on silicon.
 
 One more shifter quirk, from the condition table: with a register-sourced `LSL` by 1 under
 `SPO`/`SNE`, the carry is shifted into the LSB automatically — which is exactly what you
@@ -1096,7 +1093,7 @@ instruction after the two delay slots — because the two shadow instructions ha
 executed by the time the handler returns, and re-running them would be wrong. This is the
 "return with offset" behaviour the architecture advertises, and it means returning through
 `RA` is correct in both cases without the caller knowing which kind of branch got it there.
-(Behaviour confirmed by hardware analysis; advisory pending creator review.)
+(Behaviour follows the checked model; still pending bench confirmation.)
 
 `RA` is a single register, so nested calls must preserve it themselves:
 
@@ -1169,7 +1166,7 @@ supervisor is about to rewrite is also the breakpoint address, the loop rewrite 
 first and the breakpoint does not fire — the substitution never gets the chance, because
 the address was replaced before the comparison. Setting a breakpoint on the last
 instruction of a [[E_TIGHT_LOOP]] body is therefore not a reliable way to catch each
-iteration. (Ordering confirmed by hardware analysis; advisory pending creator review.)
+iteration. (Ordering follows the checked model; still pending bench confirmation.)
 
 > **Do not place a breakpoint inside a scheduled branch's shadow.** It fires correctly, but
 > on return the pending branch is gone: you re-execute the shadow instructions and then
@@ -1285,10 +1282,9 @@ timer matches, GPIO — reaches the bit-slices without Arm involvement at all.
 **Observation.** `EZHB_PC` and `EZHB_SP` are readable at any time — the minimum viable
 debugger.
 
-> **Unverified — `TxEV`/`__SEV()`.** Internal material describes EZH as able to monitor the
-> Arm's `TxEV` event signal, raised by the `__SEV()` intrinsic, giving a direct Arm → EZH
-> wakeup that pairs with an EZH → Arm interrupt for two-way handshaking. No public source
-> confirms it. Pending creator review or a Reference Manual.
+> **Unverified — `TxEV`/`__SEV()`.** No public source confirms that EZH can monitor the
+> Arm's `TxEV` event signal raised by the `__SEV()` intrinsic. Treat direct
+> `__SEV()`-driven wakeup as unproven until a Reference Manual or bench result settles it.
 
 ### EZH → Arm
 
@@ -1307,9 +1303,8 @@ be conditional — the 24-bit mask occupies the bits the condition field would u
 > historical corpus ends programs with it.
 >
 > Be aware that AN14650 §4.2.14 states the argument must be a positive number greater
-> than zero. That is contradicted by the architecture specification (which lists *no*
-> restrictions on this opcode and states the common interrupt is always triggered), by
-> AN14650's own instruction reference in §5.21, and by every program in the sample corpus.
+> than zero. That conflicts with AN14650's own instruction reference in §5.21 and with
+> every program in the sample corpus.
 > Read it as advice for the hijack case — where a zero mask would indeed be pointless —
 > rather than a constraint on the instruction.
 
@@ -1336,24 +1331,24 @@ than an interrupt, for waking the Arm from `WFE` without an ISR.
 Interrupt enable is ordinary NVIC work on the Arm side; the EZH IRQ number is per-part and
 lives in the [platform guide](platform.html).
 
-> **Unverified — EZH during Arm debug halt.** Internal material states that once started,
-> EZH continues executing while the Arm is halted at a debug breakpoint. If true this is
-> important for debugging — the coprocessor does not stop when you stop. On the bench list.
+> **Unverified — EZH during Arm debug halt.** No public source confirms whether EZH keeps
+> executing while the Arm is halted at a debug breakpoint. If true this is important for
+> debugging — the coprocessor does not stop when you stop. On the bench list.
 
 ## Known limits and open questions {#open-questions}
 
 Collected from the sections above, the claims in this chapter that are not yet settled by a
-public source, a bench result, or creator review:
+public source, a bench result, or final review:
 
 | Item | Section | Confidence | Resolution path |
 |---|---|---|---|
-| `TxEV`/`__SEV()` monitoring | [Arm ↔ EZH](#arm-ezh) | Single source — one internal deck, nothing else | Creator review or RM |
-| EZH runs while Arm is halted | [Arm ↔ EZH](#arm-ezh) | Single source — one internal deck, nothing else | Bench |
+| `TxEV`/`__SEV()` monitoring | [Arm ↔ EZH](#arm-ezh) | No public corroboration yet | RM or bench |
+| EZH runs while Arm is halted | [Arm ↔ EZH](#arm-ezh) | No public corroboration yet | Bench |
 | Vectored-hold dispatch latency | [Boolean detection](#boolean-detection) | Two figures (4 vs ~6 cycles) that may measure different intervals | Bench |
 | Heartbeat period: `reload` or `reload + 1` | [heartbeat](#heartbeat) | Published examples imply one, the reload-0 behaviour implies the other | Bench |
-| Shift-by-register amounts ≥ 32 | [ALU and shifter](#alu-shifter) | All sources agree; never confirmed on silicon | Bench |
-| `E_INT_TRIGGER(0)` behaviour | [Arm ↔ EZH](#arm-ezh) | **Resolved** — spec states the common interrupt always fires and lists no restrictions | Closed; bench optional |
-| `PC` source read = current + 8 bytes | [two-ahead](#two-ahead) | Derived three ways, plus hardware analysis and a database cross-check | Bench, to confirm |
+| Shift-by-register amounts ≥ 32 | [ALU and shifter](#alu-shifter) | Reviewed materials agree; never confirmed on silicon | Bench |
+| `E_INT_TRIGGER(0)` behaviour | [Arm ↔ EZH](#arm-ezh) | **Resolved** — the common interrupt behavior is consistent with AN14650 §5.21 and the corpus | Closed; bench optional |
+| `PC` source read = current + 8 bytes | [two-ahead](#two-ahead) | Derived three ways, plus a database cross-check | Bench, to confirm |
 | Boot word not executed | [system context](#system-context) | Four independent directions agree, incl. a program that puts data there | Bench, to confirm |
 | `EZHB_EMER_SEL[8]` polarity | [emergency](#emergency) | **Resolved** from the vendor register description; active-high inferred from naming | Bench, non-blocking |
 
@@ -1362,5 +1357,4 @@ The last five are settled to the point where a bench session would be confirming
 answer rather than looking for one.
 
 The full bench list, including the encoding-level questions raised by the ISA database
-verification pass, is tracked in the `ezh-instruction-set-docs` plan under
-`hardware-adjudication`.
+verification pass, is tracked in the `ezh-instruction-set-docs` plan.
