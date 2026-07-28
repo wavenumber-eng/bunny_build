@@ -41,19 +41,19 @@ depends_on = ["inventory-sources"]
 
 [[steps]]
 id = "assembler-guide"
-title = "Assembler guide chapter: two-pass model, labels, directives (E_DCD/E_DCD_VAL/E_LABEL), pseudo-instructions (E_LOAD_32IMM and the important E__END park pattern), on-target assembly thesis, Keil-era migration"
+title = "Assembler guide chapter: two-pass model, labels, directives (E_DCD/E_DCD_VAL/E_LABEL), pseudo-instructions (E_LOAD_32IMM and the important E_END park pattern), on-target assembly thesis, Keil-era migration"
 status = "done"
 depends_on = ["inventory-sources"]
 
 [[steps]]
 id = "sample-mining"
-title = "Mine ALL old code samples for patterns and idioms: flat-samples (bist, display controller, FlexIO camera/8080/MIP, QSPI), LPC55 (hello_pdm PDM decimator, PWM/ADC/CRC trio, TFT driving, keyscan), MCX, RT500, kl28z - catalog E__END-style helpers, debug recipes, DSP tricks"
+title = "Mine ALL old code samples for patterns and idioms: flat-samples (bist, display controller, FlexIO camera/8080/MIP, QSPI), LPC55 (hello_pdm PDM decimator, PWM/ADC/CRC trio, TFT driving, keyscan), MCX, RT500, kl28z - catalog E_END-style helpers, debug recipes, DSP tricks"
 status = "done"
 depends_on = ["inventory-sources"]
 
 [[steps]]
 id = "pattern-library"
-title = "Cookbook chapter: the two main EZH patterns (continuous engines; command/execute/stop with E__END), pseudo-instruction idioms, multi-app dispatch, vector-table/event idioms, debug recipes and DSP patterns from the mined samples"
+title = "Cookbook chapter: the two main EZH patterns (continuous engines; command/execute/stop with E_END), pseudo-instruction idioms, multi-app dispatch, vector-table/event idioms, debug recipes and DSP patterns from the mined samples"
 status = "active"
 depends_on = ["inventory-sources", "sample-mining"]
 
@@ -141,7 +141,7 @@ status = "met"
 
 [[exit_criteria]]
 id = "assembler-guide-chapter"
-title = "Assembler guide documents the directive and pseudo-instruction layers (incl. E__END) and the on-target assembly model"
+title = "Assembler guide documents the directive and pseudo-instruction layers (incl. E_END) and the on-target assembly model"
 status = "met"
 
 [[exit_criteria]]
@@ -217,7 +217,7 @@ rendered through the generator (design doc): (1) Home, (2) Architecture
 mechanisms and the runs-two-ahead pipeline nuances explicitly, leaning on
 spec + AN + both decks), (3) Instruction reference (generated, done),
 (4) Assembler guide (= assembler-guide step: the directives/pseudo-instruction
-layers incl. E__END, and the on-target assembly thesis), (5) Cookbook
+layers incl. E_END, and the on-target assembly thesis), (5) Cookbook
 (= pattern-library step, fed by sample-mining), (6) Platform guide
 (= platform-guide step: per-chip base addresses/pin mux/IRQs via nxp-monke),
 (7) Simulator (parked plan, slots in later). Sections 2-3 are machine-truth
@@ -231,7 +231,7 @@ Pattern sources for `pattern-library`:
 - gibbon-d `ezh_app.cpp` (teenage engineering, D:\prj\teenage_engineering\
   lpc55_gibbon-d\gibbon-d-test-fw-west\app\src) — multi-app RAM pool with
   offset dispatch, shared idle epilogue (CFM+HOLD), ARM2EZH parameter block,
-  `E_LOAD_32IMM`/`E__END` pseudo-instructions built on bunny_build, and the
+  `E_LOAD_32IMM`/`E_END` pseudo-instructions built on bunny_build, and the
   standout SPI PSRAM fetch pattern: EZH performing small memory operations
   through a command structure (ezh__execute_command dispatch, cmd+addr SPI
   transactions via FIFO writes, GOSUB subroutines, heartbeat pacing)
