@@ -1,51 +1,67 @@
 <!doctype html>
-<html lang="en" data-theme="dark" data-font="sans">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Home | EZH Architecture B</title>
     <style>:root {
   color-scheme: dark;
-  --bg: #101316;
-  --panel: #171b20;
-  --panel-2: #20262d;
-  --text: #f2f5f8;
-  --muted: #a8b3bf;
-  --line: #39434d;
-  --line-strong: #586777;
-  --accent: #4cc9f0;
-  --accent-2: #f2c94c;
-  --accent-3: #ff6b6b;
-  --ok: #5dd39e;
-  --warn: #f2c94c;
-  --code-bg: #0b0f14;
-  --code-text: #dbeafe;
-  --focus: rgba(76, 201, 240, 0.22);
-  --panel-translucent: rgba(23, 27, 32, 0.82);
-  --shadow: rgba(0, 0, 0, 0.28);
-  --mono: "JetBrains Mono", "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
-  --sans: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
+  --bg: #1a1a1a;
+  --panel: #242424;
+  --panel-2: #2d2d2d;
+  --text: #e0e0e0;
+  --muted: #808080;
+  --line: #3d3d3d;
+  --line-strong: #cc8800;
+  --accent: #ffb000;
+  --accent-2: #cc8800;
+  --accent-3: #ff4444;
+  --ok: #00ff00;
+  --warn: #ffb000;
+  --code-bg: #2d2d2d;
+  --code-text: #e0e0e0;
+  --focus: rgba(255, 176, 0, 0.22);
+  --panel-translucent: #242424;
+  --shadow: rgba(255, 176, 0, 0.12);
+  --amber-glow: rgba(255, 176, 0, 0.3);
+  --mono: Consolas, Monaco, "Courier New", monospace;
+  --sans: var(--mono);
+  --field-0: rgba(255, 176, 0, 0.18);
+  --field-1: rgba(0, 255, 0, 0.10);
+  --field-2: rgba(0, 200, 255, 0.12);
+  --field-3: rgba(255, 80, 255, 0.12);
+  --field-4: rgba(255, 96, 96, 0.14);
+  --field-5: rgba(150, 150, 255, 0.14);
+  --reserved: rgba(255, 255, 255, 0.03);
 }
 
 html[data-theme="light"] {
   color-scheme: light;
-  --bg: #f6f8fb;
-  --panel: #ffffff;
-  --panel-2: #eef3f7;
-  --text: #1c242d;
-  --muted: #5d6875;
-  --line: #cbd5df;
-  --line-strong: #93a4b5;
-  --accent: #0969da;
-  --accent-2: #9a6700;
-  --accent-3: #c93c37;
-  --ok: #1f7a4d;
-  --warn: #9a6700;
-  --code-bg: #eef3f7;
-  --code-text: #1f2937;
-  --focus: rgba(9, 105, 218, 0.18);
-  --panel-translucent: rgba(255, 255, 255, 0.88);
-  --shadow: rgba(31, 45, 61, 0.14);
+  --bg: #f4f1e8;
+  --panel: #ece9df;
+  --panel-2: #e2ded2;
+  --text: #2b2721;
+  --muted: #7d766a;
+  --line: #c6c0af;
+  --line-strong: #a87d1a;
+  --accent: #8a5800;
+  --accent-2: #a87d1a;
+  --accent-3: #c02020;
+  --ok: #0a7a0a;
+  --warn: #8a5800;
+  --code-bg: #e2ded2;
+  --code-text: #2b2721;
+  --focus: rgba(138, 88, 0, 0.22);
+  --panel-translucent: #ece9df;
+  --shadow: rgba(138, 88, 0, 0.16);
+  --amber-glow: rgba(138, 88, 0, 0.25);
+  --field-0: rgba(138, 88, 0, 0.16);
+  --field-1: rgba(10, 122, 10, 0.12);
+  --field-2: rgba(0, 110, 140, 0.12);
+  --field-3: rgba(140, 40, 140, 0.10);
+  --field-4: rgba(180, 40, 40, 0.10);
+  --field-5: rgba(60, 60, 180, 0.10);
+  --reserved: rgba(0, 0, 0, 0.04);
 }
 
 * {
@@ -59,15 +75,12 @@ html {
 body {
   margin: 0;
   min-width: 320px;
-  background: linear-gradient(180deg, rgba(76, 201, 240, 0.08), transparent 18rem), var(--bg);
+  min-height: 100vh;
+  background: var(--bg);
   color: var(--text);
-  font-family: var(--sans);
-  font-size: 16px;
-  line-height: 1.55;
-}
-
-html[data-font="mono"] body {
   font-family: var(--mono);
+  font-size: 14px;
+  line-height: 1.4;
 }
 
 a {
@@ -95,7 +108,7 @@ pre {
   padding: 1rem;
   overflow: auto;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--code-bg);
   color: var(--code-text);
 }
@@ -106,51 +119,62 @@ input {
 }
 
 .site-shell {
-  width: min(1180px, calc(100% - 32px));
+  width: min(1100px, calc(100% - 40px));
   margin: 0 auto;
+  padding: 20px 0;
 }
 
 .site-header {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
   gap: 1rem;
-  align-items: start;
-  padding: 1.1rem 0 0.75rem;
-  border-bottom: 1px solid var(--line);
-}
-
-.brand {
-  display: grid;
-  gap: 0.55rem;
-  min-width: 0;
-}
-
-.brand-mark {
-  width: 3rem;
-  height: 3rem;
-  display: inline-grid;
-  place-items: center;
-  border: 1px solid var(--line-strong);
-  border-radius: 8px;
+  align-items: stretch;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid var(--line);
   background: var(--panel);
+}
+
+.panel {
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.bunny-container {
+  min-width: 0;
+  padding: 0.2rem 0.4rem;
+  color: var(--accent);
+  text-shadow: 0 0 10px var(--amber-glow);
+  text-align: center;
+}
+
+.bunny-art {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
   color: var(--accent);
   font-family: var(--mono);
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0;
+  font-size: 8px;
+  line-height: 1.1;
+  text-align: left;
+  white-space: pre;
+  text-shadow: 0 0 10px var(--amber-glow);
 }
 
 .brand-title {
-  margin: 0;
+  margin-top: 6px;
   font-family: var(--mono);
-  font-size: clamp(1rem, 1.7vw, 1.35rem);
-  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 2px;
 }
 
 .brand-subtitle {
-  margin: 0;
+  margin-top: 2px;
   color: var(--muted);
-  max-width: 62ch;
+  font-size: 11px;
+  letter-spacing: 1px;
 }
 
 .top-actions {
@@ -160,19 +184,19 @@ input {
 }
 
 .icon-button {
-  width: 2.3rem;
-  height: 2.3rem;
-  display: inline-grid;
-  place-items: center;
+  min-height: 1.7rem;
+  padding: 0.2rem 0.5rem;
   border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--panel);
-  color: var(--text);
+  border-radius: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 11px;
   cursor: pointer;
 }
 
 .icon-button:hover {
   border-color: var(--accent);
+  color: var(--accent);
 }
 
 .search-box {
@@ -182,10 +206,10 @@ input {
 
 .search-input {
   width: 100%;
-  height: 2.7rem;
+  height: 2.2rem;
   padding: 0 0.85rem;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--code-bg);
   color: var(--text);
   outline: none;
@@ -205,9 +229,9 @@ input {
   max-height: min(70vh, 520px);
   overflow: auto;
   border: 1px solid var(--line-strong);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--panel);
-  box-shadow: 0 16px 36px var(--shadow);
+  box-shadow: 0 0 12px var(--shadow);
 }
 
 .search-result {
@@ -225,7 +249,7 @@ input {
 .search-result:hover,
 .search-result:focus {
   background: var(--panel-2);
-  color: var(--text);
+  color: var(--accent);
 }
 
 .search-result-title {
@@ -244,37 +268,38 @@ input {
 .nav {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid var(--line);
+  gap: 0;
+  margin-bottom: 10px;
+  border: 1px solid var(--line);
+  background: var(--panel);
 }
 
 .nav-link {
   padding: 0.42rem 0.65rem;
-  border: 1px solid transparent;
-  border-radius: 8px;
+  border-right: 1px solid var(--line);
   color: var(--muted);
   font-family: var(--mono);
-  font-size: 0.86rem;
+  font-size: 12px;
   text-decoration: none;
 }
 
 .nav-link:hover,
 .nav-link.active {
-  border-color: var(--line);
-  background: var(--panel);
-  color: var(--text);
+  background: var(--panel-2);
+  color: var(--accent);
 }
 
 .main {
-  padding: 1.4rem 0 3rem;
+  padding: 0 0 1rem;
 }
 
 .hero {
   display: grid;
   gap: 1.1rem;
-  padding: 1.2rem 0 1.4rem;
-  border-bottom: 1px solid var(--line);
+  margin-bottom: 10px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  background: var(--panel);
 }
 
 .hero h1,
@@ -282,9 +307,11 @@ input {
 .reference-heading h1 {
   margin: 0;
   font-family: var(--mono);
-  font-size: clamp(1.8rem, 4vw, 3.3rem);
-  line-height: 1.08;
+  color: var(--accent);
+  font-size: clamp(1.4rem, 4vw, 2.4rem);
+  line-height: 1.12;
   max-width: 18ch;
+  text-shadow: 0 0 10px var(--amber-glow);
 }
 
 .hero p,
@@ -292,7 +319,7 @@ input {
   max-width: 74ch;
   margin: 0;
   color: var(--muted);
-  font-size: 1.03rem;
+  font-size: 0.95rem;
 }
 
 .status-strip {
@@ -303,10 +330,10 @@ input {
 }
 
 .stat {
-  min-height: 6.6rem;
-  padding: 0.85rem;
+  min-height: 5.5rem;
+  padding: 0.7rem;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--panel-translucent);
 }
 
@@ -322,6 +349,7 @@ input {
   margin-top: 0.35rem;
   font-family: var(--mono);
   font-size: 1.15rem;
+  color: var(--accent);
 }
 
 .tile-grid {
@@ -332,10 +360,10 @@ input {
 }
 
 .tile {
-  min-height: 11rem;
-  padding: 1rem;
+  min-height: 9rem;
+  padding: 0.85rem;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--panel);
   color: var(--text);
   text-decoration: none;
@@ -343,12 +371,14 @@ input {
 
 .tile:hover {
   border-color: var(--accent);
-  color: var(--text);
+  color: var(--accent);
+  box-shadow: 0 0 10px var(--shadow);
 }
 
 .tile h2 {
   margin: 0;
   font-family: var(--mono);
+  color: var(--accent);
   font-size: 1rem;
 }
 
@@ -369,13 +399,14 @@ input {
   margin: 2rem 0 0.65rem;
   padding-top: 0.6rem;
   border-top: 1px solid var(--line);
+  color: var(--accent);
   font-family: var(--mono);
   font-size: 1.35rem;
 }
 
 .prose h3 {
   margin: 1.45rem 0 0.45rem;
-  color: #f5c66d;
+  color: var(--accent-2);
   font-family: var(--mono);
   font-size: 1.02rem;
 }
@@ -388,7 +419,7 @@ input {
 .prose blockquote {
   margin: 1rem 0;
   padding: 0.2rem 0 0.2rem 1rem;
-  border-left: 3px solid var(--accent-2);
+  border-left: 3px solid var(--accent);
   color: var(--muted);
 }
 
@@ -416,8 +447,8 @@ input {
 }
 
 .prose th {
-  background: var(--panel);
-  color: var(--accent-2);
+  background: var(--panel-2);
+  color: var(--accent);
   text-align: left;
 }
 
@@ -432,8 +463,9 @@ input {
 
 .provenance-block {
   margin-top: 2rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--line);
+  padding: 0.8rem;
+  border: 1px solid var(--line);
+  background: var(--panel);
   color: var(--muted);
   font-size: 0.9rem;
 }
@@ -442,7 +474,7 @@ input {
   margin: 0 0 0.55rem;
   border-top: 0;
   padding-top: 0;
-  color: var(--text);
+  color: var(--accent);
   font-size: 1rem;
 }
 
@@ -450,6 +482,9 @@ input {
   display: grid;
   gap: 0.75rem;
   margin-bottom: 1.1rem;
+  padding: 12px;
+  border: 1px solid var(--line);
+  background: var(--panel);
 }
 
 .filter-row {
@@ -463,7 +498,7 @@ input {
   height: 2.55rem;
   padding: 0 0.8rem;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--code-bg);
   color: var(--text);
   outline: none;
@@ -474,7 +509,7 @@ input {
   display: inline-grid;
   place-items: center;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
   color: var(--muted);
   font-family: var(--mono);
   font-size: 0.82rem;
@@ -487,7 +522,7 @@ input {
 
 .opcode-panel {
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--panel-translucent);
 }
 
@@ -500,8 +535,10 @@ input {
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 0.9rem;
   align-items: center;
-  min-height: 3.25rem;
-  padding: 0.72rem 0.9rem;
+  min-height: 2.5rem;
+  padding: 0.55rem 0.75rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel-2);
   cursor: pointer;
 }
 
@@ -515,7 +552,7 @@ input {
 
 .opcode-name {
   font-family: var(--mono);
-  color: var(--accent-2);
+  color: var(--accent);
   font-weight: 700;
 }
 
@@ -536,7 +573,7 @@ input {
   min-height: 1.45rem;
   padding: 0 0.42rem;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: 0;
   color: var(--muted);
   font-family: var(--mono);
   font-size: 0.72rem;
@@ -563,7 +600,7 @@ input {
 
 .form-title {
   margin: 0 0 0.5rem;
-  color: var(--accent-2);
+  color: var(--accent);
   font-family: var(--mono);
   font-size: 0.93rem;
 }
@@ -579,6 +616,65 @@ input {
   display: block;
   min-width: 660px;
   height: auto;
+}
+
+.bitfield svg rect {
+  stroke: var(--line);
+}
+
+.bitfield svg rect[data-tip] {
+  cursor: help;
+}
+
+.bitfield svg rect[data-tip]:hover {
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+
+.bitfield svg text {
+  fill: var(--text);
+  pointer-events: none;
+}
+
+.bitfield svg text.bit,
+.bitfield svg text.vrz {
+  fill: var(--muted);
+}
+
+.bitfield svg text.vfx {
+  fill: var(--ok);
+}
+
+.bitfield .fx {
+  fill: var(--panel-2);
+}
+
+.bitfield .rz {
+  fill: var(--reserved);
+}
+
+.bitfield .f0 {
+  fill: var(--field-0);
+}
+
+.bitfield .f1 {
+  fill: var(--field-1);
+}
+
+.bitfield .f2 {
+  fill: var(--field-2);
+}
+
+.bitfield .f3 {
+  fill: var(--field-3);
+}
+
+.bitfield .f4 {
+  fill: var(--field-4);
+}
+
+.bitfield .f5 {
+  fill: var(--field-5);
 }
 
 .mnemonic-table {
@@ -597,7 +693,7 @@ input {
 
 .mnemonic-table th {
   background: var(--panel-2);
-  color: var(--accent-2);
+  color: var(--accent);
   text-align: left;
 }
 
@@ -610,7 +706,7 @@ input {
   margin: 1rem 0 1.2rem;
   padding: 0.8rem;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--panel);
 }
 
@@ -623,7 +719,8 @@ input {
   padding: 1rem 0 1.6rem;
   border-top: 1px solid var(--line);
   color: var(--muted);
-  font-size: 0.85rem;
+  font-size: 11px;
+  text-align: center;
 }
 
 .tip {
@@ -632,10 +729,10 @@ input {
   max-width: min(360px, calc(100vw - 24px));
   padding: 0.5rem 0.6rem;
   border: 1px solid var(--line-strong);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--code-bg);
   color: var(--text);
-  box-shadow: 0 12px 30px var(--shadow);
+  box-shadow: 0 0 12px var(--shadow);
   font-size: 0.85rem;
   pointer-events: none;
 }
@@ -676,18 +773,36 @@ input {
   </head>
   <body>
     <div class="site-shell">
-      <header class="site-header">
-        <div class="brand">
-          <div class="brand-mark" aria-hidden="true">EZH</div>
-          <div>
-            <h1 class="brand-title">EZH Architecture B Instruction Set</h1>
-            <p class="brand-subtitle">Generated from the ISA database and reviewed prose chapters. Public output is filtered to public references only.</p>
-          </div>
+      <header class="site-header panel">
+        <div class="bunny-container">
+          <pre class="bunny-art" aria-hidden="true">     / \
+    / _ \
+   | / \ |
+   ||   || _______
+   ||   || |\     \
+   ||   || ||\     \
+   ||   || || \    |
+   ||   || ||  \__/
+   ||   || ||   ||
+    \\_/ \_/ \_//
+   /   _     _   \
+  /               \
+  |    O     O    |
+  |   \  ___  /   |
+ /     \ \_/ /     \
+/  -----  |  --\    \
+|     \__/|\__/ \   |
+\       |_|_|       /
+ \_____       _____/
+       \     /
+       |     |</pre>
+          <div class="brand-title">BUNNY_BUILD // EZH ARCHITECTURE B</div>
+          <div class="brand-subtitle">Generated from the ISA database and reviewed prose chapters. Public output is filtered to public references only.</div>
         </div>
         <div>
           <div class="top-actions">
-            <button class="icon-button" type="button" data-action="theme" title="Toggle theme" aria-label="Toggle theme">T</button>
-            <button class="icon-button" type="button" data-action="font" title="Toggle font" aria-label="Toggle font">Aa</button>
+            <button class="icon-button" type="button" data-action="theme" title="Toggle theme" aria-label="Toggle theme">theme: dark</button>
+            <button class="icon-button" type="button" data-action="font" title="Cycle monospace font" aria-label="Cycle monospace font">font: consolas</button>
           </div>
           <div class="search-box">
             <input id="site-search" class="search-input" type="search" autocomplete="off" placeholder="Search instructions, patterns, and chapters">
@@ -775,34 +890,48 @@ input {
       </main>
 
       <footer class="site-footer">
-        Generated from <code>isa/</code> and <code>docs_src/</code>. Non-public source identifiers and titles are excluded from rendered pages.
+        generated from <code>isa/</code> and <code>docs_src/</code> - bunny_build - non-public source identifiers and titles are excluded from rendered pages
       </footer>
     </div>
     <script>(function () {
   const themeButton = document.querySelector("[data-action='theme']");
   const fontButton = document.querySelector("[data-action='font']");
   const root = document.documentElement;
+  const fonts = [
+    ["consolas", "Consolas, Monaco, 'Courier New', monospace"],
+    ["cascadia", "'Cascadia Code', 'Cascadia Mono', Consolas, monospace"],
+    ["jetbrains", "'JetBrains Mono', Consolas, monospace"],
+    ["ibm plex", "'IBM Plex Mono', Consolas, monospace"],
+    ["courier", "'Courier New', Courier, monospace"],
+  ];
+  let fontIndex = 0;
 
   function setTheme(next) {
     root.dataset.theme = next;
+    if (themeButton) themeButton.textContent = "theme: " + next;
     try {
       localStorage.setItem("ezh-theme", next);
     } catch (_) {}
   }
 
-  function setFont(next) {
-    root.dataset.font = next;
+  function setFontIndex(next) {
+    const index = ((next % fonts.length) + fonts.length) % fonts.length;
+    fontIndex = index;
+    root.style.setProperty("--mono", fonts[index][1]);
+    if (fontButton) fontButton.textContent = "font: " + fonts[index][0];
     try {
-      localStorage.setItem("ezh-font", next);
+      localStorage.setItem("ezh-font-index", String(index));
     } catch (_) {}
   }
 
   try {
     const savedTheme = localStorage.getItem("ezh-theme");
-    const savedFont = localStorage.getItem("ezh-font");
+    const savedFont = localStorage.getItem("ezh-font-index");
     if (savedTheme) setTheme(savedTheme);
-    if (savedFont) setFont(savedFont);
+    if (savedFont) setFontIndex(parseInt(savedFont, 10) || 0);
   } catch (_) {}
+  setTheme(root.dataset.theme || "dark");
+  if (!root.style.getPropertyValue("--mono")) setFontIndex(0);
 
   if (themeButton) {
     themeButton.addEventListener("click", function () {
@@ -812,7 +941,7 @@ input {
 
   if (fontButton) {
     fontButton.addEventListener("click", function () {
-      setFont(root.dataset.font === "sans" ? "mono" : "sans");
+      setFontIndex(fontIndex + 1);
     });
   }
 

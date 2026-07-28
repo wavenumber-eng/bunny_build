@@ -212,29 +212,31 @@ chapter linter because the final artifact is the publication boundary.</p>
 <h2>Styling</h2>
 
 <p><strong>Current implementation:</strong> a compact technical reference UI
-with a neutral dark default, a light theme toggle, a sans-serif default font,
-and an optional monospace toggle for readers who prefer code-browser density.
-The header carries the EZH wordmark, primary navigation, theme/font buttons,
-and full-site search. There is no mascot art, external font, CDN stylesheet, or
-network-loaded visual asset.</p>
+that extends the original bunny_build instruction-set spike styling: amber
+phosphor terminal colors, flat bordered panels, dense monospace type, and the
+README bunny ASCII identity above the title
+<code>BUNNY_BUILD // EZH ARCHITECTURE B</code>. The header carries that
+identity, primary navigation, theme/font buttons, and full-site search. There
+is no external font, CDN stylesheet, or network-loaded visual asset.</p>
 
 <ul>
 <li><strong>Tokens:</strong> CSS custom properties define the dark and light
-themes. The dark identity uses neutral panels
-(<code>#101316</code>/<code>#171b20</code>/<code>#20262d</code>) with cyan,
-yellow, red, and green accents; light mode maps the same roles onto white and
-blue-gray surfaces. Bitfield cell tint tokens sit beside these shared
-tokens.</li>
+themes. The dark identity uses the spike's terminal base
+(<code>#1a1a1a</code>/<code>#242424</code>/<code>#2d2d2d</code>) with amber as
+the primary accent, green for verified/generated values, and restrained red and
+blue/purple field tints. Light mode maps the same roles onto warm paper-like
+surfaces. Bitfield cell tint tokens sit beside these shared tokens.</li>
 <li><strong>Themes:</strong> dark is the default. Light mode is manual
 (<code>data-theme="light"</code> on the root), toggled from the header, and
 persisted in <code>localStorage</code>. No
 <code>prefers-color-scheme</code> auto-switch.</li>
-<li><strong>Type:</strong> sans-serif is the default for long-form reading;
-monospace is available via <code>data-font="mono"</code> and the header font
-button. All font stacks are local/system stacks; no font CDN is allowed.</li>
+<li><strong>Type:</strong> monospace is the default. The header font button
+cycles through local/system monospace stacks by updating <code>--mono</code>
+and persists the selected index in <code>localStorage</code>. No font CDN is
+allowed.</li>
 <li><strong>Diagrams:</strong> SVG cells styled through CSS classes over the
 tokens so they follow the theme; fixed-bit values render in
-<code>--green</code>, reserved-zero cells dimmed.</li>
+<code>--ok</code>, reserved-zero cells dimmed.</li>
 </ul>
 
 <h2>Hosting</h2>
@@ -248,7 +250,7 @@ it. The publishing workflow now has a deterministic artifact and
 <h2>Site organization (decided 2026-07-22)</h2>
 
 <p>Seven top-level sections, each its own page, sharing a header bar (the
-EZH wordmark plus section navigation) and the token stylesheet; search
+bunny_build ASCII identity plus section navigation) and the token stylesheet; search
 spans all of them. (1) Home; (2) Architecture — exhaustive: all ARM/EZH
 interrupt mechanisms, the runs-two-ahead pipeline nuances, boolean
 detection, heartbeat, EZHB control block; (3) Instruction reference — the

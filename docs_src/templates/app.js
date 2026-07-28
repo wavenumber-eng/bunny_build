@@ -2,27 +2,41 @@
   const themeButton = document.querySelector("[data-action='theme']");
   const fontButton = document.querySelector("[data-action='font']");
   const root = document.documentElement;
+  const fonts = [
+    ["consolas", "Consolas, Monaco, 'Courier New', monospace"],
+    ["cascadia", "'Cascadia Code', 'Cascadia Mono', Consolas, monospace"],
+    ["jetbrains", "'JetBrains Mono', Consolas, monospace"],
+    ["ibm plex", "'IBM Plex Mono', Consolas, monospace"],
+    ["courier", "'Courier New', Courier, monospace"],
+  ];
+  let fontIndex = 0;
 
   function setTheme(next) {
     root.dataset.theme = next;
+    if (themeButton) themeButton.textContent = "theme: " + next;
     try {
       localStorage.setItem("ezh-theme", next);
     } catch (_) {}
   }
 
-  function setFont(next) {
-    root.dataset.font = next;
+  function setFontIndex(next) {
+    const index = ((next % fonts.length) + fonts.length) % fonts.length;
+    fontIndex = index;
+    root.style.setProperty("--mono", fonts[index][1]);
+    if (fontButton) fontButton.textContent = "font: " + fonts[index][0];
     try {
-      localStorage.setItem("ezh-font", next);
+      localStorage.setItem("ezh-font-index", String(index));
     } catch (_) {}
   }
 
   try {
     const savedTheme = localStorage.getItem("ezh-theme");
-    const savedFont = localStorage.getItem("ezh-font");
+    const savedFont = localStorage.getItem("ezh-font-index");
     if (savedTheme) setTheme(savedTheme);
-    if (savedFont) setFont(savedFont);
+    if (savedFont) setFontIndex(parseInt(savedFont, 10) || 0);
   } catch (_) {}
+  setTheme(root.dataset.theme || "dark");
+  if (!root.style.getPropertyValue("--mono")) setFontIndex(0);
 
   if (themeButton) {
     themeButton.addEventListener("click", function () {
@@ -32,7 +46,7 @@
 
   if (fontButton) {
     fontButton.addEventListener("click", function () {
-      setFont(root.dataset.font === "sans" ? "mono" : "sans");
+      setFontIndex(fontIndex + 1);
     });
   }
 

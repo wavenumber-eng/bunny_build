@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-theme="dark" data-font="sans">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,18 +10,36 @@
   </head>
   <body>
     <div class="site-shell">
-      <header class="site-header">
-        <div class="brand">
-          <div class="brand-mark" aria-hidden="true">EZH</div>
-          <div>
-            <h1 class="brand-title">EZH Architecture B Instruction Set</h1>
-            <p class="brand-subtitle">Generated from the ISA database and reviewed prose chapters. Public output is filtered to public references only.</p>
-          </div>
+      <header class="site-header panel">
+        <div class="bunny-container">
+          <pre class="bunny-art" aria-hidden="true">     / \
+    / _ \
+   | / \ |
+   ||   || _______
+   ||   || |\     \
+   ||   || ||\     \
+   ||   || || \    |
+   ||   || ||  \__/
+   ||   || ||   ||
+    \\_/ \_/ \_//
+   /   _     _   \
+  /               \
+  |    O     O    |
+  |   \  ___  /   |
+ /     \ \_/ /     \
+/  -----  |  --\    \
+|     \__/|\__/ \   |
+\       |_|_|       /
+ \_____       _____/
+       \     /
+       |     |</pre>
+          <div class="brand-title">BUNNY_BUILD // EZH ARCHITECTURE B</div>
+          <div class="brand-subtitle">Generated from the ISA database and reviewed prose chapters. Public output is filtered to public references only.</div>
         </div>
         <div>
           <div class="top-actions">
-            <button class="icon-button" type="button" data-action="theme" title="Toggle theme" aria-label="Toggle theme">T</button>
-            <button class="icon-button" type="button" data-action="font" title="Toggle font" aria-label="Toggle font">Aa</button>
+            <button class="icon-button" type="button" data-action="theme" title="Toggle theme" aria-label="Toggle theme">theme: dark</button>
+            <button class="icon-button" type="button" data-action="font" title="Cycle monospace font" aria-label="Cycle monospace font">font: consolas</button>
           </div>
           <div class="search-box">
             <input id="site-search" class="search-input" type="search" autocomplete="off" placeholder="Search instructions, patterns, and chapters">
@@ -41,7 +59,7 @@
       </main>
 
       <footer class="site-footer">
-        Generated from <code>isa/</code> and <code>docs_src/</code>. Non-public source identifiers and titles are excluded from rendered pages.
+        generated from <code>isa/</code> and <code>docs_src/</code> - bunny_build - non-public source identifiers and titles are excluded from rendered pages
       </footer>
     </div>
     <script>{{ app_js | safe }}</script>
