@@ -54,13 +54,13 @@ depends_on = ["inventory-sources"]
 [[steps]]
 id = "pattern-library"
 title = "Cookbook chapter: the two main EZH patterns (continuous engines; command/execute/stop with E_END), pseudo-instruction idioms, multi-app dispatch, vector-table/event idioms, debug recipes and DSP patterns from the mined samples"
-status = "active"
+status = "done"
 depends_on = ["inventory-sources", "sample-mining"]
 
 [[steps]]
 id = "platform-guide"
 title = "Platform/chip guide: dedicated section for every part with EZH/SmartDMA (LPC5410x, LPC54114/51U68, LPC55(S)xx, RT500, MCXN9xx, and the newer MCXA266/A3x) - base addresses, pin mux, IRQ numbers, INPUTMUX trigger maps; fetch authoritative per-chip data via nxp-monkey"
-status = "pending"
+status = "active"
 depends_on = ["inventory-sources"]
 
 [[steps]]
@@ -147,7 +147,7 @@ status = "met"
 [[exit_criteria]]
 id = "cookbook-chapter"
 title = "Cookbook covers the mined sample corpus patterns with pattern-grounded, provenance-clean examples; curated runnable examples remain in bunny_build examples/tests"
-status = "pending"
+status = "met"
 
 [[exit_criteria]]
 id = "platform-guide-chapter"
