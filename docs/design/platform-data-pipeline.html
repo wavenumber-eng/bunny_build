@@ -168,12 +168,12 @@ until the SDK-header data shape and open extraction gaps are reviewed. Stages
 1&ndash;2 are cheap enough to run on demand in the meantime.</p>
 
 <h3>4 &mdash; Emit</h3>
-<p>One deterministic JSON per part, committed, stamped with tool version, pinned
-manifest revision, and MCUXpresso tool version. The static doc generator reads
-that committed JSON and renders the SDK-header platform view: confirmed parts,
-per-core IRQ/base-address facts, unconfirmed candidates, and open extraction
-gaps. The later enrichment pass fills in pin mux, INPUTMUX, and wrapper setup
-details.</p>
+<p>One deterministic JSON per part, committed with schema, generator, pinned
+manifest revision, and source-project revision metadata. The static doc
+generator reads that committed JSON and renders the SDK-header platform view:
+confirmed parts, per-core IRQ/base-address facts, unconfirmed candidates, and
+open extraction gaps. The later enrichment pass fills in pin mux, INPUTMUX, and
+wrapper setup details.</p>
 
 <h2>Drift checking</h2>
 
