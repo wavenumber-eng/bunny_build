@@ -726,7 +726,7 @@ Arm gives it a new frame, buffer, or command. The important property is that EZH
 engine while the work is live; the Arm is not stepping every byte.</p>
 <p><strong>Command / execute / stop.</strong> The Arm prepares a parameter block, boots a bounded program,
 the program does the operation, optionally signals the Arm, and parks. This is the
-<code>E_INT_TRIGGER(0)</code> then <code>E__END</code> world. It is the right shape for one-shot transforms,
+<code>E_INT_TRIGGER(0)</code> then <code>E_END</code> world. It is the right shape for one-shot transforms,
 register chores, diagnostics, and small peripheral commands.</p>
 <p>Multi-app systems still usually preserve those shapes. gibbon-d does not keep a resident
 EZH dispatcher looping on a command word; the Arm chooses one independently assembled app
@@ -782,11 +782,9 @@ to fire everything.</p>
 instruction. That matters because the builder runs in your program: when a repeated
 sequence has one intent, you can give it one name instead of copying the sequence through
 every app.</p>
-<p><code>E__END</code> is the canonical example. The hardware has <a href="instructions.html#hold"><code>E_HOLD</code></a>, <code>CFS</code>, <code>CFM</code>, and
+<p><code>E_END</code> is the canonical example. The hardware has <a href="instructions.html#hold"><code>E_HOLD</code></a>, <code>CFS</code>, <code>CFM</code>, and
 branches; the pattern is "park forever without fetching". Packaging that as a helper is
 right because all eight emitted instructions have one semantic job and strict ordering.
-Call it as <code>E_END()</code> from the public header; <code>E__END()</code> remains declared for the older
-double-underscore spelling used in historical notes and examples.
 <code>E_LOAD_32IMM</code> is the other obvious case: a 32-bit constant load is not one hardware
 instruction, but it is one programmer-facing operation.</p>
 <p>Use this sparingly. A pseudo-instruction should hide boilerplate, not hide control flow.
@@ -996,9 +994,9 @@ architecture supports it well, but there is very little prior art to copy.</p>
 
       <li>AN14650 §4.2.12 shows the ARM2EZH/mask/SP sequence; 68 of 87 deduplicated corpus programs use it verbatim <span class="small-note">(AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28), bunny_build__instr.h / .c encoders)</span></li>
 
-      <li>Park block appears in seven distinct corpus sources (8x in the feature-demo file, 8x in a display-controller source, once in third-party production code) and is implemented as E_END/E__END in src/bunny_build__psuedo_instr.c <span class="small-note">(bunny_build__instr.h / .c encoders)</span></li>
+      <li>Park block appears in seven distinct corpus sources (8x in the feature-demo file, 8x in a display-controller source, once in third-party production code) and is implemented as E_END in src/bunny_build__psuedo_instr.c <span class="small-note">(bunny_build__instr.h / .c encoders)</span></li>
 
-      <li>Assembler guide pseudo-instruction source plus gibbon-d local helpers: E_END/E__END and E_LOAD_32IMM package repeated instruction sequences as C builder helpers <span class="small-note">(bunny_build__instr.h / .c encoders)</span></li>
+      <li>Assembler guide pseudo-instruction source plus gibbon-d local helpers: park and 32-bit-load helpers package repeated instruction sequences as C builder helpers <span class="small-note">(bunny_build__instr.h / .c encoders)</span></li>
 
       <li>gibbon-d (teenage engineering) app/src/ezh_app.cpp: ezh_app_offset[] pool, sequential bunny_build() into shared ezh_ram, dispatch by offset in ezh__execute_command() <span class="small-note">(bunny_build__instr.h / .c encoders)</span></li>
 

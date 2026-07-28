@@ -33,7 +33,6 @@ void main()
 	if (pseudo_instr_link_probe)
 	{
 		E_END();
-		E__END();
 	}
 
 	BUNNY_BUILD_PRINTF(VT100_WHITE"    *----------------------------*\r\n");

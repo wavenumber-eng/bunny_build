@@ -36,7 +36,7 @@ void E_DCD(uint32_t loc) { bunny_build__add_instruction(0); if (bunny_build__pas
 void E_DCD_VAL(uint32_t val) { bunny_build__add_instruction(val); }
 
 
-void E__END()
+void E_END()
 {
     E_LABEL("END_LOOP");
         E_LOAD_IMM(CFS, 0);
@@ -48,13 +48,6 @@ void E__END()
         E_HOLD();
         E_GOTO("END_LOOP");
 }
-
-
-void E_END()
-{
-    E__END();
-}
-
 
 
 void E_LOAD_32IMM(uint32_t rx, uint32_t imm)

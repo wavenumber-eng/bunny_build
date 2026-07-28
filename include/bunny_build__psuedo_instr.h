@@ -26,7 +26,6 @@ void E_DCD_VAL(uint32_t val);
  */
 
 void E_END();
-void E__END();
 
 /*
  * Loads a 32-bit immediate value into a reg.

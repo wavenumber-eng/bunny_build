@@ -43,17 +43,17 @@ detail = "src/bunny_build__psuedo_instr.c E_LABEL/E_DCD/E_DCD_VAL; AN14650 §4.2
 [[provenance]]
 section = "pseudo"
 sources = ["bunny_build", "an14650"]
-detail = "src/bunny_build__psuedo_instr.c E_LOAD_32IMM and E_END/E__END; AN14650 §4.2.4 for why a 32-bit load must be synthesized from 11-bit immediates"
+detail = "src/bunny_build__psuedo_instr.c E_LOAD_32IMM and E_END; AN14650 §4.2.4 for why a 32-bit load must be synthesized from 11-bit immediates"
 
 [[provenance]]
 section = "park"
 sources = ["bunny_build"]
-detail = "src/bunny_build__psuedo_instr.c E_END()/E__END(); CFM value 0xDB6DB600 decoded against the bit-slice event encoding in isa/ezh_b/arch.toml [bit_slice_cfg]"
+detail = "src/bunny_build__psuedo_instr.c E_END(); CFM value 0xDB6DB600 decoded against the bit-slice event encoding in isa/ezh_b/arch.toml [bit_slice_cfg]"
 
 [[provenance]]
 section = "gotchas"
 sources = ["bunny_build"]
-detail = "src/bunny_build__instr.c (undefined-label fallback, 0x1FFFFF branch mask); src/bunny_build__psuedo_instr.c (E_LOAD_32IMM stack use, E_END/E__END park helper spellings)"
+detail = "src/bunny_build__instr.c (undefined-label fallback, 0x1FFFFF branch mask); src/bunny_build__psuedo_instr.c (E_LOAD_32IMM stack use, E_END park helper)"
 
 [[provenance]]
 section = "worked-example"
@@ -337,9 +337,7 @@ bytes of a repeating three-bit pattern, which is exactly what you can assemble f
 > trick. bunny_build did not invent the park; it packaged an established idiom as a
 > pseudo-instruction so it stops being eight lines you copy between programs.
 
-Call it as `E_END()` from the public header. `E__END()` is also declared and kept as the
-historical spelling used in older notes and examples; both spellings emit the same park
-sequence.
+Call it as `E_END()` from the public header.
 
 > **Signalling the Arm is a separate step.** The park does not raise an interrupt. If the
 > Arm needs to know the program finished, issue [[E_INT_TRIGGER]] before parking —

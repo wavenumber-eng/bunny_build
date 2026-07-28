@@ -28,12 +28,12 @@ detail = "AN14650 §4.2.12 shows the ARM2EZH/mask/SP sequence; 68 of 87 deduplic
 [[provenance]]
 section = "signal-and-park"
 sources = ["bunny_build", "spec_b_06"]
-detail = "Park block appears in seven distinct corpus sources (8x in the feature-demo file, 8x in a display-controller source, once in third-party production code) and is implemented as E_END/E__END in src/bunny_build__psuedo_instr.c"
+detail = "Park block appears in seven distinct corpus sources (8x in the feature-demo file, 8x in a display-controller source, once in third-party production code) and is implemented as E_END in src/bunny_build__psuedo_instr.c"
 
 [[provenance]]
 section = "pseudo-instructions"
 sources = ["bunny_build"]
-detail = "Assembler guide pseudo-instruction source plus gibbon-d local helpers: E_END/E__END and E_LOAD_32IMM package repeated instruction sequences as C builder helpers"
+detail = "Assembler guide pseudo-instruction source plus gibbon-d local helpers: park and 32-bit-load helpers package repeated instruction sequences as C builder helpers"
 
 [[provenance]]
 section = "multi-app"
@@ -126,7 +126,7 @@ engine while the work is live; the Arm is not stepping every byte.
 
 **Command / execute / stop.** The Arm prepares a parameter block, boots a bounded program,
 the program does the operation, optionally signals the Arm, and parks. This is the
-`E_INT_TRIGGER(0)` then `E__END` world. It is the right shape for one-shot transforms,
+`E_INT_TRIGGER(0)` then `E_END` world. It is the right shape for one-shot transforms,
 register chores, diagnostics, and small peripheral commands.
 
 Multi-app systems still usually preserve those shapes. gibbon-d does not keep a resident
@@ -198,11 +198,9 @@ instruction. That matters because the builder runs in your program: when a repea
 sequence has one intent, you can give it one name instead of copying the sequence through
 every app.
 
-`E__END` is the canonical example. The hardware has [[E_HOLD]], `CFS`, `CFM`, and
+`E_END` is the canonical example. The hardware has [[E_HOLD]], `CFS`, `CFM`, and
 branches; the pattern is "park forever without fetching". Packaging that as a helper is
 right because all eight emitted instructions have one semantic job and strict ordering.
-Call it as `E_END()` from the public header; `E__END()` remains declared for the older
-double-underscore spelling used in historical notes and examples.
 `E_LOAD_32IMM` is the other obvious case: a 32-bit constant load is not one hardware
 instruction, but it is one programmer-facing operation.
 

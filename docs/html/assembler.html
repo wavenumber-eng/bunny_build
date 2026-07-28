@@ -896,9 +896,7 @@ production code. It is the corpus's <em>standard program terminator</em>, not on
 trick. bunny_build did not invent the park; it packaged an established idiom as a
 pseudo-instruction so it stops being eight lines you copy between programs.</p>
 </blockquote>
-<p>Call it as <code>E_END()</code> from the public header. <code>E__END()</code> is also declared and kept as the
-historical spelling used in older notes and examples; both spellings emit the same park
-sequence.</p>
+<p>Call it as <code>E_END()</code> from the public header.</p>
 <blockquote>
 <p><strong>Signalling the Arm is a separate step.</strong> The park does not raise an interrupt. If the
 Arm needs to know the program finished, issue <a href="instructions.html#int_trigger"><code>E_INT_TRIGGER</code></a> before parking —
@@ -998,11 +996,11 @@ right instruction for a loop that never returns.</p>
 
       <li>src/bunny_build__psuedo_instr.c E_LABEL/E_DCD/E_DCD_VAL; AN14650 §4.2.15.2 shows the historical E_DCD label-table idiom <span class="small-note">(bunny_build__instr.h / .c encoders, AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28))</span></li>
 
-      <li>src/bunny_build__psuedo_instr.c E_LOAD_32IMM and E_END/E__END; AN14650 §4.2.4 for why a 32-bit load must be synthesized from 11-bit immediates <span class="small-note">(bunny_build__instr.h / .c encoders, AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28))</span></li>
+      <li>src/bunny_build__psuedo_instr.c E_LOAD_32IMM and E_END; AN14650 §4.2.4 for why a 32-bit load must be synthesized from 11-bit immediates <span class="small-note">(bunny_build__instr.h / .c encoders, AN14650 SmartDMA Cookbook Rev 1.0 (2025-05-28))</span></li>
 
-      <li>src/bunny_build__psuedo_instr.c E_END()/E__END(); CFM value 0xDB6DB600 decoded against the bit-slice event encoding in isa/ezh_b/arch.toml [bit_slice_cfg] <span class="small-note">(bunny_build__instr.h / .c encoders)</span></li>
+      <li>src/bunny_build__psuedo_instr.c E_END(); CFM value 0xDB6DB600 decoded against the bit-slice event encoding in isa/ezh_b/arch.toml [bit_slice_cfg] <span class="small-note">(bunny_build__instr.h / .c encoders)</span></li>
 
-      <li>src/bunny_build__instr.c (undefined-label fallback, 0x1FFFFF branch mask); src/bunny_build__psuedo_instr.c (E_LOAD_32IMM stack use, E_END/E__END park helper spellings) <span class="small-note">(bunny_build__instr.h / .c encoders)</span></li>
+      <li>src/bunny_build__instr.c (undefined-label fallback, 0x1FFFFF branch mask); src/bunny_build__psuedo_instr.c (E_LOAD_32IMM stack use, E_END park helper) <span class="small-note">(bunny_build__instr.h / .c encoders)</span></li>
 
       <li>test/lpc55s69__ezh_hello_gpio/source/ezh_app.c, reproduced from this repository <span class="small-note">(bunny_build__instr.h / .c encoders)</span></li>
 
