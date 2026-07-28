@@ -1,0 +1,57 @@
+{
+  "cores": [
+    {
+      "base_addresses": [
+        {
+          "address": "0x40033000",
+          "address_int": 1073950720,
+          "macro": "SMARTDMA0_BASE",
+          "space": "default_or_nonsecure"
+        },
+        {
+          "address": "0x50033000",
+          "address_int": 1342386176,
+          "macro": "SMARTDMA0_BASE",
+          "space": "secure_or_cmse"
+        },
+        {
+          "address": "0x40033000",
+          "address_int": 1073950720,
+          "macro": "SMARTDMA0_BASE_NS",
+          "space": "nonsecure_alias"
+        }
+      ],
+      "common_header": "MCXN/MCXN246/MCXN246_COMMON.h",
+      "core": "default",
+      "features_header": "MCXN/MCXN246/MCXN246_features.h",
+      "irqs": [
+        {
+          "description": "SmartDMA_IRQ",
+          "name": "SMARTDMA_IRQn",
+          "number": 53
+        }
+      ],
+      "presence": {
+        "block_name": "SMARTDMA",
+        "count": 1,
+        "probe": "FSL_FEATURE_SOC_SMARTDMA_COUNT"
+      }
+    }
+  ],
+  "enrichment": {
+    "inputmux_triggers": "pending_nxp_monkey",
+    "pin_mux": "pending_nxp_monkey",
+    "register_block": "pending_nxp_monkey"
+  },
+  "family": "MCXN",
+  "manifest_path": "submanifests/devices/MCX.yml",
+  "manifest_revision": "d00fe90aef626b082bbd0a5358620625c9297afb",
+  "part": "MCXN246",
+  "repo": "nxp-mcuxpresso/mcux-devices-mcx",
+  "repo_path": "MCXN/MCXN246",
+  "repo_revision": "e674ef7a122cf0f9cd352597dc8d5359c100411c",
+  "series": "MCX",
+  "stage": "sdk_headers",
+  "status": "sdk_feature_confirmed",
+  "track_branch": "release/26.09.00-pvw1"
+}

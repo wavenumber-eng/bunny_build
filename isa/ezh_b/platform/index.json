@@ -1,0 +1,674 @@
+{
+  "generator": "isa/tools/discover_parts.py",
+  "manifest": {
+    "device_manifests": {
+      "LPC": "submanifests/devices/LPC.yml",
+      "MCX": "submanifests/devices/MCX.yml",
+      "RT": "submanifests/devices/RT.yml"
+    },
+    "repo": "nxp-mcuxpresso/mcuxsdk-manifests",
+    "revision": "d00fe90aef626b082bbd0a5358620625c9297afb"
+  },
+  "notes": [
+    "Pin mux, INPUTMUX trigger maps, and register block extraction are deferred to the nxp-monkey enrichment stage.",
+    "IRQ values are extracted from SDK COMMON.h IRQn_Type enums, not config-tool interrupt tables."
+  ],
+  "open_items": [
+    {
+      "detail": "The pinned LPC device repo has feature headers, but none match FSL_FEATURE_SOC_SMARTDMA_COUNT or EZH_ARCH_B. Legacy LPC EZH rows need AN/RM/nxp-monkey confirmation.",
+      "id": "lpc-current-sdk-no-ezh-probe",
+      "severity": "blocks_platform_guide_completeness"
+    }
+  ],
+  "part_files": [
+    "parts/MCXA173.json",
+    "parts/MCXA174.json",
+    "parts/MCXA175.json",
+    "parts/MCXA176.json",
+    "parts/MCXA185.json",
+    "parts/MCXA186.json",
+    "parts/MCXA255.json",
+    "parts/MCXA256.json",
+    "parts/MCXA265.json",
+    "parts/MCXA266.json",
+    "parts/MCXA286.json",
+    "parts/MCXA287.json",
+    "parts/MCXA343.json",
+    "parts/MCXA344.json",
+    "parts/MCXA345.json",
+    "parts/MCXA346.json",
+    "parts/MCXA355.json",
+    "parts/MCXA356.json",
+    "parts/MCXA365.json",
+    "parts/MCXA366.json",
+    "parts/MCXA456.json",
+    "parts/MCXA457.json",
+    "parts/MCXA536.json",
+    "parts/MCXA537.json",
+    "parts/MCXA556.json",
+    "parts/MCXA557.json",
+    "parts/MCXA566.json",
+    "parts/MCXA567.json",
+    "parts/MCXA577.json",
+    "parts/MCXN235.json",
+    "parts/MCXN236.json",
+    "parts/MCXN246.json",
+    "parts/MCXN246T.json",
+    "parts/MCXN247.json",
+    "parts/MCXN247T.json",
+    "parts/MCXN526.json",
+    "parts/MCXN527.json",
+    "parts/MCXN527T.json",
+    "parts/MCXN536.json",
+    "parts/MCXN536T.json",
+    "parts/MCXN537.json",
+    "parts/MCXN537T.json",
+    "parts/MCXN546.json",
+    "parts/MCXN546T.json",
+    "parts/MCXN547.json",
+    "parts/MCXN547T.json",
+    "parts/MCXN556S.json",
+    "parts/MCXN556T.json",
+    "parts/MCXN557S.json",
+    "parts/MCXN557T.json",
+    "parts/MCXN946.json",
+    "parts/MCXN946T.json",
+    "parts/MCXN947.json",
+    "parts/MCXN947T.json",
+    "parts/MIMXRT533S.json",
+    "parts/MIMXRT555S.json",
+    "parts/MIMXRT595S.json"
+  ],
+  "parts": [
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXA",
+      "file": "parts/MCXA173.json",
+      "part": "MCXA173",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXA",
+      "file": "parts/MCXA174.json",
+      "part": "MCXA174",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXA",
+      "file": "parts/MCXA175.json",
+      "part": "MCXA175",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXA",
+      "file": "parts/MCXA176.json",
+      "part": "MCXA176",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXA",
+      "file": "parts/MCXA185.json",
+      "part": "MCXA185",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXA",
+      "file": "parts/MCXA186.json",
+      "part": "MCXA186",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXA",
+      "file": "parts/MCXA255.json",
+      "part": "MCXA255",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXA",
+      "file": "parts/MCXA256.json",
+      "part": "MCXA256",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXA",
+      "file": "parts/MCXA265.json",
+      "part": "MCXA265",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXA",
+      "file": "parts/MCXA266.json",
+      "part": "MCXA266",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXA",
+      "file": "parts/MCXA286.json",
+      "part": "MCXA286",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXA",
+      "file": "parts/MCXA287.json",
+      "part": "MCXA287",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXA",
+      "file": "parts/MCXA343.json",
+      "part": "MCXA343",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXA",
+      "file": "parts/MCXA344.json",
+      "part": "MCXA344",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXA",
+      "file": "parts/MCXA345.json",
+      "part": "MCXA345",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXA",
+      "file": "parts/MCXA346.json",
+      "part": "MCXA346",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXA",
+      "file": "parts/MCXA355.json",
+      "part": "MCXA355",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXA",
+      "file": "parts/MCXA356.json",
+      "part": "MCXA356",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXA",
+      "file": "parts/MCXA365.json",
+      "part": "MCXA365",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXA",
+      "file": "parts/MCXA366.json",
+      "part": "MCXA366",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXA",
+      "file": "parts/MCXA456.json",
+      "part": "MCXA456",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXA",
+      "file": "parts/MCXA457.json",
+      "part": "MCXA457",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXA",
+      "file": "parts/MCXA536.json",
+      "part": "MCXA536",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXA",
+      "file": "parts/MCXA537.json",
+      "part": "MCXA537",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXA",
+      "file": "parts/MCXA556.json",
+      "part": "MCXA556",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXA",
+      "file": "parts/MCXA557.json",
+      "part": "MCXA557",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXA",
+      "file": "parts/MCXA566.json",
+      "part": "MCXA566",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXA",
+      "file": "parts/MCXA567.json",
+      "part": "MCXA567",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXA",
+      "file": "parts/MCXA577.json",
+      "part": "MCXA577",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXN",
+      "file": "parts/MCXN235.json",
+      "part": "MCXN235",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXN",
+      "file": "parts/MCXN236.json",
+      "part": "MCXN236",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXN",
+      "file": "parts/MCXN246.json",
+      "part": "MCXN246",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXN",
+      "file": "parts/MCXN246T.json",
+      "part": "MCXN246T",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXN",
+      "file": "parts/MCXN247.json",
+      "part": "MCXN247",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "MCXN",
+      "file": "parts/MCXN247T.json",
+      "part": "MCXN247T",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "cm33_core0",
+        "cm33_core1"
+      ],
+      "family": "MCXN",
+      "file": "parts/MCXN526.json",
+      "part": "MCXN526",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "cm33_core0",
+        "cm33_core1"
+      ],
+      "family": "MCXN",
+      "file": "parts/MCXN527.json",
+      "part": "MCXN527",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "cm33_core0",
+        "cm33_core1"
+      ],
+      "family": "MCXN",
+      "file": "parts/MCXN527T.json",
+      "part": "MCXN527T",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "cm33_core0",
+        "cm33_core1"
+      ],
+      "family": "MCXN",
+      "file": "parts/MCXN536.json",
+      "part": "MCXN536",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "cm33_core0",
+        "cm33_core1"
+      ],
+      "family": "MCXN",
+      "file": "parts/MCXN536T.json",
+      "part": "MCXN536T",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "cm33_core0",
+        "cm33_core1"
+      ],
+      "family": "MCXN",
+      "file": "parts/MCXN537.json",
+      "part": "MCXN537",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "cm33_core0",
+        "cm33_core1"
+      ],
+      "family": "MCXN",
+      "file": "parts/MCXN537T.json",
+      "part": "MCXN537T",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "cm33_core0",
+        "cm33_core1"
+      ],
+      "family": "MCXN",
+      "file": "parts/MCXN546.json",
+      "part": "MCXN546",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "cm33_core0",
+        "cm33_core1"
+      ],
+      "family": "MCXN",
+      "file": "parts/MCXN546T.json",
+      "part": "MCXN546T",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "cm33_core0",
+        "cm33_core1"
+      ],
+      "family": "MCXN",
+      "file": "parts/MCXN547.json",
+      "part": "MCXN547",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "cm33_core0",
+        "cm33_core1"
+      ],
+      "family": "MCXN",
+      "file": "parts/MCXN547T.json",
+      "part": "MCXN547T",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "cm33_core0",
+        "cm33_core1"
+      ],
+      "family": "MCXN",
+      "file": "parts/MCXN556S.json",
+      "part": "MCXN556S",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "cm33_core0",
+        "cm33_core1"
+      ],
+      "family": "MCXN",
+      "file": "parts/MCXN556T.json",
+      "part": "MCXN556T",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "cm33_core0",
+        "cm33_core1"
+      ],
+      "family": "MCXN",
+      "file": "parts/MCXN557S.json",
+      "part": "MCXN557S",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "cm33_core0",
+        "cm33_core1"
+      ],
+      "family": "MCXN",
+      "file": "parts/MCXN557T.json",
+      "part": "MCXN557T",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "cm33_core0",
+        "cm33_core1"
+      ],
+      "family": "MCXN",
+      "file": "parts/MCXN946.json",
+      "part": "MCXN946",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "cm33_core0",
+        "cm33_core1"
+      ],
+      "family": "MCXN",
+      "file": "parts/MCXN946T.json",
+      "part": "MCXN946T",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "cm33_core0",
+        "cm33_core1"
+      ],
+      "family": "MCXN",
+      "file": "parts/MCXN947.json",
+      "part": "MCXN947",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "cm33_core0",
+        "cm33_core1"
+      ],
+      "family": "MCXN",
+      "file": "parts/MCXN947T.json",
+      "part": "MCXN947T",
+      "series": "MCX"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "RT500",
+      "file": "parts/MIMXRT533S.json",
+      "part": "MIMXRT533S",
+      "series": "RT"
+    },
+    {
+      "cores": [
+        "default"
+      ],
+      "family": "RT500",
+      "file": "parts/MIMXRT555S.json",
+      "part": "MIMXRT555S",
+      "series": "RT"
+    },
+    {
+      "cores": [
+        "cm33",
+        "dsp"
+      ],
+      "family": "RT500",
+      "file": "parts/MIMXRT595S.json",
+      "part": "MIMXRT595S",
+      "series": "RT"
+    }
+  ],
+  "projects": {
+    "LPC": {
+      "manifest_path": "submanifests/devices/LPC.yml",
+      "name": "mcux-devices-lpc",
+      "path": "mcuxsdk/devices/LPC",
+      "repo": "nxp-mcuxpresso/mcux-devices-lpc",
+      "revision": "93c2603494b0f1cb75d6fff25792ad29d1711748",
+      "series": "LPC",
+      "track_branch": "release/26.09.00-pvw1"
+    },
+    "MCX": {
+      "manifest_path": "submanifests/devices/MCX.yml",
+      "name": "mcux-devices-mcx",
+      "path": "mcuxsdk/devices/MCX",
+      "repo": "nxp-mcuxpresso/mcux-devices-mcx",
+      "revision": "e674ef7a122cf0f9cd352597dc8d5359c100411c",
+      "series": "MCX",
+      "track_branch": "release/26.09.00-pvw1"
+    },
+    "RT": {
+      "manifest_path": "submanifests/devices/RT.yml",
+      "name": "mcux-devices-rt",
+      "path": "mcuxsdk/devices/RT",
+      "repo": "nxp-mcuxpresso/mcux-devices-rt",
+      "revision": "40ab7654b7fdc774e62e5f0234ab0a7cc6d1aa93",
+      "series": "RT",
+      "track_branch": "release/26.09.00-pvw1"
+    }
+  },
+  "schema": "ezh-platform-sdk-headers-v1",
+  "series": {
+    "LPC": {
+      "confirmed_core_views": 0,
+      "confirmed_parts": 0,
+      "feature_headers_scanned": 47,
+      "tree_entries": 2281
+    },
+    "MCX": {
+      "confirmed_core_views": 73,
+      "confirmed_parts": 54,
+      "feature_headers_scanned": 134,
+      "tree_entries": 6021
+    },
+    "RT": {
+      "confirmed_core_views": 4,
+      "confirmed_parts": 3,
+      "feature_headers_scanned": 57,
+      "tree_entries": 4186
+    }
+  },
+  "stage": "sdk_header_discovery",
+  "summary": {
+    "confirmed_core_views": 77,
+    "confirmed_parts": 57,
+    "cores_missing_irq": 0,
+    "parts_missing_any_base_address": 3
+  }
+}

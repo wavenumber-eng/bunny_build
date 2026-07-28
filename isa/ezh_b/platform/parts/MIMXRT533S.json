@@ -1,0 +1,38 @@
+{
+  "cores": [
+    {
+      "base_addresses": [],
+      "common_header": "RT500/MIMXRT533S/MIMXRT533S_COMMON.h",
+      "core": "default",
+      "features_header": "RT500/MIMXRT533S/MIMXRT533S_features.h",
+      "irqs": [
+        {
+          "description": "Smart DMA Engine Controller interrupt",
+          "name": "SDMA_IRQn",
+          "number": 73
+        }
+      ],
+      "presence": {
+        "block_name": "SMARTDMA",
+        "count": 1,
+        "probe": "FSL_FEATURE_SOC_SMARTDMA_COUNT"
+      }
+    }
+  ],
+  "enrichment": {
+    "inputmux_triggers": "pending_nxp_monkey",
+    "pin_mux": "pending_nxp_monkey",
+    "register_block": "pending_nxp_monkey"
+  },
+  "family": "RT500",
+  "manifest_path": "submanifests/devices/RT.yml",
+  "manifest_revision": "d00fe90aef626b082bbd0a5358620625c9297afb",
+  "part": "MIMXRT533S",
+  "repo": "nxp-mcuxpresso/mcux-devices-rt",
+  "repo_path": "RT500/MIMXRT533S",
+  "repo_revision": "40ab7654b7fdc774e62e5f0234ab0a7cc6d1aa93",
+  "series": "RT",
+  "stage": "sdk_headers",
+  "status": "sdk_feature_confirmed",
+  "track_branch": "release/26.09.00-pvw1"
+}
