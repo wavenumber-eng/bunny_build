@@ -131,8 +131,9 @@ regeneration reproducible and makes a diff between two runs meaningful.</p>
 
 <h3>1 &mdash; Discover (cheap)</h3>
 <p>Probe the three device repos with both terms; emit a candidate part list with
-the matching probe recorded per part. Code search over the org is sufficient and
-fast; a manifest-driven shallow clone is the fallback if search API limits bite.</p>
+the matching probe recorded per part. The implemented tool uses the unauthenticated
+GitHub tree API plus raw file fetches; GitHub code search currently requires
+authentication, so it is not part of the reproducible path.</p>
 
 <h3>2 &mdash; Confirm and extract (cheap)</h3>
 <p>For each candidate, read <code>&lt;PART&gt;_features.h</code> and
@@ -142,6 +143,14 @@ that fail confirmation drop out here with a recorded reason &mdash; a part that
 matched a broad <code>EZH</code> grep because of an unrelated INPUTMUX reference
 must not survive into the output silently.</p>
 
+<p><strong>Stage 1&ndash;2 implementation (2026-07-28):</strong>
+<code>isa/tools/discover_parts.py</code> emits
+<code>isa/ezh_b/platform/index.json</code> plus one JSON file per confirmed part
+under <code>isa/ezh_b/platform/parts/</code>. The first committed run finds 57
+SDK-confirmed parts across MCX and RT, with 77 core views. It records a hard open
+item for LPC because the pinned LPC repo has no feature header matching
+<code>FSL_FEATURE_SOC_SMARTDMA_COUNT</code> or <code>EZH_ARCH_B</code>.</p>
+
 <h3>3 &mdash; Enrich (expensive; deferred)</h3>
 <p>Drive <code>nxp-monkey fetch</code> for confirmed parts only, then extract pin
 mux, INPUTMUX triggers, and the register block. This is the &ldquo;work
@@ -149,9 +158,9 @@ backwards&rdquo; stage: the confirmed list drives the fetches, so the catalogue 
 never swept wholesale. Roughly 134&nbsp;MB per part, so approximately 6&nbsp;GB
 across the current list.</p>
 
-<p><strong>Deferred by decision (Eli, 2026-07-25)</strong> until the
-<code>platform-guide</code> step is actually picked up. Stages 1&ndash;2 are cheap
-enough to run on demand in the meantime.</p>
+<p><strong>Stage 3 remains deferred by decision (Eli, 2026-07-25)</strong>
+until the SDK-header data shape and open extraction gaps are reviewed. Stages
+1&ndash;2 are cheap enough to run on demand in the meantime.</p>
 
 <h3>4 &mdash; Emit</h3>
 <p>One deterministic JSON per part, committed, stamped with tool version, pinned
@@ -161,8 +170,9 @@ reference&rsquo;s.</p>
 
 <h2>Drift checking</h2>
 
-<pre>uv run python isa/tools/discover_parts.py          # regenerate
-uv run python isa/tools/discover_parts.py --check  # fail if committed output is stale</pre>
+<pre>uv run python isa/tools/discover_parts.py                      # regenerate
+uv run python isa/tools/discover_parts.py --check              # fail if committed output is stale
+uv run python isa/tools/discover_parts.py --require-complete   # fail on unresolved extraction gaps</pre>
 
 <p>Mirrors the doc generator&rsquo;s <code>--check</code>: regenerate to a
 temporary tree, diff against the committed output, any difference is a failure.
@@ -174,14 +184,17 @@ a deliberate, reviewable change with a visible diff.</p>
 <h2>Open items for implementation</h2>
 
 <ul>
+<li>The pinned LPC device repo currently has 47 feature headers but no
+<code>FSL_FEATURE_SOC_SMARTDMA_COUNT</code> or <code>EZH_ARCH_B</code> match.
+Legacy LPC rows therefore need AN/RM/nxp-monkey confirmation instead of silently
+falling out of the generated table.</li>
 <li>Confirm whether LPC54608/54628/54S018(M) are genuine instances or matched the
 broad <code>EZH</code> probe via an unrelated INPUTMUX reference. They are not in
 AN14650&rsquo;s table.</li>
-<li><code>MIMXRT595S</code> exposes the block to both the CM33 and the DSP core
-(separate <code>_cm33_</code> and <code>_dsp_</code> feature headers) &mdash;
-decide how multi-core visibility is represented in the output schema.</li>
-<li>Multi-core parts generally (MCXN947 has core0/core1 headers): which core&rsquo;s
-IRQ table is authoritative, or are both recorded?</li>
+<li>RT500 parts advertise <code>FSL_FEATURE_SOC_SMARTDMA_COUNT</code> and expose
+<code>SDMA_IRQn</code>, but their COMMON headers do not contain a
+SmartDMA-prefixed base-address macro. <code>--require-complete</code> fails on
+those rows until the base-address source is settled.</li>
 <li>Settle the output schema before stage 3 &mdash; it is cheaper to change with
 no fetched data committed.</li>
 </ul>

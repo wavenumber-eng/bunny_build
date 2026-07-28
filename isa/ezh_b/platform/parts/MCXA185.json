@@ -1,0 +1,45 @@
+{
+  "cores": [
+    {
+      "base_addresses": [
+        {
+          "address": "0x4000e000",
+          "address_int": 1073799168,
+          "macro": "SMARTDMA0_BASE",
+          "space": "default_or_nonsecure"
+        }
+      ],
+      "common_header": "MCXA/MCXA185/MCXA185_COMMON.h",
+      "core": "default",
+      "features_header": "MCXA/MCXA185/MCXA185_features.h",
+      "irqs": [
+        {
+          "description": "SmartDMA interrupt",
+          "name": "SMARTDMA_IRQn",
+          "number": 108
+        }
+      ],
+      "presence": {
+        "block_name": "SMARTDMA",
+        "count": 1,
+        "probe": "FSL_FEATURE_SOC_SMARTDMA_COUNT"
+      }
+    }
+  ],
+  "enrichment": {
+    "inputmux_triggers": "pending_nxp_monkey",
+    "pin_mux": "pending_nxp_monkey",
+    "register_block": "pending_nxp_monkey"
+  },
+  "family": "MCXA",
+  "manifest_path": "submanifests/devices/MCX.yml",
+  "manifest_revision": "d00fe90aef626b082bbd0a5358620625c9297afb",
+  "part": "MCXA185",
+  "repo": "nxp-mcuxpresso/mcux-devices-mcx",
+  "repo_path": "MCXA/MCXA185",
+  "repo_revision": "e674ef7a122cf0f9cd352597dc8d5359c100411c",
+  "series": "MCX",
+  "stage": "sdk_headers",
+  "status": "sdk_feature_confirmed",
+  "track_branch": "release/26.09.00-pvw1"
+}
