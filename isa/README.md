@@ -28,7 +28,9 @@ isa/
     expand_mnemonics.py  # mnemonic patterns -> exact 1502-name reproduction
     pc_model.py          # PC-relative arithmetic model + self-test vs the sources
 
-    gen_docs_spike.py    # doc-generator spike (superseded by build-static-html)
+
+
+    gen_docs_spike.py    # archived doc-generator spike
 ```
 
 ## Core model

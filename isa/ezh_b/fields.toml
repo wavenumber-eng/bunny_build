@@ -173,10 +173,9 @@ slices = [{ instr = "26:24", value = "2:0" }]
 
 
 
-
 [fields.or_reg3]
 kind = "register"
-desc = "OR-source register, R0-R7 only pending hardware confirmation (E_ANDOR)"
+desc = "OR-source register, R0-R7 in the current E_ANDOR model"
 slices = [{ instr = "26:24", value = "2:0" }]
 
 

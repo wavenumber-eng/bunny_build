@@ -21,10 +21,10 @@ involved: the historical argument name "ror" reads register-to-OR, not
 rotate-right. The supported options are conditional execution and set-flag.
 """
 restrictions = [
-  "Encoding needs hardware confirmation",
+  "Encoding remains marked for hardware confirmation",
   "No support for SPO/SNE condition flags",
   "S with destination PC does not set flags (schedules branch instead)",
-  "OR-source register limited to R0-R7 pending hardware confirmation of the field width",
+  "OR-source register limited to R0-R7 in the current model; field width still needs hardware confirmation",
 ]
 
 [timing]
@@ -38,7 +38,7 @@ mnemonic = { pattern = "E_[COND_]ANDOR[S]", binds = ["cond", "s"] }
 fixed = [{ bits = "4:0", value = 0x16 }]
 operands = ["dest", "src1", "src2", "or_reg3"]
 modifiers = ["cond", "s"]
-notes = "Source register in src1 [17:14], AND operand register in src2 [23:20], OR-source register in or_reg3 [26:24]. Bits [28:27] are reserved-zero (they belonged to the presumed 5-bit rotate before the correction); the register-field width needs hardware confirmation."
+notes = "Source register in src1 [17:14], AND operand register in src2 [23:20], OR-source register in or_reg3 [26:24]. Bits [28:27] are reserved-zero; the current database models the OR-source register as R0-R7 pending hardware confirmation."
 
 [forms.encoding_reference]
 bunny_build = "E_ANDOR(dest,rsrc,rand,ror) = 0x16 + (dest<<10) + (rsrc<<14) + (rand<<20) + (ror<<24) + (EU<<5)"
