@@ -16,6 +16,11 @@ sources = ["bunny_build"]
 detail = "Corpus inventory and dedup method recorded in plan logs corpus-inventory-and-catalog and corpus-counts-deduplicated"
 
 [[provenance]]
+section = "program-shapes"
+sources = ["bunny_build"]
+detail = "Pattern-library draft log: corpus split into continuous engines and command/execute/stop programs; avc continuous capture and gibbon-d command dispatch are the product-code anchors"
+
+[[provenance]]
 section = "boot-preamble"
 sources = ["an14650", "bunny_build"]
 detail = "AN14650 §4.2.12 shows the ARM2EZH/mask/SP sequence; 68 of 87 deduplicated corpus programs use it verbatim"
@@ -24,6 +29,11 @@ detail = "AN14650 §4.2.12 shows the ARM2EZH/mask/SP sequence; 68 of 87 deduplic
 section = "signal-and-park"
 sources = ["bunny_build", "spec_b_06"]
 detail = "Park block appears in seven distinct corpus sources (8x in the feature-demo file, 8x in a display-controller source, once in third-party production code) and is implemented as E__END in src/bunny_build__psuedo_instr.c"
+
+[[provenance]]
+section = "pseudo-instructions"
+sources = ["bunny_build"]
+detail = "Assembler guide pseudo-instruction source plus gibbon-d local helpers: E__END and E_LOAD_32IMM package repeated instruction sequences as C builder helpers"
 
 [[provenance]]
 section = "multi-app"
@@ -83,7 +93,8 @@ resolve_by = "not resolvable; stated so the numbers are not over-read"
 
 The [architecture chapter](architecture.html) describes the machine and the
 [assembler guide](assembler.html) describes how to write for it. This chapter is the
-part you copy from.
+part you copy shapes from. The small runnable examples stay in the repository; this
+chapter is where the larger corpus gets reduced to reusable structure.
 
 ## How to read this chapter {#how-to-read}
 
@@ -93,16 +104,39 @@ engineering's gibbon-d, and wavenumber's avc. The curated runnable examples stay
 bunny_build examples/tests and remain deliberately small; this chapter mines the older and
 product code for the patterns those small examples introduce.
 
-The two dominant shapes are **continuous engines** (camera decode, key scan, protocol
-emulation) and **command / execute / stop** programs that signal the Arm and park with
-`E__END`. bunny_build's on-target assembly model adds a third recurring theme: you can
-build pseudo-instructions in C when a repeated sequence should become one
-programmer-facing operation.
+Read the snippets as pattern evidence, not as canonical starter projects. The old code is
+valuable because it shows what people reached for when they had real timing, capture, or
+protocol work to do; the curated examples are intentionally much smaller than that.
 
 One number worth carrying: **the algorithmic flags are used by exactly one program in the
 entire corpus, and register-sourced shifts by exactly one** — both in the same NXP feature
 demonstration. Those are real architecture features with a single worked example anywhere.
 If you need them, the example below may be all there is.
+
+## Choose the program shape {#program-shapes}
+
+Decide this before choosing individual instructions. Most EZH programs in the corpus fit
+one of two shapes.
+
+**Continuous engine.** Boot the program and let EZH own a timing- or event-driven job:
+camera capture, key scan, display streaming, bit-banged protocol work. The program waits
+on `HOLD`, heartbeat, FIFO state, GPIO, or a tight loop, then keeps moving data until the
+Arm gives it a new frame, buffer, or command. The important property is that EZH is the
+engine while the work is live; the Arm is not stepping every byte.
+
+**Command / execute / stop.** The Arm prepares a parameter block, boots a bounded program,
+the program does the operation, optionally signals the Arm, and parks. This is the
+`E_INT_TRIGGER(0)` then `E__END` world. It is the right shape for one-shot transforms,
+register chores, diagnostics, and small peripheral commands.
+
+Multi-app systems still usually preserve those shapes. gibbon-d does not keep a resident
+EZH dispatcher looping on a command word; the Arm chooses one independently assembled app
+by offset and boots it. That keeps the EZH side simple and makes each program auditable on
+its own.
+
+bunny_build's C builder gives you one more lever: if a repeated sequence has a single
+intent, make it a pseudo-instruction. That is not a third execution shape; it is how you
+name the boundary between pattern and boilerplate.
 
 ## The boot preamble {#boot-preamble}
 
@@ -157,6 +191,24 @@ to fire everything.
 
 > Order matters. Park first and the interrupt never issues, because the core has stopped.
 
+## Pseudo-instructions are pattern boundaries {#pseudo-instructions}
+
+EZH pseudo-instructions are ordinary C builder helpers that emit more than one hardware
+instruction. That matters because the builder runs in your program: when a repeated
+sequence has one intent, you can give it one name instead of copying the sequence through
+every app.
+
+`E__END` is the canonical example. The hardware has [[E_HOLD]], `CFS`, `CFM`, and
+branches; the pattern is "park forever without fetching". Packaging that as a helper is
+right because all eight emitted instructions have one semantic job and strict ordering.
+`E_LOAD_32IMM` is the other obvious case: a 32-bit constant load is not one hardware
+instruction, but it is one programmer-facing operation.
+
+Use this sparingly. A pseudo-instruction should hide boilerplate, not hide control flow.
+Document scratch registers, stack requirements, and whether the helper emits labels or
+branches. If those rules are surprising, the sequence may deserve to stay visible in the
+program that uses it.
+
 ## Multi-app dispatch {#multi-app}
 
 One EZH, several programs, chosen at run time. gibbon-d does this by assembling every
@@ -198,7 +250,11 @@ independently assembled and independently booted, and the Arm chooses by pointin
 the second correctly passes what is left. Getting that wrong turns a pool overflow into a
 silent overwrite of the previous app.
 
-## Parameters are set up fresh on every run {#capture}
+## Continuous engines re-boot with fresh parameters {#capture}
+
+Continuous does not have to mean "boot once for the life of the product". avc's camera
+path shows the more useful shape: EZH owns the hot path while a frame is live, then the
+Arm starts the next frame with fresh parameters.
 
 EZH has no persistent descriptor chain. Each boot writes a new parameter-block pointer to
 `EZHB_ARM2EZH`, and the program re-reads it from the top — so the natural way to run
