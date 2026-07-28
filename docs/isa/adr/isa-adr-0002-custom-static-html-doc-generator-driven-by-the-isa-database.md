@@ -67,7 +67,7 @@ plus Markdown prose to self-contained static HTML in `docs/html/`:
   together with this check.
 - **Provenance rendering:** rendered citations are built only from sources
   whose `public = true` in `arch.toml`. Non-public source ids may remain in
-  structured metadata for creator review, but their ids, titles, and private
+  structured metadata for private review, but their ids, titles, and private
   audit notes are not renderable data. A public-output scan is part of the
   generator check path.
 

@@ -84,6 +84,13 @@ existing verifier suite (<code>validate.py</code>,
 way encoding drift does. Generated output is only ever committed together
 with a passing check.</p>
 
+<p><strong>Output safety:</strong> <code>docs/html/</code> is the known
+generated root and carries a <code>.ezh-docs-generated</code> sentinel. A custom
+<code>--out</code> directory may be new, empty, or already marked with that
+sentinel; otherwise the generator refuses to clear it. It also refuses the repo
+root, top-level source/doc directories, and filesystem roots. A typo in
+<code>--out</code> must fail before deleting unrelated repo content.</p>
+
 <p><strong>Chapter linting runs ahead of generation.</strong>
 <code>isa/tools/lint_chapter.py</code> (built 2026-07-25) enforces the prose
 chapter contract described under Provenance rendering &mdash; front matter
@@ -198,39 +205,33 @@ non-public source id or title.</p>
 <p><strong>Generated-output confidentiality scan.</strong> After rendering,
 the generator check path runs a public-output scanner over
 <code>docs/html/</code>. It fails on non-public source ids, non-public source
-titles, confidential banners, and private source filenames. This is separate
-from the chapter linter because the final artifact is the publication boundary.</p>
+titles, confidential banners, private source filenames, and review-process
+phrasing that belongs only in private review notes. This is separate from the
+chapter linter because the final artifact is the publication boundary.</p>
 
 <h2>Styling</h2>
 
-<p><strong>Direction (Eli, 2026-07-22):</strong> the
-<a href="https://github.com/wavenumber-eng/supply-chain-monkey">supply-chain-monkey</a>
-status page (<code>src/py/scm/server/templates/status.html</code>, deployed
-at <code>scm.wavenumber.net/v1/</code>) copied verbatim where applicable:
-amber phosphor-glow terminal aesthetic, monospace throughout, flat
-collapsible panels (<code>[-]</code>/<code>[+]</code> headers), status rows,
-bordered result tables, the glow via
-<code>text-shadow: 0 0 10px var(--amber-glow)</code>. The monkey ASCII art
-is replaced by the bunny from this repository's README.</p>
+<p><strong>Current implementation:</strong> a compact technical reference UI
+with a neutral dark default, a light theme toggle, a sans-serif default font,
+and an optional monospace toggle for readers who prefer code-browser density.
+The header carries the EZH wordmark, primary navigation, theme/font buttons,
+and full-site search. There is no mascot art, external font, CDN stylesheet, or
+network-loaded visual asset.</p>
 
 <ul>
-<li><strong>Tokens:</strong> the SCM palette verbatim as CSS custom
-properties (<code>--bg-dark #1a1a1a</code>, <code>--bg-panel #242424</code>,
-<code>--bg-input #2d2d2d</code>, <code>--border #3d3d3d</code>,
-<code>--amber #ffb000</code>, <code>--amber-dim #cc8800</code>,
-<code>--text #e0e0e0</code>, <code>--text-dim #808080</code>,
-<code>--green #00ff00</code>, <code>--red #ff4444</code>), plus bitfield
-cell tint tokens for the SVG diagrams.</li>
-<li><strong>Themes:</strong> dark is the identity and the default. Light
-mode is a manual option (<code>data-theme="light"</code> on the root,
-toggled from the footer, persisted in <code>localStorage</code>) with a
-warm-paper rendering of the same amber identity. No
-<code>prefers-color-scheme</code> auto-switch — deliberate.</li>
-<li><strong>Type:</strong> monospace only, via a <code>--font-mono</code>
-token. The footer carries a font cycler (Consolas / Cascadia Code /
-JetBrains Mono / IBM Plex Mono / Courier) for trying options; the final
-stack gets pinned once chosen. Local system fonts only — no font CDNs, and
-the GitHub Pages target keeps the no-external-asset rule.</li>
+<li><strong>Tokens:</strong> CSS custom properties define the dark and light
+themes. The dark identity uses neutral panels
+(<code>#101316</code>/<code>#171b20</code>/<code>#20262d</code>) with cyan,
+yellow, red, and green accents; light mode maps the same roles onto white and
+blue-gray surfaces. Bitfield cell tint tokens sit beside these shared
+tokens.</li>
+<li><strong>Themes:</strong> dark is the default. Light mode is manual
+(<code>data-theme="light"</code> on the root), toggled from the header, and
+persisted in <code>localStorage</code>. No
+<code>prefers-color-scheme</code> auto-switch.</li>
+<li><strong>Type:</strong> sans-serif is the default for long-form reading;
+monospace is available via <code>data-font="mono"</code> and the header font
+button. All font stacks are local/system stacks; no font CDN is allowed.</li>
 <li><strong>Diagrams:</strong> SVG cells styled through CSS classes over the
 tokens so they follow the theme; fixed-bit values render in
 <code>--green</code>, reserved-zero cells dimmed.</li>

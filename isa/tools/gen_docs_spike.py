@@ -2,20 +2,20 @@
 
 Usage:  uv run python isa/tools/gen_docs_spike.py OUTDIR [--single FILE]
 
-Proves the pipeline end-to-end with stdlib only: walks the ISA db and emits
-one styled HTML page per base opcode plus an index, with bitfield diagrams as
-inline SVG derived from the slice data and mnemonic lists from the verified
-pattern expansion.  The real generator (build-static-html step) replaces the
-f-string templating here with Jinja2 and adds the Markdown prose chapters and
-the --check reproducibility mode; page structure and the SVG walk carry over.
+Historical stdlib-only proof of the pipeline: walks the ISA db and emits one
+styled HTML page per base opcode plus an index, with bitfield diagrams as inline
+SVG derived from the slice data and mnemonic lists from the verified pattern
+expansion.  `isa/tools/gen_docs.py` has replaced the f-string templating here
+with Jinja2, Markdown prose chapters, static search, and the --check
+reproducibility mode; only the SVG walk remains useful as implementation
+background.
 
-Styling (direction from Eli, 2026-07-22): the supply-chain-monkey status page
+Prototype styling (direction from Eli, 2026-07-22): the supply-chain-monkey status page
 (src/py/scm/server/templates/status.html in wavenumber-eng/supply-chain-monkey)
 copied verbatim where applicable - amber phosphor-glow terminal, monospace,
 flat collapsible panels - with the monkey ASCII art replaced by the bunny from
-this repo's README.  Tweaks per direction: token-based CSS variables, a light
-theme as a manual option (dark is the identity and the default), and a footer
-font cycler for trying monospace options.
+this repo's README. The final site style now lives in docs_src/style.css and is
+described in docs/design/isa-doc-generator.html.
 
 --single additionally writes everything as one self-contained page (used for
 review previews).  Output is deterministic; nothing is written inside the

@@ -10,7 +10,7 @@ by the same numeric probing extract_header.py uses on the bunny_build encoders:
 
 The header is NXP confidential: it is read in place from the ezh doc_project and
 nothing from it is copied into this repo — the JSON carries only derived numeric
-encodings, argument names, and line numbers for adjudication.
+encodings, argument names, and line numbers for source, bench, or owner review.
 
 Macro body shapes handled (anything else is a loud ERROR, never a silent drop):
 
@@ -24,8 +24,8 @@ Macro body shapes handled (anything else is a loud ERROR, never a silent drop):
 
 Known-defective macros (see DEFECTS) are parsed as *intended* — with the
 minimal documented repair applied — and carry a `"defect"` note describing why
-the macro as written cannot compile/expand.  They are adjudication items, not
-silent fixes: verify_fsl.py lists them in its discrepancy report.
+the macro as written cannot compile/expand.  They are review items, not silent
+fixes: verify_fsl.py lists them in its known-defect review report.
 
 Register/condition/bit-slice constants are taken from the header's own
 #defines so the extraction is self-consistent; verify_fsl.py separately diffs
@@ -43,7 +43,7 @@ DIRECTIVES = {"E_DCD", "E_DCD_VAL", "E_LABEL"}
 M32 = 0xFFFFFFFF
 
 # Macros that are broken as written in the header.  Each entry: the defect
-# description (goes into the JSON and the adjudication report) and regex
+# description (goes into the JSON and known-defect review report) and regex
 # repairs applied to the expression so the *intended* encoding can be probed.
 ANDOR_DEFECT = (
     "missing '+' between (rsrc<<14) and (rand<<20) - expands to (int)(int), "

@@ -78,26 +78,26 @@ depends_on = ["verify-encodings", "instruction-prose", "architecture-overview", 
 [[steps]]
 id = "design-doc-intent-audit"
 title = "Audit design docs, ADRs, and requirements against implementation"
-status = "pending"
+status = "done"
 depends_on = ["build-static-html"]
 
 [[steps]]
 id = "test-runtime-impact-audit"
 title = "Audit new test runtime impact"
-status = "pending"
+status = "done"
 depends_on = ["build-static-html"]
 
 [[steps]]
-id = "hardware-adjudication"
-title = "Bench verification of adjudication items on real hardware (MCXN947/LPC55S69): GOTO 8MB window, ANDOR operand width/semantics, rshift >=32 amounts, CFS-pointer reads, store post-update cancellation, hold table replica, TIGHT_LOOP corner cases, emergency-bit polarity, INT_TRIGGER(0)"
+id = "hardware-bench-confirmation"
+title = "Bench verification of open hardware questions on real hardware (MCXN947/LPC55S69): GOTO 8MB window, ANDOR operand width/semantics, rshift >=32 amounts, CFS-pointer reads, store post-update cancellation, hold table replica, TIGHT_LOOP corner cases, emergency-bit polarity, INT_TRIGGER(0)"
 status = "pending"
 depends_on = ["verify-encodings"]
 
 [[steps]]
 id = "external-review"
-title = "Obtain independent external review: EZH creator reviews instruction semantics, the adjudication list (with bench results attached), and the doc chapters"
+title = "Obtain independent external review: original EZH owner reviews instruction semantics, the open hardware-question list (with bench results attached), and the doc chapters"
 status = "pending"
-depends_on = ["build-static-html", "design-doc-intent-audit", "test-runtime-impact-audit", "hardware-adjudication"]
+depends_on = ["build-static-html", "design-doc-intent-audit", "test-runtime-impact-audit", "hardware-bench-confirmation"]
 
 [[exit_criteria]]
 id = "signoff"
@@ -122,12 +122,12 @@ status = "met"
 [[exit_criteria]]
 id = "design-doc-intent-audit"
 title = "Design docs, ADRs, and requirements match implementation"
-status = "pending"
+status = "met"
 
 [[exit_criteria]]
 id = "test-runtime-impact-audit"
 title = "New tests are listed and runtime impact is reviewed"
-status = "pending"
+status = "met"
 
 [[exit_criteria]]
 id = "external-review"
@@ -160,7 +160,7 @@ status = "pending"
 ## Goal
 
 Produce a new, coherent documentation set for the NXP EZH (SmartDMA) Architecture B
-IO coprocessor — with the blessing of the original EZH creator — synthesized from
+IO coprocessor — with the blessing of the original EZH owner — synthesized from
 public NXP documents and the original architecture document. The end deliverable is a
 static HTML doc set that ships with bunny_build, **generated from a machine-readable
 ISA description** that also serves future code generation, simulation, and debugging.
@@ -185,17 +185,18 @@ harness, (3) assembler generation/validation for bunny_build, (4) simulator deco
 
 ## Verification (`verify-encodings`)
 
-Authority ranking, per the EZH creator:
+Authority ranking, per the original EZH owner:
 
-1. **`fsl_ezh_armclang.h`** — hand-created by the EZH creator; best available reference.
+1. **`fsl_ezh_armclang.h`** — hand-created by the original EZH owner; best available reference.
 2. **bunny_build encoders** — independently validated by the camera byte-for-byte test.
-3. **`ezh_tb_package.sv`** — was an *experiment*; advisory only, never authoritative.
+3. **`ezh_tb_package.sv`** — was an *experiment*; not authoritative.
 
 Because the header was hand-written, it can contain bugs (one already found:
 `E_COND_VECTORED_HOLD_NRA` defined with a space before its parameter list — broken
 object-like macro). The verification step mechanically parses both the header macros
 and the bunny_build inline functions into encoding expressions, three-way diffs them
-against the ISA db, and produces a discrepancy list for the creator to adjudicate.
+against the ISA db, and produces a discrepancy list for source, bench, or owner
+review.
 The MCX camera blob byte-for-byte test remains the integration anchor. Hardware
 spot-checks on MCXN947/LPC55S69 where feasible.
 
@@ -278,7 +279,7 @@ differs slightly from the header's.
   NXP-internal decks (or only deck + spec) must be grounded in a public
   Reference Manual before the docs state it plainly (per-chip RMs carry the
   SmartDMA/EZH chapters; fetch via nxp-monke); otherwise it ships hedged as
-  unverified pending bench (`hardware-adjudication`) or creator review.
+  unverified pending bench confirmation or owner review.
 - **platform-guide does not gate build-static-html** (decided 2026-07-22):
   the initial published set ships with sections 1-5 and 7; the platform
   guide publishes in a follow-up regeneration when its per-chip data lands.

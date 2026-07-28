@@ -35,7 +35,7 @@ Reading a green result, two caveats:
     verifies the nonzero side of each binding).
   - For the 9 known-defective fsl macros (extract_fsl.DEFECTS), prediction is
     checked against the *repaired* intended encoding, not the uncompilable
-    text as written - those remain adjudication items regardless of this
+    text as written - those remain review items regardless of this
     check's result.
 """
 from __future__ import annotations

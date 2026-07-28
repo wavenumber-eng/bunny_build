@@ -121,9 +121,9 @@ fails.
 
 - `sv_tb` is an **internal analysis source**: cite it only inside
   `[[provenance]]` blocks (which never render) and never name it in prose,
-  restrictions, notes, syntax strings, or citation details - rendered text
-  says "hardware analysis (advisory)" or states the fact without
-  attribution.
+  restrictions, notes, syntax strings, or citation details. Rendered text states
+  the fact without private-source attribution, or cites only public sources that
+  independently support it.
 
 - One base opcode per file; keep prose semantics (`semantics.prose`) in sync with
   cited sources and record `provenance` (source ids from `arch.toml`).
@@ -141,7 +141,7 @@ fails.
 - Run `uv run python isa/tools/verify_fsl.py` for the full three-way check
   against the original fsl header (authority #1): constants, structure,
   header-vs-header diff, dead forms, phantom modifiers/operands, plus the
-  adjudication report of known-defective macros.
+  known-defect report for macros that need source, bench, or owner review.
 - Run `uv run python isa/tools/expand_mnemonics.py` after touching any
   `mnemonic` data — it must report the exact 1502-name reproduction with all
   bases verified.

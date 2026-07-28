@@ -24,7 +24,7 @@ from __future__ import annotations
 WORD = 4
 #: A PC source read returns the current instruction's address plus this many
 #: bytes. On the bench list for silicon confirmation; derived independently from
-#: three worked examples and corroborated by hardware analysis.
+#: three worked examples.
 PC_READ_OFFSET = 8
 
 

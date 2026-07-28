@@ -2,7 +2,7 @@
 
 Usage:  uv run python isa/tools/verify_fsl.py [--header PATH] [--verbose]
 
-The fsl header (`fsl_ezh_armclang.h`, hand-created by the EZH creator) is authority
+The fsl header (`fsl_ezh_armclang.h`, hand-created by the original EZH owner) is authority
 #1 for encodings.  This tool closes the verify-encodings loop:
 
   1. constants: every register / condition / bit-slice value in arch.toml must
@@ -17,9 +17,9 @@ The fsl header (`fsl_ezh_armclang.h`, hand-created by the EZH creator) is author
      declared modifier must be observed set at least once (cond counts via
      COND_ variants), and every declared operand must be exercised by some
      argument — a phantom modifier/operand in the db cannot pass silently;
-  5. adjudication report: known-defective macros (uncompilable as written) and
-     name-set asymmetries between the two headers, printed for review with
-     the EZH creator — informational, not failures, since the db already records them.
+  5. known-defect review report: known-defective macros (uncompilable as written)
+     and name-set asymmetries between the two headers, printed for source, bench,
+     or owner review — informational, not failures, since the db already records them.
 
 Exit code 1 on any constant mismatch, structural mismatch, ambiguous match,
 cross-diff disagreement, dead form, phantom modifier, or phantom operand.
@@ -192,8 +192,8 @@ def main() -> int:
     errors += len(bberrors)
     errors += cross_diff(inv, bb, verbose)
 
-    # ----- adjudication report (informational; recorded in db provenance) ---
-    print("\n--- adjudication report (for review with the EZH creator) ---")
+    # ----- known-defect review report (informational; recorded in db provenance) ---
+    print("\n--- known-defect review report (source/bench/owner review) ---")
     defects = {n: m for n, m in sorted(inv.items()) if m.get("defect")}
     print(f"defective macros in fsl header: {len(defects)}")
     for n, m in defects.items():

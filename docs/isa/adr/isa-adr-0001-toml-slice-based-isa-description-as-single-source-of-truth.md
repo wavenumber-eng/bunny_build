@@ -73,7 +73,7 @@ hardware distinguishes a non-canonical NOP from a canonical one — a claim the 
 header's emission formula alone cannot support. Where hardware decode
 width is unverified, opcode files declare only the opcode bits (and any known form
 selects) as fixed, and note the uncertainty in `provenance`/`notes` for
-adjudication with the EZH creator. The disassembler renders words whose
+bench confirmation or owner review. The disassembler renders words whose
 reserved-zero bits are nonzero with a "(non-canonical)" annotation rather than
 refusing to decode.
 
@@ -103,8 +103,8 @@ alternative. A group may bind an operand when the historical names split on an
 operand value (e.g. `{IMM|SIMM}` on the shift amount: zero → first alternative).
 The validator checks group count == len(binds) and that every bind resolves.
 Expansion of all patterns across all forms must reproduce the historical
-mnemonic list exactly — any mismatch is a `verify-encodings` failure to
-adjudicate, not a silent rename.
+mnemonic list exactly — any mismatch is a `verify-encodings` failure for source
+or owner review, not a silent rename.
 
 **Amendment 2026-07-21 (notation v2, validated against the full name list).**
 Populating the patterns against the fsl header's 1502 names showed the
@@ -153,4 +153,5 @@ both; 1502/1502 verified).
   drift between docs, tools, and hardware description becomes a validator failure
   instead of a silent divergence.
 - Discrepancies found during population (e.g. the broken E_COND_VECTORED_HOLD_NRA
-  macro in the fsl header) get recorded in the db and adjudicated by the EZH creator.
+  macro in the fsl header) get recorded in the db and resolved through source,
+  bench, or owner review.
