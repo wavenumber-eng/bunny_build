@@ -864,6 +864,440 @@ input {
 </section>
 
 <article class="prose platform-guide">
+  <h2>Use EZH On A Platform</h2>
+  <p>Bring-up starts with four platform facts: the EZH/SmartDMA register base, the IRQ number, the package pins that can carry <code>SMARTDMA_PIO</code> signals, and the INPUTMUX values that can trigger the block. The table groups SDK-confirmed parts that currently share the same visible base-address and IRQ shape.</p>
+  <div class="table-scroll">
+    <table class="platform-table">
+      <thead>
+        <tr>
+          <th>Group</th>
+          <th>Cores</th>
+          <th>Register Base</th>
+          <th>IRQ</th>
+          <th>Pin Mux Status</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr>
+          <td>
+            <code>MCX / MCXA</code><br>
+            <span class="small-note">18 parts</span>
+            <ul class="compact-list">
+
+              <li><a href="#part-mcxa173"><code>MCXA173</code></a></li>
+
+              <li><a href="#part-mcxa174"><code>MCXA174</code></a></li>
+
+              <li><a href="#part-mcxa175"><code>MCXA175</code></a></li>
+
+              <li><a href="#part-mcxa176"><code>MCXA176</code></a></li>
+
+              <li><a href="#part-mcxa185"><code>MCXA185</code></a></li>
+
+              <li><a href="#part-mcxa186"><code>MCXA186</code></a></li>
+
+              <li><a href="#part-mcxa255"><code>MCXA255</code></a></li>
+
+              <li><a href="#part-mcxa256"><code>MCXA256</code></a></li>
+
+              <li><a href="#part-mcxa265"><code>MCXA265</code></a></li>
+
+              <li><a href="#part-mcxa266"><code>MCXA266</code></a></li>
+
+              <li><a href="#part-mcxa343"><code>MCXA343</code></a></li>
+
+              <li><a href="#part-mcxa344"><code>MCXA344</code></a></li>
+
+              <li><a href="#part-mcxa345"><code>MCXA345</code></a></li>
+
+              <li><a href="#part-mcxa346"><code>MCXA346</code></a></li>
+
+              <li><a href="#part-mcxa355"><code>MCXA355</code></a></li>
+
+              <li><a href="#part-mcxa356"><code>MCXA356</code></a></li>
+
+              <li><a href="#part-mcxa365"><code>MCXA365</code></a></li>
+
+              <li><a href="#part-mcxa366"><code>MCXA366</code></a></li>
+
+            </ul>
+          </td>
+          <td>1 core</td>
+          <td>
+
+            <ul class="compact-list">
+
+              <li><code>SMARTDMA0_BASE = 0x4000e000</code><br><span class="small-note">default/non-secure</span></li>
+
+            </ul>
+
+          </td>
+          <td>
+
+            <ul class="compact-list">
+
+              <li><code>SMARTDMA_IRQn = 108</code><br><span class="small-note">SmartDMA interrupt</span></li>
+
+            </ul>
+
+          </td>
+          <td>
+
+            <span class="small-note">pending chip-data enrichment</span>
+
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <code>MCX / MCXA</code><br>
+            <span class="small-note">11 parts</span>
+            <ul class="compact-list">
+
+              <li><a href="#part-mcxa286"><code>MCXA286</code></a></li>
+
+              <li><a href="#part-mcxa287"><code>MCXA287</code></a></li>
+
+              <li><a href="#part-mcxa456"><code>MCXA456</code></a></li>
+
+              <li><a href="#part-mcxa457"><code>MCXA457</code></a></li>
+
+              <li><a href="#part-mcxa536"><code>MCXA536</code></a></li>
+
+              <li><a href="#part-mcxa537"><code>MCXA537</code></a></li>
+
+              <li><a href="#part-mcxa556"><code>MCXA556</code></a></li>
+
+              <li><a href="#part-mcxa557"><code>MCXA557</code></a></li>
+
+              <li><a href="#part-mcxa566"><code>MCXA566</code></a></li>
+
+              <li><a href="#part-mcxa567"><code>MCXA567</code></a></li>
+
+              <li><a href="#part-mcxa577"><code>MCXA577</code></a></li>
+
+            </ul>
+          </td>
+          <td>1 core</td>
+          <td>
+
+            <ul class="compact-list">
+
+              <li><code>SMARTDMA_BASE = 0x4000e000</code><br><span class="small-note">default/non-secure</span></li>
+
+              <li><code>SMARTDMA_BASE = 0x5000e000</code><br><span class="small-note">secure/CMSE</span></li>
+
+              <li><code>SMARTDMA_BASE_NS = 0x4000e000</code><br><span class="small-note">non-secure alias</span></li>
+
+            </ul>
+
+          </td>
+          <td>
+
+            <ul class="compact-list">
+
+              <li><code>SMARTDMA_IRQn = 108</code><br><span class="small-note">SmartDMA interrupt</span></li>
+
+            </ul>
+
+          </td>
+          <td>
+
+            <span class="small-note">pending chip-data enrichment</span>
+
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <code>MCX / MCXN</code><br>
+            <span class="small-note">6 parts</span>
+            <ul class="compact-list">
+
+              <li><a href="#part-mcxn235"><code>MCXN235</code></a></li>
+
+              <li><a href="#part-mcxn236"><code>MCXN236</code></a></li>
+
+              <li><a href="#part-mcxn246"><code>MCXN246</code></a></li>
+
+              <li><a href="#part-mcxn246t"><code>MCXN246T</code></a></li>
+
+              <li><a href="#part-mcxn247"><code>MCXN247</code></a></li>
+
+              <li><a href="#part-mcxn247t"><code>MCXN247T</code></a></li>
+
+            </ul>
+          </td>
+          <td>1 core</td>
+          <td>
+
+            <ul class="compact-list">
+
+              <li><code>SMARTDMA0_BASE = 0x40033000</code><br><span class="small-note">default/non-secure</span></li>
+
+              <li><code>SMARTDMA0_BASE = 0x50033000</code><br><span class="small-note">secure/CMSE</span></li>
+
+              <li><code>SMARTDMA0_BASE_NS = 0x40033000</code><br><span class="small-note">non-secure alias</span></li>
+
+            </ul>
+
+          </td>
+          <td>
+
+            <ul class="compact-list">
+
+              <li><code>SMARTDMA_IRQn = 53</code><br><span class="small-note">SmartDMA_IRQ</span></li>
+
+            </ul>
+
+          </td>
+          <td>
+
+            <span class="small-note">pending chip-data enrichment</span>
+
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <code>MCX / MCXN</code><br>
+            <span class="small-note">19 parts</span>
+            <ul class="compact-list">
+
+              <li><a href="#part-mcxn526"><code>MCXN526</code></a></li>
+
+              <li><a href="#part-mcxn527"><code>MCXN527</code></a></li>
+
+              <li><a href="#part-mcxn527t"><code>MCXN527T</code></a></li>
+
+              <li><a href="#part-mcxn536"><code>MCXN536</code></a></li>
+
+              <li><a href="#part-mcxn536t"><code>MCXN536T</code></a></li>
+
+              <li><a href="#part-mcxn537"><code>MCXN537</code></a></li>
+
+              <li><a href="#part-mcxn537t"><code>MCXN537T</code></a></li>
+
+              <li><a href="#part-mcxn546"><code>MCXN546</code></a></li>
+
+              <li><a href="#part-mcxn546t"><code>MCXN546T</code></a></li>
+
+              <li><a href="#part-mcxn547"><code>MCXN547</code></a></li>
+
+              <li><a href="#part-mcxn547t"><code>MCXN547T</code></a></li>
+
+              <li><a href="#part-mcxn556s"><code>MCXN556S</code></a></li>
+
+              <li><a href="#part-mcxn556t"><code>MCXN556T</code></a></li>
+
+              <li><a href="#part-mcxn557s"><code>MCXN557S</code></a></li>
+
+              <li><a href="#part-mcxn557t"><code>MCXN557T</code></a></li>
+
+              <li><a href="#part-mcxn946"><code>MCXN946</code></a></li>
+
+              <li><a href="#part-mcxn946t"><code>MCXN946T</code></a></li>
+
+              <li><a href="#part-mcxn947"><code>MCXN947</code></a></li>
+
+              <li><a href="#part-mcxn947t"><code>MCXN947T</code></a></li>
+
+            </ul>
+          </td>
+          <td>2 cores</td>
+          <td>
+
+            <ul class="compact-list">
+
+              <li><code>SMARTDMA0_BASE = 0x40033000</code><br><span class="small-note">default/non-secure</span></li>
+
+              <li><code>SMARTDMA0_BASE = 0x50033000</code><br><span class="small-note">secure/CMSE</span></li>
+
+              <li><code>SMARTDMA0_BASE_NS = 0x40033000</code><br><span class="small-note">non-secure alias</span></li>
+
+            </ul>
+
+          </td>
+          <td>
+
+            <ul class="compact-list">
+
+              <li><code>SMARTDMA_IRQn = 53</code><br><span class="small-note">SmartDMA_IRQ</span></li>
+
+            </ul>
+
+          </td>
+          <td>
+
+            <ul class="compact-list">
+
+              <li><a href="#part-mcxn947"><code>MCXN947</code></a>: SMARTDMA_PIO0..31 on PIO1, PIO2, PIO3, PIO4; mux <code>0x7</code>, IBE <code>0x1</code></li>
+
+            </ul>
+
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <code>RT / RT500</code><br>
+            <span class="small-note">2 parts</span>
+            <ul class="compact-list">
+
+              <li><a href="#part-mimxrt533s"><code>MIMXRT533S</code></a></li>
+
+              <li><a href="#part-mimxrt555s"><code>MIMXRT555S</code></a></li>
+
+            </ul>
+          </td>
+          <td>1 core</td>
+          <td>
+
+            <span class="badge warn">missing</span>
+
+          </td>
+          <td>
+
+            <ul class="compact-list">
+
+              <li><code>SDMA_IRQn = 73</code><br><span class="small-note">Smart DMA Engine Controller interrupt</span></li>
+
+            </ul>
+
+          </td>
+          <td>
+
+            <span class="small-note">pending chip-data enrichment</span>
+
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <code>RT / RT500</code><br>
+            <span class="small-note">1 part</span>
+            <ul class="compact-list">
+
+              <li><a href="#part-mimxrt595s"><code>MIMXRT595S</code></a></li>
+
+            </ul>
+          </td>
+          <td>2 cores</td>
+          <td>
+
+            <span class="badge warn">missing</span>
+
+          </td>
+          <td>
+
+            <ul class="compact-list">
+
+              <li><code>SDMA_IRQn = 71</code><br><span class="small-note">Smart DMA Controller interrupt(DSP_INT_SELn source IRQ39)</span></li>
+
+              <li><code>SDMA_IRQn = 73</code><br><span class="small-note">Smart DMA Engine Controller interrupt</span></li>
+
+            </ul>
+
+          </td>
+          <td>
+
+            <span class="small-note">pending chip-data enrichment</span>
+
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+
+  <h2>Pin Mux Summary</h2>
+  <p>The current enrichment pass has package-pin data for the parts below. This is the data that should eventually feed generated platform headers and verification checks.</p>
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Part</th>
+          <th>SMARTDMA_PIO Coverage</th>
+          <th>Ports</th>
+          <th>Setting</th>
+          <th>Packages</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr>
+          <td><a href="#part-mcxn947"><code>MCXN947</code></a><br><span class="small-note">default orderable MCXN947VDF</span></td>
+          <td>SMARTDMA_PIO0..31<br><span class="small-note">213 package-pin options</span></td>
+          <td>PIO1, PIO2, PIO3, PIO4</td>
+          <td>MUX <code>0x7</code><br><span class="small-note">Input buffer enable <code>0x1</code></span></td>
+          <td>5 package variants</td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Part / Package</th>
+          <th>Package Pins</th>
+          <th>SMARTDMA_PIO Coverage</th>
+          <th>Ports</th>
+          <th>Setting</th>
+        </tr>
+      </thead>
+      <tbody>
+
+
+        <tr>
+          <td><a href="#part-mcxn947"><code>MCXN947</code></a><br><code>MCXN947VAB</code></td>
+          <td>WLCSP 123 pins<br><span class="small-note">47 SMARTDMA_PIO options</span></td>
+          <td>SMARTDMA_PIO0..17, SMARTDMA_PIO20..31</td>
+          <td>PIO1, PIO2, PIO3, PIO4</td>
+          <td>MUX <code>0x7</code><br><span class="small-note">IBE <code>0x1</code></span></td>
+        </tr>
+
+        <tr>
+          <td><a href="#part-mcxn947"><code>MCXN947</code></a><br><code>MCXN947VDF</code></td>
+          <td>VFBGA 184 pins<br><span class="small-note">64 SMARTDMA_PIO options</span></td>
+          <td>SMARTDMA_PIO0..31</td>
+          <td>PIO1, PIO2, PIO3, PIO4</td>
+          <td>MUX <code>0x7</code><br><span class="small-note">IBE <code>0x1</code></span></td>
+        </tr>
+
+        <tr>
+          <td><a href="#part-mcxn947"><code>MCXN947</code></a><br><code>MCXN947VKL</code></td>
+          <td>HLQFP 100 pins<br><span class="small-note">44 SMARTDMA_PIO options</span></td>
+          <td>SMARTDMA_PIO0..17, SMARTDMA_PIO20..31</td>
+          <td>PIO1, PIO2, PIO3, PIO4</td>
+          <td>MUX <code>0x7</code><br><span class="small-note">IBE <code>0x1</code></span></td>
+        </tr>
+
+        <tr>
+          <td><a href="#part-mcxn947"><code>MCXN947</code></a><br><code>MCXN947VNL</code></td>
+          <td>HLQFP 100 pins<br><span class="small-note">0 SMARTDMA_PIO options</span></td>
+          <td>none</td>
+          <td>none</td>
+          <td>MUX <code>not recorded</code></td>
+        </tr>
+
+        <tr>
+          <td><a href="#part-mcxn947"><code>MCXN947</code></a><br><code>MCXN947VPB</code></td>
+          <td>HDQFP 172 pins<br><span class="small-note">58 SMARTDMA_PIO options</span></td>
+          <td>SMARTDMA_PIO0..17, SMARTDMA_PIO20..31</td>
+          <td>PIO1, PIO2, PIO3, PIO4</td>
+          <td>MUX <code>0x7</code><br><span class="small-note">IBE <code>0x1</code></span></td>
+        </tr>
+
+
+      </tbody>
+    </table>
+  </div>
+
+
   <h2>Source Boundary</h2>
   <p>The committed data comes from <code>isa/ezh_b/platform/</code>, generated by <code>isa/tools/discover_parts.py</code> from manifest <code>d00fe90aef62</code>. A row is a core view: dual-core parts can appear twice because SDK headers expose per-core facts separately.</p>
   <p>Presence is confirmed only by SDK feature probes such as <code>FSL_FEATURE_SOC_SMARTDMA_COUNT</code>. Unconfirmed LPC markers are listed separately and are not promoted to platform rows.</p>

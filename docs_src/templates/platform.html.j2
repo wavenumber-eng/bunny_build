@@ -26,6 +26,126 @@
 </section>
 
 <article class="prose platform-guide">
+  <h2>Use EZH On A Platform</h2>
+  <p>Bring-up starts with four platform facts: the EZH/SmartDMA register base, the IRQ number, the package pins that can carry <code>SMARTDMA_PIO</code> signals, and the INPUTMUX values that can trigger the block. The table groups SDK-confirmed parts that currently share the same visible base-address and IRQ shape.</p>
+  <div class="table-scroll">
+    <table class="platform-table">
+      <thead>
+        <tr>
+          <th>Group</th>
+          <th>Cores</th>
+          <th>Register Base</th>
+          <th>IRQ</th>
+          <th>Pin Mux Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for group in platform.use_groups %}
+        <tr>
+          <td>
+            <code>{{ group.series }} / {{ group.family }}</code><br>
+            <span class="small-note">{{ group.part_count }} part{% if group.part_count != 1 %}s{% endif %}</span>
+            <ul class="compact-list">
+              {% for part in group.parts %}
+              <li><a href="#{{ part.anchor }}"><code>{{ part.part }}</code></a></li>
+              {% endfor %}
+            </ul>
+          </td>
+          <td>{{ group.core_count }} core{% if group.core_count != 1 %}s{% endif %}</td>
+          <td>
+            {% if group.base_addresses %}
+            <ul class="compact-list">
+              {% for base in group.base_addresses %}
+              <li><code>{{ base.label }}</code><br><span class="small-note">{{ base.space }}</span></li>
+              {% endfor %}
+            </ul>
+            {% else %}
+            <span class="badge warn">missing</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if group.irqs %}
+            <ul class="compact-list">
+              {% for irq in group.irqs %}
+              <li><code>{{ irq.label }}</code>{% if irq.description %}<br><span class="small-note">{{ irq.description }}</span>{% endif %}</li>
+              {% endfor %}
+            </ul>
+            {% else %}
+            <span class="badge warn">missing</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if group.enriched_pin_mux %}
+            <ul class="compact-list">
+              {% for summary in group.enriched_pin_mux %}
+              <li><a href="#{{ summary.anchor }}"><code>{{ summary.part }}</code></a>: {{ summary.signals_label }} on {{ summary.ports_label }}; mux <code>{{ summary.mux_values_label }}</code>{% if summary.input_buffer_values_label %}, IBE <code>{{ summary.input_buffer_values_label }}</code>{% endif %}</li>
+              {% endfor %}
+            </ul>
+            {% else %}
+            <span class="small-note">pending chip-data enrichment</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if platform.enriched_pin_mux %}
+  <h2>Pin Mux Summary</h2>
+  <p>The current enrichment pass has package-pin data for the parts below. This is the data that should eventually feed generated platform headers and verification checks.</p>
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Part</th>
+          <th>SMARTDMA_PIO Coverage</th>
+          <th>Ports</th>
+          <th>Setting</th>
+          <th>Packages</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for summary in platform.enriched_pin_mux %}
+        <tr>
+          <td><a href="#{{ summary.anchor }}"><code>{{ summary.part }}</code></a><br><span class="small-note">default orderable {{ summary.default_part }}</span></td>
+          <td>{{ summary.signals_label }}<br><span class="small-note">{{ summary.option_count }} package-pin options</span></td>
+          <td>{{ summary.ports_label }}</td>
+          <td>MUX <code>{{ summary.mux_values_label }}</code>{% if summary.input_buffer_values_label %}<br><span class="small-note">Input buffer enable <code>{{ summary.input_buffer_values_label }}</code></span>{% endif %}</td>
+          <td>{{ summary.package_count }} package variants</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Part / Package</th>
+          <th>Package Pins</th>
+          <th>SMARTDMA_PIO Coverage</th>
+          <th>Ports</th>
+          <th>Setting</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for summary in platform.enriched_pin_mux %}
+        {% for package in summary.packages %}
+        <tr>
+          <td><a href="#{{ summary.anchor }}"><code>{{ summary.part }}</code></a><br><code>{{ package.package_id }}</code></td>
+          <td>{{ package.package }} {{ package.pin_count }} pins<br><span class="small-note">{{ package.option_count }} SMARTDMA_PIO options</span></td>
+          <td>{{ package.signals_label }}</td>
+          <td>{{ package.ports_label }}</td>
+          <td>MUX <code>{{ package.mux_values_label }}</code>{% if package.input_buffer_values_label %}<br><span class="small-note">IBE <code>{{ package.input_buffer_values_label }}</code></span>{% endif %}</td>
+        </tr>
+        {% endfor %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
   <h2>Source Boundary</h2>
   <p>The committed data comes from <code>isa/ezh_b/platform/</code>, generated by <code>isa/tools/discover_parts.py</code> from manifest <code>{{ platform.manifest_revision_short }}</code>. A row is a core view: dual-core parts can appear twice because SDK headers expose per-core facts separately.</p>
   <p>Presence is confirmed only by SDK feature probes such as <code>FSL_FEATURE_SOC_SMARTDMA_COUNT</code>. Unconfirmed LPC markers are listed separately and are not promoted to platform rows.</p>
