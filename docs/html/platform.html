@@ -430,6 +430,8 @@ input {
 }
 
 .table-scroll {
+  min-width: 0;
+  max-width: 100%;
   width: 100%;
   overflow-x: auto;
 }
@@ -517,9 +519,12 @@ input {
 .opcode-list {
   display: grid;
   gap: 0.75rem;
+  min-width: 0;
 }
 
 .opcode-panel {
+  min-width: 0;
+  max-width: 100%;
   border: 1px solid var(--line);
   border-radius: 0;
   background: var(--panel-translucent);
@@ -589,6 +594,8 @@ input {
 }
 
 .opcode-body {
+  min-width: 0;
+  max-width: 100%;
   padding: 0 0.9rem 1rem;
 }
 
@@ -5621,7 +5628,7 @@ input {
         </div>
 
         <h4>SMARTDMAARCHB Inputmux</h4>
-        <p><code>SMARTDMAARCHB_INMUX{1}</code> exposes 8 inputs. Field <code>INP[6:0]</code> resets to <code>0x7F</code>; 71 input values are enumerated in the chip data.</p>
+        <p><code>SMARTDMAARCHB_INMUX0..7</code> exposes 8 inputs. Field <code>INP[6:0]</code> resets to <code>0x7F</code>; 71 input values are enumerated in the chip data.</p>
         <div class="table-scroll">
           <table>
             <thead>
