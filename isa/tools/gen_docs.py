@@ -40,6 +40,7 @@ TEMPLATE_DIR = DOCS_SRC / "templates"
 DEFAULT_OUT = ROOT / "docs" / "html"
 VENDOR_DIR = DOCS_SRC / "vendor"
 PLATFORM_DIR = ROOT / "isa" / "ezh_b" / "platform"
+PLATFORM_ENRICHMENT_DIR = ROOT / "isa" / "ezh_b" / "platform_enrichment"
 SENTINEL = ".ezh-docs-generated"
 
 CHAPTER_IDS = ("architecture", "assembler", "cookbook")
@@ -688,11 +689,29 @@ def format_base_address(base: dict[str, Any]) -> dict[str, str]:
     }
 
 
+def load_platform_enrichments() -> dict[str, dict[str, Any]]:
+    if not PLATFORM_ENRICHMENT_DIR.exists():
+        return {}
+    enrichments: dict[str, dict[str, Any]] = {}
+    for path in sorted(PLATFORM_ENRICHMENT_DIR.glob("*.json")):
+        data = json.loads(read_text(path))
+        if data.get("schema") != "ezh-platform-chipdata-enrichment-v1":
+            raise GenerationError(
+                f"unsupported platform enrichment schema in {path.relative_to(ROOT)}"
+            )
+        part = data.get("part")
+        if not part:
+            raise GenerationError(f"platform enrichment missing part: {path.relative_to(ROOT)}")
+        enrichments[part] = data
+    return enrichments
+
+
 def load_platform_model() -> dict[str, Any]:
     index_path = PLATFORM_DIR / "index.json"
     if not index_path.exists():
         raise GenerationError(f"missing platform index: {index_path.relative_to(ROOT)}")
     index = json.loads(read_text(index_path))
+    enrichments = load_platform_enrichments()
 
     parts: list[dict[str, Any]] = []
     core_rows: list[dict[str, Any]] = []
@@ -745,6 +764,7 @@ def load_platform_model() -> dict[str, Any]:
             )
             family["core_views"] += 1
 
+        chipdata = enrichments.get(part["part"])
         parts.append(
             {
                 "part": part["part"],
@@ -759,6 +779,7 @@ def load_platform_model() -> dict[str, Any]:
                 "status": part.get("status"),
                 "cores": part_cores,
                 "enrichment": part.get("enrichment", {}),
+                "chipdata": chipdata,
             }
         )
 
@@ -791,6 +812,13 @@ def load_platform_model() -> dict[str, Any]:
 
     summary = dict(index.get("summary", {}))
     summary["missing_base_core_views"] = missing_base_core_views
+    summary["enriched_parts"] = len(enrichments)
+    notes = list(index.get("notes", []))
+    if enrichments:
+        notes.append(
+            "Chip-data enrichment is rendered for "
+            f"{len(enrichments)} part(s) from isa/ezh_b/platform_enrichment/."
+        )
     return {
         "index": index,
         "summary": summary,
@@ -801,7 +829,7 @@ def load_platform_model() -> dict[str, Any]:
         "parts": parts,
         "core_rows": core_rows,
         "open_items": index.get("open_items", []),
-        "notes": index.get("notes", []),
+        "notes": notes,
         "unconfirmed_candidates": unconfirmed_candidates,
     }
 
@@ -842,6 +870,41 @@ def platform_search_docs(platform: dict[str, Any]) -> list[dict[str, Any]]:
             for base in core["base_addresses"]:
                 terms.append(base["label"])
                 terms.append(base["space"])
+        chipdata = part.get("chipdata")
+        if chipdata:
+            terms.extend(
+                [
+                    "chipdata",
+                    "nxp-monkey",
+                    "SMARTDMA0",
+                    "SMARTDMAARCHB_INMUX",
+                    "SMARTDMA_PIO",
+                    "pin mux",
+                    "inputmux",
+                    "register block",
+                    chipdata.get("tool_data_version", ""),
+                    chipdata.get("default_part", ""),
+                ]
+            )
+            for register in chipdata.get("register_block", {}).get("registers", []):
+                terms.append(register.get("name", ""))
+                terms.append(register.get("description", ""))
+                for field in register.get("fields", []):
+                    terms.append(field.get("name", ""))
+                    terms.append(field.get("description", ""))
+            for instance in chipdata.get("inputmux", {}).get("instances", []):
+                terms.append(instance.get("register", ""))
+            for value in chipdata.get("inputmux", {}).get("values", []):
+                terms.append(value.get("value", ""))
+                terms.append(value.get("description", ""))
+            for package in chipdata.get("pin_mux", {}).get("packages", []):
+                terms.append(package.get("package_id", ""))
+                terms.append(package.get("package", ""))
+                for option in package.get("options", []):
+                    terms.append(option.get("signal", ""))
+                    terms.append(option.get("pin", ""))
+                    terms.append(option.get("package_pin", ""))
+                    terms.append(option.get("mux_register", ""))
         core_count = len(part["cores"])
         docs.append(
             {
