@@ -689,6 +689,180 @@ def format_base_address(base: dict[str, Any]) -> dict[str, str]:
     }
 
 
+def natural_key(text: str) -> tuple[tuple[int, str | int], ...]:
+    return tuple(
+        (0, int(part)) if part.isdigit() else (1, part.lower())
+        for part in re.split(r"(\d+)", text)
+        if part
+    )
+
+
+def compact_join(values: list[str]) -> str:
+    return ", ".join(value for value in values if value)
+
+
+def signal_number(signal: str) -> int | None:
+    match = re.fullmatch(r"SMARTDMA_PIO(\d+)", signal)
+    if not match:
+        return None
+    return int(match.group(1))
+
+
+def numbered_ranges_label(numbers: set[int], prefix: str) -> str:
+    if not numbers:
+        return "none"
+    ranges: list[str] = []
+    ordered = sorted(numbers)
+    start = ordered[0]
+    previous = ordered[0]
+    for value in ordered[1:]:
+        if value == previous + 1:
+            previous = value
+            continue
+        ranges.append(
+            f"{prefix}{start}" if start == previous else f"{prefix}{start}..{previous}"
+        )
+        start = value
+        previous = value
+    ranges.append(f"{prefix}{start}" if start == previous else f"{prefix}{start}..{previous}")
+    return compact_join(ranges)
+
+
+def pin_port(pin: str) -> str:
+    return pin.split("_", 1)[0] if "_" in pin else ""
+
+
+def summarize_pin_mux(chipdata: dict[str, Any]) -> dict[str, Any]:
+    pin_mux = chipdata.get("pin_mux", {})
+    signals: set[int] = set()
+    ports: set[str] = set()
+    mux_values: set[str] = set()
+    input_buffer_values: set[str] = set()
+    package_rows: list[dict[str, Any]] = []
+
+    for package in pin_mux.get("packages", []):
+        package_signals: set[int] = set()
+        package_ports: set[str] = set()
+        package_mux_values: set[str] = set()
+        package_input_buffer_values: set[str] = set()
+        for option in package.get("options", []):
+            number = signal_number(option.get("signal", ""))
+            if number is not None:
+                signals.add(number)
+                package_signals.add(number)
+            port = pin_port(option.get("pin", ""))
+            if port:
+                ports.add(port)
+                package_ports.add(port)
+            mux_value = option.get("mux_value", "")
+            if mux_value:
+                mux_values.add(mux_value)
+                package_mux_values.add(mux_value)
+            input_buffer_value = option.get("input_buffer_value", "")
+            if input_buffer_value:
+                input_buffer_values.add(input_buffer_value)
+                package_input_buffer_values.add(input_buffer_value)
+
+        package_rows.append(
+            {
+                "package_id": package.get("package_id", ""),
+                "package": package.get("package", ""),
+                "pin_count": package.get("pin_count", 0),
+                "option_count": package.get("option_count", 0),
+                "signals_label": numbered_ranges_label(package_signals, "SMARTDMA_PIO"),
+                "ports_label": compact_join(sorted(package_ports, key=natural_key)) or "none",
+                "mux_values_label": (
+                    compact_join(sorted(package_mux_values, key=natural_key)) or "not recorded"
+                ),
+                "input_buffer_values_label": compact_join(
+                    sorted(package_input_buffer_values, key=natural_key)
+                ),
+            }
+        )
+
+    part = chipdata.get("part", "")
+    return {
+        "part": part,
+        "anchor": f"part-{html_id(part)}" if part else "",
+        "default_part": chipdata.get("default_part", ""),
+        "option_count": pin_mux.get("option_count", 0),
+        "package_count": pin_mux.get("package_count", len(package_rows)),
+        "signals_label": numbered_ranges_label(signals, "SMARTDMA_PIO"),
+        "ports_label": compact_join(sorted(ports, key=natural_key)) or "none",
+        "mux_values_label": compact_join(sorted(mux_values, key=natural_key))
+        or "not recorded",
+        "input_buffer_values_label": compact_join(
+            sorted(input_buffer_values, key=natural_key)
+        ),
+        "packages": sorted(package_rows, key=lambda item: natural_key(item["package_id"])),
+    }
+
+
+def build_platform_use_groups(
+    parts: list[dict[str, Any]], pin_mux_by_part: dict[str, dict[str, Any]]
+) -> list[dict[str, Any]]:
+    groups: dict[tuple[Any, ...], dict[str, Any]] = {}
+    for part in parts:
+        base_items = sorted(
+            {
+                (base["label"], base["space"])
+                for core in part["cores"]
+                for base in core["base_addresses"]
+            },
+            key=lambda item: natural_key(item[0]),
+        )
+        irq_items = sorted(
+            {
+                (irq["label"], irq["description"])
+                for core in part["cores"]
+                for irq in core["irqs"]
+            },
+            key=lambda item: natural_key(item[0]),
+        )
+        core_count = len(part["cores"])
+        key = (part["series"], part["family"], core_count, tuple(base_items), tuple(irq_items))
+        group = groups.setdefault(
+            key,
+            {
+                "series": part["series"],
+                "family": part["family"],
+                "core_count": core_count,
+                "base_addresses": [
+                    {"label": label, "space": space} for label, space in base_items
+                ],
+                "irqs": [
+                    {"label": label, "description": description}
+                    for label, description in irq_items
+                ],
+                "parts": [],
+                "enriched_pin_mux": [],
+            },
+        )
+        group["parts"].append({"part": part["part"], "anchor": part["anchor"]})
+        summary = pin_mux_by_part.get(part["part"])
+        if summary:
+            group["enriched_pin_mux"].append(summary)
+
+    rows = []
+    for group in groups.values():
+        group["parts"] = sorted(group["parts"], key=lambda item: natural_key(item["part"]))
+        group["enriched_pin_mux"] = sorted(
+            group["enriched_pin_mux"], key=lambda item: natural_key(item["part"])
+        )
+        group["part_count"] = len(group["parts"])
+        group["parts_label"] = compact_join([item["part"] for item in group["parts"]])
+        rows.append(group)
+    return sorted(
+        rows,
+        key=lambda item: (
+            natural_key(item["series"]),
+            natural_key(item["family"]),
+            item["core_count"],
+            natural_key(item["parts"][0]["part"]),
+        ),
+    )
+
+
 def load_platform_enrichments() -> dict[str, dict[str, Any]]:
     if not PLATFORM_ENRICHMENT_DIR.exists():
         return {}
@@ -716,6 +890,7 @@ def load_platform_model() -> dict[str, Any]:
     parts: list[dict[str, Any]] = []
     core_rows: list[dict[str, Any]] = []
     families: dict[tuple[str, str], dict[str, Any]] = {}
+    pin_mux_by_part: dict[str, dict[str, Any]] = {}
     missing_base_core_views = 0
 
     for rel_path in index.get("part_files", []):
@@ -765,6 +940,10 @@ def load_platform_model() -> dict[str, Any]:
             family["core_views"] += 1
 
         chipdata = enrichments.get(part["part"])
+        if chipdata:
+            chipdata = dict(chipdata)
+            chipdata["pin_mux_summary"] = summarize_pin_mux(chipdata)
+            pin_mux_by_part[part["part"]] = chipdata["pin_mux_summary"]
         parts.append(
             {
                 "part": part["part"],
@@ -828,6 +1007,10 @@ def load_platform_model() -> dict[str, Any]:
         "families": sorted(families.values(), key=lambda item: (item["series"], item["family"])),
         "parts": parts,
         "core_rows": core_rows,
+        "use_groups": build_platform_use_groups(parts, pin_mux_by_part),
+        "enriched_pin_mux": sorted(
+            pin_mux_by_part.values(), key=lambda item: natural_key(item["part"])
+        ),
         "open_items": index.get("open_items", []),
         "notes": notes,
         "unconfirmed_candidates": unconfirmed_candidates,
@@ -844,7 +1027,7 @@ def platform_search_docs(platform: dict[str, Any]) -> list[dict[str, Any]]:
             "summary": "SDK-discovered SmartDMA/EZH parts and known extraction gaps.",
             "body": (
                 "platform smartdma ezh sdk discovery part core base address irq "
-                "inputmux pin mux enrichment open gaps"
+                "bring-up use group inputmux pin mux package pins enrichment open gaps"
             ),
             "mnemonics": "",
             "tags": "platform smartdma ezh",
