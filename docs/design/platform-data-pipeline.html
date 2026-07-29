@@ -156,31 +156,36 @@ repo has no feature header matching <code>FSL_FEATURE_SOC_SMARTDMA_COUNT</code>
 or <code>EZH_ARCH_B</code>, while the broad sweep finds three unconfirmed
 LPC55 common-header candidates.</p>
 
-<h3>3 &mdash; Enrich (expensive; deferred)</h3>
+<h3>3 &mdash; Enrich (expensive; incremental)</h3>
 <p>Drive <code>nxp-monkey fetch</code> for confirmed parts only, then extract pin
 mux, INPUTMUX triggers, and the register block. This is the &ldquo;work
 backwards&rdquo; stage: the confirmed list drives the fetches, so the catalogue is
 never swept wholesale. Roughly 134&nbsp;MB per part, so approximately 6&nbsp;GB
 across the current list.</p>
 
-<p><strong>Stage 3 remains deferred by decision (Eli, 2026-07-25)</strong>
-until the SDK-header data shape and open extraction gaps are reviewed. Stages
-1&ndash;2 are cheap enough to run on demand in the meantime.</p>
+<p><strong>Stage 3 is now prototyped for MCXN947.</strong>
+<code>isa/tools/enrich_platform.py</code> consumes a filtered nxp-monkey JSON
+mirror and emits compact public enrichment under
+<code>isa/ezh_b/platform_enrichment/</code>. The raw chip-data tree stays in an
+ignored scratch/cache location. Bulk enrichment across the confirmed list
+remains the expensive follow-up.</p>
 
 <h3>4 &mdash; Emit</h3>
-<p>One deterministic JSON per part, committed with schema, generator, pinned
-manifest revision, and source-project revision metadata. The static doc
-generator reads that committed JSON and renders the SDK-header platform view:
-confirmed parts, per-core IRQ/base-address facts, unconfirmed candidates, and
-open extraction gaps. The later enrichment pass fills in pin mux, INPUTMUX, and
-wrapper setup details.</p>
+<p>Stage 1&ndash;2 emits one deterministic SDK-header JSON per confirmed part,
+committed with schema, generator, pinned manifest revision, and source-project
+revision metadata. Stage 3 emits separate compact enrichment JSON per enriched
+part. The static doc generator reads both layers: confirmed parts, per-core
+IRQ/base-address facts, unconfirmed candidates, open extraction gaps, and the
+pin mux / INPUTMUX / wrapper-register tables available for enriched parts.</p>
 
 <h2>Drift checking</h2>
 
 <pre>uv run python isa/tools/discover_parts.py --self-test          # offline parser regression tests
 uv run python isa/tools/discover_parts.py                      # regenerate
 uv run python isa/tools/discover_parts.py --check              # fail if committed output is stale
-uv run python isa/tools/discover_parts.py --require-complete   # fail on unresolved extraction gaps</pre>
+uv run python isa/tools/discover_parts.py --require-complete   # fail on unresolved extraction gaps
+uv run python isa/tools/enrich_platform.py --part MCXN947 --input build/nxp-monkey-probe
+uv run python isa/tools/enrich_platform.py --part MCXN947 --check --input build/nxp-monkey-probe</pre>
 
 <p>Mirrors the doc generator&rsquo;s <code>--check</code>: regenerate to a
 temporary tree, diff against the committed output, any difference is a failure.
@@ -207,8 +212,8 @@ AN14650&rsquo;s table.</li>
 <code>SDMA_IRQn</code>, but their COMMON headers do not contain a
 SmartDMA-prefixed base-address macro. <code>--require-complete</code> fails on
 those rows until the base-address source is settled.</li>
-<li>Settle the output schema before stage 3 &mdash; it is cheaper to change with
-no fetched data committed.</li>
+<li>Run stage 3 beyond the MCXN947 prototype once the compact enrichment schema
+has had review time.</li>
 </ul>
 
 <h2>Relationship to the rest of the doc set</h2>
