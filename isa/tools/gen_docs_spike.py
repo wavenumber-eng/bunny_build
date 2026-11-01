@@ -1,6 +1,10 @@
 """Generate a standalone EZH instruction reference.
 
 Usage: uv run python isa/tools/gen_docs_spike.py OUTDIR [--single FILE]
+
+Writes an expandable index and per-opcode pages with instruction encodings,
+bitfield diagrams, and mnemonic tables. --single also writes a self-contained
+reference page to FILE.
 """
 from __future__ import annotations
 

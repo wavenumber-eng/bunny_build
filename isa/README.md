@@ -27,9 +27,9 @@ isa/
     verify_fsl.py        # three-way check: fsl <-> db <-> bunny_build + report
     expand_mnemonics.py  # mnemonic patterns -> exact 1502-name reproduction
     pc_model.py          # PC-relative arithmetic model + self-test vs the sources
-
-
-
+    lint_chapter.py      # prose-chapter contract checks (docs_src/*.md)
+    check_docs.py # generated-output confidentiality scan (docs/html/)
+    gen_docs.py          # deterministic static HTML site generator
     gen_docs_spike.py    # archived doc-generator spike
 ```
 
@@ -128,9 +128,9 @@ Run the ISA and documentation checks:
 ```sh
 uv run python isa/tools/validate.py
 uv run python isa/tools/verify_encodings.py
-
-
-
+uv run python isa/tools/lint_chapter.py --quiet
+uv run python isa/tools/gen_docs.py
+uv run python isa/tools/gen_docs.py --check
 ```
 
 The final command rebuilds the site in a temporary directory, validates encoding
@@ -139,26 +139,11 @@ chapter links, scans the output, and checks for stale generated files.
 The generated pages and search index contain no attribution or review records.
 
 To compare with a different reference header, set `BUNNY_BUILD_REFERENCE_HEADER`
-
+before running `gen_docs.py --check`, or pass
 `--header PATH` to `expand_mnemonics.py` and `verify_fsl.py` directly.
 
 To check chapter attribution coverage locally, pass a private JSON record file to
-
+`lint_chapter.py --provenance PATH`. This file is not needed to build the site.
 Set `BUNNY_BUILD_PRIVATE_MARKERS` to a private JSON catalog containing a `markers`
 list to supplement the publication scan. An unavailable or malformed configured
 catalog fails the checks.
-
-## Validation
-
-Run the ISA checks:
-
-```sh
-uv run python isa/tools/validate.py
-uv run python isa/tools/verify_encodings.py
-uv run python isa/tools/expand_mnemonics.py
-uv run python isa/tools/verify_fsl.py
-```
-
-The mnemonic and macro checks use the bundled reference header. Use `--header PATH`
-to compare with another header. Attribution and authoring records are maintained
-separately from this repository.

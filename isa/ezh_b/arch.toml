@@ -1,17 +1,17 @@
-
-
+# EZH Architecture B — architecture-level shared definitions.
+# Single source of truth; see isa/README.md.
 
 [arch]
 name = "ezh_b"
 title = "NXP EZH Architecture B (SmartDMA)"
 instruction_width = 32
 opcode_bits = "4:0"
+# GOSUB overlays every encoding whose bits [1:0] == 0b11; decoders must match
+# most-specific-first (sort forms by mask popcount, descending).
 
-
-
-
-
-
+# ---------------------------------------------------------------------------
+# Register file: 4-bit register addresses used by dest/src fields.
+# ---------------------------------------------------------------------------
 
 [registers.R0]
 value = 0x0
@@ -93,10 +93,10 @@ value = 0xf
 class = "control"
 desc = "Return address"
 
-
-
-
-
+# ---------------------------------------------------------------------------
+# Condition codes: 4-bit values for the cond field (instruction bits [8:5]).
+# EU = execute unconditionally.
+# ---------------------------------------------------------------------------
 
 [conditions.EU]
 value = 0x0
@@ -164,9 +164,9 @@ desc = "Boolean slice set"
 value = 0xf
 desc = "External flag set"
 
-
-
-
+# ---------------------------------------------------------------------------
+# Bit-slice mux configurations (boolean pattern detector inputs).
+# ---------------------------------------------------------------------------
 
 [bit_slice_cfg.BS_1]
 value = 0
@@ -200,9 +200,9 @@ desc = "Constant 0"
 value = 7
 desc = "Event input"
 
-
-
-
+# ---------------------------------------------------------------------------
+# Glossary: architecture terms used across the opcode pages.
+# ---------------------------------------------------------------------------
 
 [glossary.naming]
 desc = "EZH and SmartDMA are the same block. SmartDMA is NXP's official name in public documentation and in silicon register naming (SMARTDMA0, SMARTDMAARCHB_INMUX, SMARTDMA_IRQn, SMARTDMA_PIO). EZH ('EZ Handler') is the original architecture name and survives in the programmer-facing surface: the E_* mnemonics, the fsl_ezh_* headers, and the EZHB_* control registers. Use EZH for architecture and instruction-set discussion and SmartDMA for part-specific material."
