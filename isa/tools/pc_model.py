@@ -1,4 +1,4 @@
-"""EZH PC-relative arithmetic: one model, self-tested against the sources.
+"""EZH PC-relative arithmetic: one model, self-tested against worked examples.
 
 Every PC-relative idiom in the documentation depends on two facts that are easy
 to state and easy to get wrong:
