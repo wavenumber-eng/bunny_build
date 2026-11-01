@@ -1,4 +1,4 @@
-
+# HOLD — opcode 0x1c: halt / wait-for-event, plain and vectored.
 
 [opcode]
 name = "HOLD"
@@ -42,7 +42,7 @@ syntax = "E_[COND_]HOLD ([cond])"
 mnemonic = { pattern = "E_[COND_]HOLD", binds = ["cond"] }
 fixed = [
   { bits = "4:0", value = 0x1c },
-  { bits = "13:10", value = 0xd },  
+  { bits = "13:10", value = 0xd },  # PC in the dest slot
   { bits = "15:15", value = 1 },
 ]
 operands = []
@@ -51,10 +51,10 @@ modifiers = ["cond"]
 [forms.encoding_reference]
 bunny_build = "E_HOLD() = 0x1C + (PC<<10) + (1<<15) + (EU<<5)"
 
-
-
-
-
+# ---------------------------------------------------------------------------
+# Vectored: table register replicated into [13:10] and [23:20].
+# Bit 9 = 0: no vector byte.  Bit 9 = 1 (ACC form): vectors byte in [31:24].
+# ---------------------------------------------------------------------------
 
 [[forms]]
 name = "vectored"

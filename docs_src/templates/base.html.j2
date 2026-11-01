@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ title }} | EZH Architecture B</title>
+    <style>{{ style_css | safe }}</style>
+    <script src="vendor/minisearch/minisearch-7.2.0.js"></script>
+    <script src="search_index.js"></script>
+  </head>
+  <body>
+    <div class="site-shell">
+      <header class="site-header panel">
+        <div class="bunny-container">
+          <pre class="bunny-art" aria-hidden="true">     / \
+    / _ \
+   | / \ |
+   ||   || _______
+   ||   || |\     \
+   ||   || ||\     \
+   ||   || || \    |
+   ||   || ||  \__/
+   ||   || ||   ||
+    \\_/ \_/ \_//
+   /   _     _   \
+  /               \
+  |    O     O    |
+  |   \  ___  /   |
+ /     \ \_/ /     \
+/  -----  |  --\    \
+|     \__/|\__/ \   |
+\       |_|_|       /
+ \_____       _____/
+       \     /
+       |     |</pre>
+          <div class="brand-title">BUNNY_BUILD // EZH ARCHITECTURE B</div>
+        </div>
+        <div>
+          <div class="top-actions">
+            <button class="icon-button" type="button" data-action="theme" title="Toggle theme" aria-label="Toggle theme">theme: dark</button>
+            <button class="icon-button" type="button" data-action="font" title="Cycle monospace font" aria-label="Cycle monospace font">font: consolas</button>
+          </div>
+          <div class="search-box">
+            <input id="site-search" class="search-input" type="search" autocomplete="off" placeholder="Search instructions, patterns, and chapters">
+            <div id="site-search-results" class="search-results" hidden></div>
+          </div>
+        </div>
+      </header>
+
+      <nav class="nav" aria-label="Primary">
+        {% for item in nav %}
+        <a class="nav-link{% if item.id == active %} active{% endif %}" href="{{ item.href }}">{{ item.title }}</a>
+        {% endfor %}
+      </nav>
+
+      <main class="main">
+        {{ body | safe }}
+      </main>
+
+    </div>
+    <script>{{ app_js | safe }}</script>
+  </body>
+</html>

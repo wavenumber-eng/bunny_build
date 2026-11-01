@@ -16,6 +16,7 @@ import argparse
 import filecmp
 import html as html_lib
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -107,34 +108,6 @@ def first_sentence(text: str, max_len: int = 150) -> str:
     if len(cleaned) > max_len:
         cleaned = cleaned[: max_len - 1].rstrip() + "..."
     return cleaned
-
-
-def public_sources(arch: dict[str, Any]) -> dict[str, str]:
-    out: dict[str, str] = {}
-    for key, meta in arch.get("sources", {}).items():
-        if meta.get("public"):
-            out[key] = meta.get("title", key)
-    return out
-
-
-def public_provenance(
-    entries: list[dict[str, Any]] | None, arch: dict[str, Any]
-) -> list[dict[str, Any]]:
-    public = public_sources(arch)
-    rendered: list[dict[str, Any]] = []
-    for entry in entries or []:
-        src_ids = entry.get("sources")
-        if src_ids is None and "source" in entry:
-            src_ids = [entry["source"]]
-        src_ids = list(src_ids or [])
-        titles = [public[sid] for sid in src_ids if sid in public]
-        if not titles:
-            continue
-        detail = str(entry.get("detail", "")).strip()
-        if not detail:
-            detail = "Public source evidence"
-        rendered.append({"detail": detail, "sources": titles})
-    return rendered
 
 
 def parse_chapter(path: Path) -> dict[str, Any]:
@@ -512,9 +485,7 @@ def build_opcode_models(
                 "forms": form_models,
                 "form_count": len(form_models),
                 "mnemonic_count": mnemonic_count,
-                "has_public_sources": bool(public_provenance(op.get("provenance"), arch)),
                 "has_notes": bool(restrictions),
-                "public_provenance": public_provenance(op.get("provenance"), arch),
                 "search_text": re.sub(r"\s+", " ", search_terms.lower()).strip(),
                 "search_doc": {
                     "id": f"opcode:{opcode_key}",
@@ -568,7 +539,6 @@ def render_chapters(
             "title": meta["title"],
             "href": href,
             "html": html_body,
-            "public_provenance": public_provenance(meta.get("provenance"), arch),
         }
         rendered.append(model)
 
@@ -1024,10 +994,10 @@ def platform_search_docs(platform: dict[str, Any]) -> list[dict[str, Any]]:
             "title": "Platform Guide",
             "url": "platform.html",
             "kind": "page",
-            "summary": "SDK-discovered SmartDMA/EZH parts and known extraction gaps.",
+            "summary": "SmartDMA parts, register addresses, interrupts, and pin assignments.",
             "body": (
-                "platform smartdma ezh sdk discovery part core base address irq "
-                "bring-up use group inputmux pin mux package pins enrichment open gaps"
+                "platform smartdma ezh part core base address irq "
+                "bring-up use group inputmux pin mux package pins"
             ),
             "mnemonics": "",
             "tags": "platform smartdma ezh",
@@ -1038,15 +1008,10 @@ def platform_search_docs(platform: dict[str, Any]) -> list[dict[str, Any]]:
             part["part"],
             part["series"],
             part["family"],
-            part.get("repo_path") or "",
-            part.get("track_branch") or "",
             "platform smartdma ezh",
         ]
         for core in part["cores"]:
             terms.append(core["core"])
-            terms.append(core.get("features_header") or "")
-            terms.append(core.get("common_header") or "")
-            terms.append(core.get("presence", {}).get("probe", ""))
             for irq in core["irqs"]:
                 terms.append(irq["label"])
                 terms.append(irq["description"])
@@ -1057,15 +1022,12 @@ def platform_search_docs(platform: dict[str, Any]) -> list[dict[str, Any]]:
         if chipdata:
             terms.extend(
                 [
-                    "chipdata",
-                    "nxp-monkey",
                     "SMARTDMA0",
                     "SMARTDMAARCHB_INMUX",
                     "SMARTDMA_PIO",
                     "pin mux",
                     "inputmux",
                     "register block",
-                    chipdata.get("tool_data_version", ""),
                     chipdata.get("default_part", ""),
                 ]
             )
@@ -1097,44 +1059,13 @@ def platform_search_docs(platform: dict[str, Any]) -> list[dict[str, Any]]:
                 "kind": "platform",
                 "summary": (
                     f"{part['series']} {part['family']}; "
-                    f"{core_count} SDK-confirmed core view"
+                    f"{core_count} core"
                     f"{'' if core_count == 1 else 's'}."
                 ),
                 "body": " ".join(item for item in terms if item),
                 "mnemonics": "",
                 "lookup": f"{part['part']} {part['family']} {part['series']}",
                 "tags": "platform smartdma ezh",
-            }
-        )
-    for candidate in platform["unconfirmed_candidates"]:
-        candidate_part = Path(candidate["path"]).parent.name
-        terms: list[str] = [
-            candidate_part,
-            candidate["series"],
-            candidate["path"],
-            candidate["reason"],
-            "platform smartdma ezh lpc candidate unconfirmed open gap",
-        ]
-        for irq in candidate["irqs"]:
-            terms.append(irq["label"])
-            terms.append(irq["description"])
-        for base in candidate["base_addresses"]:
-            terms.append(base["label"])
-            terms.append(base["space"])
-        docs.append(
-            {
-                "id": f"platform-candidate:{candidate_part}",
-                "title": f"{candidate_part} unconfirmed platform candidate",
-                "url": "platform.html#unconfirmed-lpc-candidates",
-                "kind": "platform candidate",
-                "summary": (
-                    f"{candidate['series']} broad-sweep candidate; requires "
-                    "AN/RM or nxp-monkey confirmation."
-                ),
-                "body": " ".join(item for item in terms if item),
-                "mnemonics": "",
-                "lookup": f"{candidate_part} {candidate['series']} LPC candidate",
-                "tags": "platform smartdma ezh lpc candidate",
             }
         )
     return docs
@@ -1222,7 +1153,7 @@ def generate_site(out_dir: Path) -> dict[str, int]:
             "title": "Instruction Reference",
             "url": "instructions.html",
             "kind": "page",
-            "summary": "Generated opcode, form, bitfield, and mnemonic reference.",
+            "summary": "Opcode, instruction form, bitfield, and mnemonic reference.",
             "body": "instruction reference opcode form bitfield mnemonic encoding base word",
             "mnemonics": "",
             "tags": "instructions",
@@ -1243,9 +1174,9 @@ def generate_site(out_dir: Path) -> dict[str, int]:
 
     home_body = env.get_template("home.html.j2").render(
         summary=(
-            "A public static reference for EZH, the instruction-set surface of "
-            "NXP SmartDMA. Encodings come from the checked ISA database; prose "
-            "chapters explain the architecture, assembler, and recurring patterns."
+            "EZH is the instruction-set architecture of NXP SmartDMA. "
+            "Explore the architecture, instruction encodings, assembler, "
+            "programming patterns, and supported platforms."
         ),
         opcode_count=len(opcodes),
         mnemonic_count=len(mnemonic_to_opcode),
@@ -1259,7 +1190,7 @@ def generate_site(out_dir: Path) -> dict[str, int]:
             {
                 "title": "Instruction Reference",
                 "href": "instructions.html",
-                "description": "Expandable opcode panels with generated bitfields, forms, and mnemonic expansions.",
+                "description": "Instruction encodings, bitfields, forms, and mnemonics.",
             },
             {
                 "title": "Assembler",
@@ -1269,12 +1200,12 @@ def generate_site(out_dir: Path) -> dict[str, int]:
             {
                 "title": "Cookbook",
                 "href": "cookbook.html",
-                "description": "Corpus-backed patterns for continuous engines, command/execute/stop programs, and pseudo-instruction idioms.",
+                "description": "Patterns for continuous engines, command/execute/stop programs, and pseudo-instructions.",
             },
             {
                 "title": "Platform",
                 "href": "platform.html",
-                "description": "SDK-discovered SmartDMA/EZH parts, per-core IRQ/base facts, and explicit extraction gaps.",
+                "description": "SmartDMA parts, per-core register addresses, interrupts, and pin assignments.",
             },
             {
                 "title": "Simulator",
@@ -1343,11 +1274,14 @@ def preflight(full: bool) -> int:
         checks.extend(
             [
                 [sys.executable, "isa/tools/validate.py"],
-                [sys.executable, "isa/tools/expand_mnemonics.py"],
                 [sys.executable, "isa/tools/verify_encodings.py"],
-                [sys.executable, "isa/tools/verify_fsl.py"],
             ]
         )
+    if full and os.environ.get("BUNNY_BUILD_REFERENCE_HEADER"):
+        checks.extend([
+            [sys.executable, "isa/tools/expand_mnemonics.py"],
+            [sys.executable, "isa/tools/verify_fsl.py"],
+        ])
     checks.append(
         [
             sys.executable,

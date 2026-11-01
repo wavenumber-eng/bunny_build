@@ -1,4 +1,4 @@
-
+# E_MOV — opcode 0x00: register move / immediate load family.
 
 [opcode]
 name = "MOV"
@@ -34,7 +34,7 @@ syntax = "E_[COND_]{MOV|MVN}[S] ([cond,] dest, src)"
 mnemonic = { pattern = "E_[COND_]{MOV|MVN}[S]", binds = ["cond", "n", "s"] }
 fixed = [
   { bits = "4:0", value = 0x00 },
-  { bits = "18:18", value = 0 },   
+  { bits = "18:18", value = 0 },   # 0 = register form (1 selects immediate form)
 ]
 operands = ["dest", "src1"]
 modifiers = ["cond", "s", "n"]
@@ -42,9 +42,9 @@ modifiers = ["cond", "s", "n"]
 [forms.encoding_reference]
 bunny_build = "E_MOV(dest,src) = 0x0 + (src<<14) + (dest<<10) + (EU<<5)"
 
-
-
-
+# ---------------------------------------------------------------------------
+# Form 2: immediate load.  E_[COND_]LOAD_[S]IMM[N][S] (cond,) dest, imm11s (,shift5)
+# ---------------------------------------------------------------------------
 
 [[forms]]
 name = "imm"
@@ -55,7 +55,7 @@ mnemonics = [
 ]
 fixed = [
   { bits = "4:0", value = 0x00 },
-  { bits = "18:18", value = 1 },   
+  { bits = "18:18", value = 1 },   # immediate form select
 ]
 operands = ["dest", "imm11s", "shift5_simm"]
 modifiers = ["cond", "s", "n"]

@@ -1,4 +1,4 @@
-
+# E_GOSUB — opcode 0x03: subroutine call overlay.
 
 [opcode]
 name = "GOSUB"

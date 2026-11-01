@@ -1,8 +1,8 @@
-
-
-
-
-
+# E_ADD — opcode 0x06: add family (ALU matrix).
+#
+# All seven ALU opcodes (0x06 ADD, 0x08 SUB, 0x09 ADC, 0x0a SBC, 0x0c OR,
+# 0x0d AND, 0x0e XOR) share this exact structure; only the opcode value and
+# operation differ.
 
 [opcode]
 name = "ADD"
@@ -47,7 +47,7 @@ mnemonics = [
 ]
 fixed = [
   { bits = "4:0", value = 0x06 },
-  { bits = "18:18", value = 0 },   
+  { bits = "18:18", value = 0 },   # 0 = register form (1 selects immediate form)
 ]
 operands = ["dest", "src1", "src2", "shift5"]
 modifiers = ["cond", "s", "n_alu", "f_alu", "shift_type_alu"]
@@ -56,9 +56,9 @@ notes = "Mnemonics without a shift suffix are the LSL encoding with shift5 = 0."
 [forms.encoding_reference]
 bunny_build = "E_ADD(dest,src1,src2) = 0x6 + (src1<<14) + (dest<<10) + (src2<<20) + (EU<<5)"
 
-
-
-
+# ---------------------------------------------------------------------------
+# Form 2: register + 12-bit signed immediate.
+# ---------------------------------------------------------------------------
 
 [[forms]]
 name = "imm"
@@ -67,7 +67,7 @@ syntax = "E_[COND_]ADD[N]_IMM[S] ([cond,] dest, src1, imm12s)"
 mnemonic = { pattern = "E_[COND_]ADD[N]_IMM[S]", binds = ["cond", "n_alu", "s"] }
 fixed = [
   { bits = "4:0", value = 0x06 },
-  { bits = "18:18", value = 1 },   
+  { bits = "18:18", value = 1 },   # immediate form select
 ]
 operands = ["dest", "src1", "imm12s"]
 modifiers = ["cond", "s", "n_alu"]

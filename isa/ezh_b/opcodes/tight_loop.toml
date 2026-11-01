@@ -1,4 +1,4 @@
-
+# E_TIGHT_LOOP — opcode 0x1a: hardware loop.
 
 [opcode]
 name = "TIGHT_LOOP"

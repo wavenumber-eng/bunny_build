@@ -1,4 +1,4 @@
-
+# E_SBC — opcode 0x0a: sbc family (ALU matrix).
 
 [opcode]
 name = "SBC"
@@ -43,7 +43,7 @@ mnemonics = [
 ]
 fixed = [
   { bits = "4:0", value = 0x0a },
-  { bits = "18:18", value = 0 },   
+  { bits = "18:18", value = 0 },   # 0 = register form (1 selects immediate form)
 ]
 operands = ["dest", "src1", "src2", "shift5"]
 modifiers = ["cond", "s", "n_alu", "f_alu", "shift_type_alu"]
@@ -52,9 +52,9 @@ notes = "Mnemonics without a shift suffix are the LSL encoding with shift5 = 0."
 [forms.encoding_reference]
 bunny_build = "E_SBC(dest,src1,src2) = 0xa + (src1<<14) + (dest<<10) + (src2<<20) + (EU<<5)"
 
-
-
-
+# ---------------------------------------------------------------------------
+# Form 2: register + 12-bit signed immediate.
+# ---------------------------------------------------------------------------
 
 [[forms]]
 name = "imm"
@@ -63,7 +63,7 @@ syntax = "E_[COND_]SBC[N]_IMM[S] ([cond,] dest, src1, imm12s)"
 mnemonic = { pattern = "E_[COND_]SBC[N]_IMM[S]", binds = ["cond", "n_alu", "s"] }
 fixed = [
   { bits = "4:0", value = 0x0a },
-  { bits = "18:18", value = 1 },   
+  { bits = "18:18", value = 1 },   # immediate form select
 ]
 operands = ["dest", "src1", "imm12s"]
 modifiers = ["cond", "s", "n_alu"]

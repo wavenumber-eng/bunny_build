@@ -1,4 +1,4 @@
-
+# BITOP — opcode 0x18: bit test / set / clear / toggle.
 
 [opcode]
 name = "BITOP"
@@ -31,7 +31,7 @@ syntax = "E_[COND_]{BCLR|BTST|BSET|BTOG}[S] ([cond,] dest, rdata, rbit)"
 mnemonic = { pattern = "E_[COND_]{BCLR=1|BTST=5|BSET=6|BTOG=7}[S]", binds = ["cond", "bitop_sel", "s"] }
 fixed = [
   { bits = "4:0", value = 0x18 },
-  { bits = "18:18", value = 1 },   
+  { bits = "18:18", value = 1 },   # 1 = bit number from register
 ]
 operands = ["dest", "src1", "src2"]
 modifiers = ["cond", "s", "bitop_sel"]
@@ -47,7 +47,7 @@ syntax = "E_[COND_]{BCLR|BTST|BSET|BTOG}_IMM[S] ([cond,] dest, rdata, bit5)"
 mnemonic = { pattern = "E_[COND_]{BCLR=1|BTST=5|BSET=6|BTOG=7}_IMM[S]", binds = ["cond", "bitop_sel", "s"] }
 fixed = [
   { bits = "4:0", value = 0x18 },
-  { bits = "18:18", value = 0 },   
+  { bits = "18:18", value = 0 },   # 0 = immediate bit number
 ]
 operands = ["dest", "src1", "bit5"]
 modifiers = ["cond", "s", "bitop_sel"]

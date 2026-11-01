@@ -1,4 +1,4 @@
-
+# E_STR — opcode 0x02: store register to memory (immediate offset).
 
 [opcode]
 name = "STR"

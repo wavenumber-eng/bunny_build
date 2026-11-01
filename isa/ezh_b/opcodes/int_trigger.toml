@@ -1,4 +1,4 @@
-
+# E_INT_TRIGGER — opcode 0x14: raise interrupt/trigger outputs.
 
 [opcode]
 name = "INT_TRIGGER"

@@ -1,0 +1,327 @@
+<section class="reference-heading">
+  <h1>Platform Guide</h1>
+  <p>SmartDMA register addresses, interrupts, input triggers, and package pin assignments.</p>
+
+</section>
+
+<article class="prose platform-guide">
+  <h2>Use EZH On A Platform</h2>
+  <p>Bring-up starts with four platform facts: the EZH/SmartDMA register base, the IRQ number, the package pins that can carry <code>SMARTDMA_PIO</code> signals, and the INPUTMUX values that can trigger the block. The table groups parts with the same register-base and IRQ layout.</p>
+  <div class="table-scroll">
+    <table class="platform-table">
+      <thead>
+        <tr>
+          <th>Group</th>
+          <th>Cores</th>
+          <th>Register Base</th>
+          <th>IRQ</th>
+          <th>Pin Mux Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for group in platform.use_groups %}
+        <tr>
+          <td>
+            <code>{{ group.series }} / {{ group.family }}</code><br>
+            <span class="small-note">{{ group.part_count }} part{% if group.part_count != 1 %}s{% endif %}</span>
+            <ul class="compact-list">
+              {% for part in group.parts %}
+              <li><a href="#{{ part.anchor }}"><code>{{ part.part }}</code></a></li>
+              {% endfor %}
+            </ul>
+          </td>
+          <td>{{ group.core_count }} core{% if group.core_count != 1 %}s{% endif %}</td>
+          <td>
+            {% if group.base_addresses %}
+            <ul class="compact-list">
+              {% for base in group.base_addresses %}
+              <li><code>{{ base.label }}</code><br><span class="small-note">{{ base.space }}</span></li>
+              {% endfor %}
+            </ul>
+            {% else %}
+            <span class="badge warn">Not documented</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if group.irqs %}
+            <ul class="compact-list">
+              {% for irq in group.irqs %}
+              <li><code>{{ irq.label }}</code>{% if irq.description %}<br><span class="small-note">{{ irq.description }}</span>{% endif %}</li>
+              {% endfor %}
+            </ul>
+            {% else %}
+            <span class="badge warn">Not documented</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if group.enriched_pin_mux %}
+            <ul class="compact-list">
+              {% for summary in group.enriched_pin_mux %}
+              <li><a href="#{{ summary.anchor }}"><code>{{ summary.part }}</code></a>: {{ summary.signals_label }} on {{ summary.ports_label }}; mux <code>{{ summary.mux_values_label }}</code>{% if summary.input_buffer_values_label %}, IBE <code>{{ summary.input_buffer_values_label }}</code>{% endif %}</li>
+              {% endfor %}
+            </ul>
+            {% else %}
+            <span class="small-note">Not documented</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if platform.enriched_pin_mux %}
+  <h2>Pin Mux Summary</h2>
+  <p>Select the pin-mux function and input-buffer setting for your part and package.</p>
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Part</th>
+          <th>SMARTDMA_PIO Coverage</th>
+          <th>Ports</th>
+          <th>Setting</th>
+          <th>Packages</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for summary in platform.enriched_pin_mux %}
+        <tr>
+          <td><a href="#{{ summary.anchor }}"><code>{{ summary.part }}</code></a><br><span class="small-note">default orderable {{ summary.default_part }}</span></td>
+          <td>{{ summary.signals_label }}<br><span class="small-note">{{ summary.option_count }} package-pin options</span></td>
+          <td>{{ summary.ports_label }}</td>
+          <td>MUX <code>{{ summary.mux_values_label }}</code>{% if summary.input_buffer_values_label %}<br><span class="small-note">Input buffer enable <code>{{ summary.input_buffer_values_label }}</code></span>{% endif %}</td>
+          <td>{{ summary.package_count }} package variants</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Part / Package</th>
+          <th>Package Pins</th>
+          <th>SMARTDMA_PIO Coverage</th>
+          <th>Ports</th>
+          <th>Setting</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for summary in platform.enriched_pin_mux %}
+        {% for package in summary.packages %}
+        <tr>
+          <td><a href="#{{ summary.anchor }}"><code>{{ summary.part }}</code></a><br><code>{{ package.package_id }}</code></td>
+          <td>{{ package.package }} {{ package.pin_count }} pins<br><span class="small-note">{{ package.option_count }} SMARTDMA_PIO options</span></td>
+          <td>{{ package.signals_label }}</td>
+          <td>{{ package.ports_label }}</td>
+          <td>MUX <code>{{ package.mux_values_label }}</code>{% if package.input_buffer_values_label %}<br><span class="small-note">IBE <code>{{ package.input_buffer_values_label }}</code></span>{% endif %}</td>
+        </tr>
+        {% endfor %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  <h2>Family Coverage</h2>
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Series</th>
+          <th>Family</th>
+          <th>Parts</th>
+          <th>Cores</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in platform.families %}
+        <tr>
+          <td><code>{{ row.series }}</code></td>
+          <td><code>{{ row.family }}</code></td>
+          <td>{{ row.parts }}</td>
+          <td>{{ row.core_views }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Register Bases and Interrupts</h2>
+  <p>Dual-core parts have a row for each core. An address marked &ldquo;Not documented&rdquo; must be checked for your part before use.</p>
+  <div class="table-scroll">
+    <table class="platform-table">
+      <thead>
+        <tr>
+          <th>Part</th>
+          <th>Core</th>
+          <th>IRQ</th>
+          <th>Base Addresses</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in platform.core_rows %}
+        <tr>
+          <td><a href="#{{ row.anchor }}"><code>{{ row.part }}</code></a><br><span class="small-note">{{ row.series }} / {{ row.family }}</span></td>
+          <td><code>{{ row.core }}</code></td>
+          <td>
+            {% if row.irqs %}
+            <ul class="compact-list">
+              {% for irq in row.irqs %}
+              <li><code>{{ irq.label }}</code>{% if irq.description %}<br><span class="small-note">{{ irq.description }}</span>{% endif %}</li>
+              {% endfor %}
+            </ul>
+            {% else %}
+            <span class="badge warn">Not documented</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if row.base_addresses %}
+            <ul class="compact-list">
+              {% for base in row.base_addresses %}
+              <li><code>{{ base.label }}</code><br><span class="small-note">{{ base.space }}</span></li>
+              {% endfor %}
+            </ul>
+            {% else %}
+            <span class="badge warn">Not documented</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Per-Part Details</h2>
+  <section class="opcode-list" aria-label="Per-part platform details">
+    {% for part in platform.parts %}
+    <details class="opcode-panel" id="{{ part.anchor }}">
+      <summary class="opcode-summary">
+        <span class="opcode-title">
+          <span class="opcode-name">{{ part.part }}</span>
+          <span class="opcode-meta">{{ part.series }} / {{ part.family }}</span>
+        </span>
+        <span class="badge-row">
+          <span class="badge">{{ part.cores | length }} core{% if part.cores | length != 1 %}s{% endif %}</span>
+        </span>
+      </summary>
+      <div class="opcode-body">
+        {% if not part.chipdata %}
+        <p>Pin assignments, trigger maps, and register fields are not documented here for this part.</p>
+        {% endif %}
+
+        {% if part.chipdata %}
+        <h4>SMARTDMA0 Register Block</h4>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Offset</th>
+                <th>Register</th>
+                <th>Description</th>
+                <th>Fields</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for register in part.chipdata.register_block.registers %}
+              <tr>
+                <td><code>{{ register.offset }}</code></td>
+                <td><code>{{ register.name }}</code></td>
+                <td>{{ register.description }}</td>
+                <td>
+                  <ul class="compact-list">
+                    {% for field in register.fields %}
+                    <li><code>{{ field.name }}[{{ field.bit_range }}]</code>{% if field.access %} {{ field.access }}{% endif %}{% if field.description %}<br><span class="small-note">{{ field.description }}</span>{% endif %}</li>
+                    {% endfor %}
+                  </ul>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <h4>SMARTDMAARCHB Inputmux</h4>
+        <p><code>{{ part.chipdata.inputmux.register_label }}</code> exposes {{ part.chipdata.inputmux.input_count }} inputs. Field <code>{{ part.chipdata.inputmux.field.name }}[{{ part.chipdata.inputmux.field.bit_range }}]</code> resets to <code>{{ part.chipdata.inputmux.field.reset }}</code>; the input selections are listed below.</p>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Input</th>
+                <th>Register</th>
+                <th>Offset</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for instance in part.chipdata.inputmux.instances %}
+              <tr>
+                <td>{{ instance.channel }}</td>
+                <td><code>{{ instance.register }}</code></td>
+                <td><code>{{ instance.offset }}</code></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Value</th>
+                <th>Selected Source</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for value in part.chipdata.inputmux["values"] %}
+              <tr>
+                <td><code>{{ value.value }}</code></td>
+                <td>{{ value.description }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <h4>SMARTDMA_PIO Pin Mux</h4>
+        <p>{{ part.chipdata.pin_mux.option_count }} package-pin options across {{ part.chipdata.pin_mux.package_count }} package variants.</p>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Package</th>
+                <th>Signal</th>
+                <th>Pin</th>
+                <th>Ball</th>
+                <th>Mux</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for package in part.chipdata.pin_mux.packages %}
+              {% for option in package.options %}
+              <tr>
+                <td><code>{{ package.package_id }}</code><br><span class="small-note">{{ package.package }} {{ package.pin_count }} pins</span></td>
+                <td><code>{{ option.signal }}</code></td>
+                <td><code>{{ option.pin }}</code></td>
+                <td>{{ option.package_pin }}</td>
+                <td><code>{{ option.mux_register }}</code> = <code>{{ option.mux_value }}</code>{% if option.input_buffer_register %}<br><span class="small-note"><code>{{ option.input_buffer_register }}</code> IBE = <code>{{ option.input_buffer_value }}</code></span>{% endif %}</td>
+              </tr>
+              {% endfor %}
+              {% if package.option_count == 0 %}
+              <tr>
+                <td><code>{{ package.package_id }}</code><br><span class="small-note">{{ package.package }} {{ package.pin_count }} pins</span></td>
+                <td colspan="4"><span class="small-note">No SMARTDMA_PIO pin mux options in this package variant.</span></td>
+              </tr>
+              {% endif %}
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% endif %}
+      </div>
+    </details>
+    {% endfor %}
+  </section>
+
+</article>

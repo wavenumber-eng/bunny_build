@@ -117,6 +117,32 @@ every name's bound field values must predict its macro's base word
 bit-for-bit — a pattern that spells the right name with the wrong binding
 fails.
 
+## Editing and validation
+
+Keep instruction semantics and encoding fields consistent. Attribution and review
+records are maintained separately from this public repository. The SmartDMA
+Cookbook (AN14650) may be referenced in reader-facing documentation.
+
+Run the ISA and documentation checks:
+
+```sh
+uv run python isa/tools/validate.py
+uv run python isa/tools/verify_encodings.py
+
+
+
+```
+
+The final command rebuilds the site in a temporary directory, validates encoding
+structure and chapter links, scans the output, and checks for stale generated files.
+The generated pages and search index contain no attribution or review records.
+
+For optional comparison with a separately supplied reference header, set
+
+`--header PATH` to `expand_mnemonics.py` and `verify_fsl.py` directly.
+
+To check chapter attribution coverage locally, pass a private JSON record file to
+
 ## Validation
 
 Run the ISA checks:

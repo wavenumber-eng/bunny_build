@@ -1,4 +1,4 @@
-
+# FSHIFT — opcode 0x11: flip (endian or bit-reverse) + shift, optional fused ALU op.
 
 [opcode]
 name = "FSHIFT"

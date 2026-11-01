@@ -1,4 +1,4 @@
-
+# E_LDR — opcode 0x01: load register from memory (immediate offset).
 
 [opcode]
 name = "LDR"
@@ -53,7 +53,7 @@ notes = "S suffix on this family means SIGNED (bit 21), not set-flags. _PRE = wb
 [forms.encoding_reference]
 bunny_build = "E_LDRB(dest,src,off8) = 0x1 + (dest<<10) + (src<<14) + (off8<<24) + (EU<<5)"
 
-
+# Stack aliases: baked operands on the default form.
 
 [[aliases]]
 name = "POP"
