@@ -77,6 +77,13 @@ class ValidationChecks(unittest.TestCase):
                 with self.subTest(data=data), self.assertRaises(ValueError):
                     lint_chapter.load_private_records(path)
 
+    def test_marker_detection_handles_markup_entities_and_line_breaks(self):
+        marker = "restricted example title"
+        for text in ("Restricted <em>Example</em> Title", "Restricted&#32;Example Title",
+                     "Restricted\nExample Title", "Rest<strong>ricted</strong> Example Title"):
+            with self.subTest(text=text):
+                self.assertIn(marker, check_docs.source_marker_hits(text, {marker}))
+
     def test_superseded_or_conditional_directive_wrapper_is_rejected(self):
         good = '#define E_DCD(loc) __asm(".word "#loc)\n'
         for text in (good + '#undef E_DCD\n' + good,
