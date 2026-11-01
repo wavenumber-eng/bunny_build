@@ -1,9 +1,9 @@
-
-
-
-
-
-
+# NOP — opcode 0x12: no-operation and the beat/timing sub-op family.
+#
+# Bits [8:5] (the cond slot elsewhere) are a sub-op selector here; none of
+# these instructions supports conditional execution:
+#   0 = NOP, 1 = HEART_RYTHM (bit 9: 0 = immediate, 1 = register),
+#   2 = SYNCH_ALL_TO_BEAT, 3 = WAIT_FOR_BEAT
 
 [opcode]
 name = "NOP"
@@ -38,8 +38,8 @@ name = "nop"
 brief = "No operation"
 syntax = "E_NOP"
 mnemonic = { pattern = "E_NOP", binds = [] }
-
-
+# Decode-mask convention: opcode plus the sub-op selector are
+# fixed; the remaining bits are reserved-zero (canonical word 0x00000012).
 fixed = [
   { bits = "4:0", value = 0x12 },
   { bits = "8:5", value = 0 },
