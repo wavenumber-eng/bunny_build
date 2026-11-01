@@ -1,0 +1,1112 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Home | EZH Architecture B</title>
+    <style>:root {
+  color-scheme: dark;
+  --bg: #1a1a1a;
+  --panel: #242424;
+  --panel-2: #2d2d2d;
+  --text: #e0e0e0;
+  --muted: #808080;
+  --line: #3d3d3d;
+  --line-strong: #cc8800;
+  --accent: #ffb000;
+  --accent-2: #cc8800;
+  --accent-3: #ff4444;
+  --ok: #00ff00;
+  --warn: #ffb000;
+  --code-bg: #2d2d2d;
+  --code-text: #e0e0e0;
+  --focus: rgba(255, 176, 0, 0.22);
+  --panel-translucent: #242424;
+  --shadow: rgba(255, 176, 0, 0.12);
+  --amber-glow: rgba(255, 176, 0, 0.3);
+  --mono: Consolas, Monaco, "Courier New", monospace;
+  --sans: var(--mono);
+  --field-0: rgba(255, 176, 0, 0.18);
+  --field-1: rgba(0, 255, 0, 0.10);
+  --field-2: rgba(0, 200, 255, 0.12);
+  --field-3: rgba(255, 80, 255, 0.12);
+  --field-4: rgba(255, 96, 96, 0.14);
+  --field-5: rgba(150, 150, 255, 0.14);
+  --reserved: rgba(255, 255, 255, 0.03);
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f4f1e8;
+  --panel: #ece9df;
+  --panel-2: #e2ded2;
+  --text: #2b2721;
+  --muted: #7d766a;
+  --line: #c6c0af;
+  --line-strong: #a87d1a;
+  --accent: #8a5800;
+  --accent-2: #a87d1a;
+  --accent-3: #c02020;
+  --ok: #0a7a0a;
+  --warn: #8a5800;
+  --code-bg: #e2ded2;
+  --code-text: #2b2721;
+  --focus: rgba(138, 88, 0, 0.22);
+  --panel-translucent: #ece9df;
+  --shadow: rgba(138, 88, 0, 0.16);
+  --amber-glow: rgba(138, 88, 0, 0.25);
+  --field-0: rgba(138, 88, 0, 0.16);
+  --field-1: rgba(10, 122, 10, 0.12);
+  --field-2: rgba(0, 110, 140, 0.12);
+  --field-3: rgba(140, 40, 140, 0.10);
+  --field-4: rgba(180, 40, 40, 0.10);
+  --field-5: rgba(60, 60, 180, 0.10);
+  --reserved: rgba(0, 0, 0, 0.04);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+a {
+  color: var(--accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+a:hover {
+  color: var(--accent-2);
+}
+
+code,
+pre,
+kbd {
+  font-family: var(--mono);
+}
+
+code {
+  color: var(--code-text);
+}
+
+pre {
+  margin: 1rem 0;
+  padding: 1rem;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--code-bg);
+  color: var(--code-text);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.site-shell {
+  width: min(1100px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 20px 0;
+}
+
+.site-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
+  gap: 1rem;
+  align-items: stretch;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.panel {
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.bunny-container {
+  min-width: 0;
+  padding: 0.2rem 0.4rem;
+  color: var(--accent);
+  text-shadow: 0 0 10px var(--amber-glow);
+  text-align: center;
+}
+
+.bunny-art {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 8px;
+  line-height: 1.1;
+  text-align: left;
+  white-space: pre;
+  text-shadow: 0 0 10px var(--amber-glow);
+}
+
+.brand-title {
+  margin-top: 6px;
+  font-family: var(--mono);
+  font-size: 14px;
+  letter-spacing: 2px;
+}
+
+.brand-subtitle {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+
+.top-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.45rem;
+}
+
+.icon-button {
+  min-height: 1.7rem;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.icon-button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.search-box {
+  position: relative;
+  margin-top: 0.7rem;
+}
+
+.search-input {
+  width: 100%;
+  height: 2.2rem;
+  padding: 0 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--code-bg);
+  color: var(--text);
+  outline: none;
+}
+
+.search-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--focus);
+}
+
+.search-results {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.35rem);
+  right: 0;
+  left: 0;
+  max-height: min(70vh, 520px);
+  overflow: auto;
+  border: 1px solid var(--line-strong);
+  border-radius: 0;
+  background: var(--panel);
+  box-shadow: 0 0 12px var(--shadow);
+}
+
+.search-result {
+  display: block;
+  padding: 0.72rem 0.8rem;
+  border-bottom: 1px solid var(--line);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.search-result:last-child {
+  border-bottom: 0;
+}
+
+.search-result:hover,
+.search-result:focus {
+  background: var(--panel-2);
+  color: var(--accent);
+}
+
+.search-result-title {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.9rem;
+}
+
+.search-result-meta {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  margin-bottom: 10px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.nav-link {
+  padding: 0.42rem 0.65rem;
+  border-right: 1px solid var(--line);
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  background: var(--panel-2);
+  color: var(--accent);
+}
+
+.main {
+  padding: 0 0 1rem;
+}
+
+.hero {
+  display: grid;
+  gap: 1.1rem;
+  margin-bottom: 10px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.hero h1,
+.prose h1,
+.reference-heading h1 {
+  margin: 0;
+  font-family: var(--mono);
+  color: var(--accent);
+  font-size: clamp(1.4rem, 4vw, 2.4rem);
+  line-height: 1.12;
+  max-width: 18ch;
+  text-shadow: 0 0 10px var(--amber-glow);
+}
+
+.hero p,
+.reference-heading p {
+  max-width: 74ch;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.status-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.7rem;
+  margin-top: 0.3rem;
+}
+
+.stat {
+  min-height: 5.5rem;
+  padding: 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--panel-translucent);
+}
+
+.stat-label {
+  display: block;
+  color: var(--muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+}
+
+.stat-value {
+  display: block;
+  margin-top: 0.35rem;
+  font-family: var(--mono);
+  font-size: 1.15rem;
+  color: var(--accent);
+}
+
+.tile-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin-top: 1.2rem;
+}
+
+.tile {
+  min-height: 9rem;
+  padding: 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--panel);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.tile:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 10px var(--shadow);
+}
+
+.tile h2 {
+  margin: 0;
+  font-family: var(--mono);
+  color: var(--accent);
+  font-size: 1rem;
+}
+
+.tile p {
+  margin: 0.55rem 0 0;
+  color: var(--muted);
+}
+
+.prose {
+  max-width: 880px;
+}
+
+.prose h1 {
+  margin-bottom: 0.8rem;
+}
+
+.prose h2 {
+  margin: 2rem 0 0.65rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--line);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 1.35rem;
+}
+
+.prose h3 {
+  margin: 1.45rem 0 0.45rem;
+  color: var(--accent-2);
+  font-family: var(--mono);
+  font-size: 1.02rem;
+}
+
+.prose p,
+.prose li {
+  color: var(--text);
+}
+
+.prose blockquote {
+  margin: 1rem 0;
+  padding: 0.2rem 0 0.2rem 1rem;
+  border-left: 3px solid var(--accent);
+  color: var(--muted);
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.95rem;
+}
+
+.table-scroll {
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table-scroll table {
+  min-width: 760px;
+}
+
+.prose th,
+.prose td {
+  padding: 0.55rem;
+  border: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.prose th {
+  background: var(--panel-2);
+  color: var(--accent);
+  text-align: left;
+}
+
+.compact-list {
+  margin: 0;
+  padding-left: 1rem;
+}
+
+.compact-list li + li {
+  margin-top: 0.35rem;
+}
+
+.reference-heading {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 1.1rem;
+  padding: 12px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.filter-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.55rem;
+  max-width: 760px;
+}
+
+.filter-input {
+  height: 2.55rem;
+  padding: 0 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--code-bg);
+  color: var(--text);
+  outline: none;
+}
+
+.filter-count {
+  min-width: 8.5rem;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.82rem;
+}
+
+.opcode-list {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.opcode-panel {
+  min-width: 0;
+  max-width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--panel-translucent);
+}
+
+.opcode-panel[open] {
+  border-color: var(--line-strong);
+}
+
+.opcode-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.9rem;
+  align-items: center;
+  min-height: 2.5rem;
+  padding: 0.55rem 0.75rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel-2);
+  cursor: pointer;
+}
+
+.opcode-title {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: baseline;
+  min-width: 0;
+}
+
+.opcode-name {
+  font-family: var(--mono);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.opcode-meta {
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.45rem;
+  padding: 0 0.42rem;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+}
+
+.badge.public {
+  color: var(--ok);
+  border-color: var(--ok);
+}
+
+.badge.warn {
+  color: var(--warn);
+  border-color: var(--warn);
+}
+
+.opcode-body {
+  min-width: 0;
+  max-width: 100%;
+  padding: 0 0.9rem 1rem;
+}
+
+.form-block {
+  padding: 0.85rem 0 0;
+  border-top: 1px solid var(--line);
+}
+
+.form-title {
+  margin: 0 0 0.5rem;
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 0.93rem;
+}
+
+.bitfield {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  padding-bottom: 0.2rem;
+}
+
+.bitfield svg {
+  display: block;
+  min-width: 660px;
+  height: auto;
+}
+
+.bitfield svg rect {
+  stroke: var(--line);
+}
+
+.bitfield svg rect[data-tip] {
+  cursor: help;
+}
+
+.bitfield svg rect[data-tip]:hover {
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+
+.bitfield svg text {
+  fill: var(--text);
+  pointer-events: none;
+}
+
+.bitfield svg text.bit,
+.bitfield svg text.vrz {
+  fill: var(--muted);
+}
+
+.bitfield svg text.vfx {
+  fill: var(--ok);
+}
+
+.bitfield .fx {
+  fill: var(--panel-2);
+}
+
+.bitfield .rz {
+  fill: var(--reserved);
+}
+
+.bitfield .f0 {
+  fill: var(--field-0);
+}
+
+.bitfield .f1 {
+  fill: var(--field-1);
+}
+
+.bitfield .f2 {
+  fill: var(--field-2);
+}
+
+.bitfield .f3 {
+  fill: var(--field-3);
+}
+
+.bitfield .f4 {
+  fill: var(--field-4);
+}
+
+.bitfield .f5 {
+  fill: var(--field-5);
+}
+
+.mnemonic-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.7rem 0;
+  font-size: 0.9rem;
+}
+
+.mnemonic-table th,
+.mnemonic-table td {
+  padding: 0.48rem;
+  border: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.mnemonic-table th {
+  background: var(--panel-2);
+  color: var(--accent);
+  text-align: left;
+}
+
+.small-note {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.toc {
+  margin: 1rem 0 1.2rem;
+  padding: 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--panel);
+}
+
+.toc ul {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.site-footer {
+  padding: 1rem 0 1.6rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 11px;
+  text-align: center;
+}
+
+.tip {
+  position: fixed;
+  z-index: 50;
+  max-width: min(360px, calc(100vw - 24px));
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 0;
+  background: var(--code-bg);
+  color: var(--text);
+  box-shadow: 0 0 12px var(--shadow);
+  font-size: 0.85rem;
+  pointer-events: none;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+@media (max-width: 860px) {
+  .site-shell {
+    width: min(100% - 24px, 1180px);
+  }
+
+  .site-header {
+    grid-template-columns: 1fr;
+  }
+
+  .top-actions {
+    justify-content: flex-start;
+  }
+
+  .status-strip,
+  .tile-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-row {
+    grid-template-columns: 1fr;
+  }
+
+  .opcode-summary {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+    <script src="vendor/minisearch/minisearch-7.2.0.js"></script>
+    <script src="search_index.js"></script>
+  </head>
+  <body>
+    <div class="site-shell">
+      <header class="site-header panel">
+        <div class="bunny-container">
+          <pre class="bunny-art" aria-hidden="true">     / \
+    / _ \
+   | / \ |
+   ||   || _______
+   ||   || |\     \
+   ||   || ||\     \
+   ||   || || \    |
+   ||   || ||  \__/
+   ||   || ||   ||
+    \\_/ \_/ \_//
+   /   _     _   \
+  /               \
+  |    O     O    |
+  |   \  ___  /   |
+ /     \ \_/ /     \
+/  -----  |  --\    \
+|     \__/|\__/ \   |
+\       |_|_|       /
+ \_____       _____/
+       \     /
+       |     |</pre>
+          <div class="brand-title">BUNNY_BUILD // EZH ARCHITECTURE B</div>
+        </div>
+        <div>
+          <div class="top-actions">
+            <button class="icon-button" type="button" data-action="theme" title="Toggle theme" aria-label="Toggle theme">theme: dark</button>
+            <button class="icon-button" type="button" data-action="font" title="Cycle monospace font" aria-label="Cycle monospace font">font: consolas</button>
+          </div>
+          <div class="search-box">
+            <input id="site-search" class="search-input" type="search" autocomplete="off" placeholder="Search instructions, patterns, and chapters">
+            <div id="site-search-results" class="search-results" hidden></div>
+          </div>
+        </div>
+      </header>
+
+      <nav class="nav" aria-label="Primary">
+
+        <a class="nav-link active" href="index.html">Home</a>
+
+        <a class="nav-link" href="architecture.html">Architecture</a>
+
+        <a class="nav-link" href="instructions.html">Instructions</a>
+
+        <a class="nav-link" href="assembler.html">Assembler</a>
+
+        <a class="nav-link" href="cookbook.html">Cookbook</a>
+
+        <a class="nav-link" href="platform.html">Platform</a>
+
+        <a class="nav-link" href="simulator.html">Simulator</a>
+
+      </nav>
+
+      <main class="main">
+        <section class="hero">
+  <h1>EZH Architecture B</h1>
+  <p>EZH is the instruction-set architecture of NXP SmartDMA. Explore the architecture, instruction encodings, assembler, programming patterns, and supported platforms.</p>
+  <div class="status-strip" aria-label="Reference contents">
+    <div class="stat">
+      <span class="stat-label">Opcodes</span>
+      <span class="stat-value">25</span>
+    </div>
+    <div class="stat">
+      <span class="stat-label">Mnemonics</span>
+      <span class="stat-value">1502</span>
+    </div>
+    <div class="stat">
+      <span class="stat-label">Chapters</span>
+      <span class="stat-value">3</span>
+    </div>
+    <div class="stat">
+      <span class="stat-label">Search Mode</span>
+      <span class="stat-value">Static</span>
+    </div>
+  </div>
+</section>
+
+<section class="tile-grid" aria-label="Documentation sections">
+
+  <a class="tile" href="architecture.html">
+    <h2>Architecture</h2>
+    <p>Execution model, register file, flags, buses, branches, and supervisor behavior.</p>
+  </a>
+
+  <a class="tile" href="instructions.html">
+    <h2>Instruction Reference</h2>
+    <p>Instruction encodings, bitfields, forms, and mnemonics.</p>
+  </a>
+
+  <a class="tile" href="assembler.html">
+    <h2>Assembler</h2>
+    <p>bunny_build as a two-pass C assembler with labels, directives, and pseudo-instructions.</p>
+  </a>
+
+  <a class="tile" href="cookbook.html">
+    <h2>Cookbook</h2>
+    <p>Patterns for continuous engines, command/execute/stop programs, and pseudo-instructions.</p>
+  </a>
+
+  <a class="tile" href="platform.html">
+    <h2>Platform</h2>
+    <p>SmartDMA parts, per-core register addresses, interrupts, and pin assignments.</p>
+  </a>
+
+  <a class="tile" href="simulator.html">
+    <h2>Simulator</h2>
+    <p>Instruction simulator (not yet available).</p>
+  </a>
+
+</section>
+
+      </main>
+
+    </div>
+    <script>(function () {
+  const themeButton = document.querySelector("[data-action='theme']");
+  const fontButton = document.querySelector("[data-action='font']");
+  const root = document.documentElement;
+  const fonts = [
+    ["consolas", "Consolas, Monaco, 'Courier New', monospace"],
+    ["cascadia", "'Cascadia Code', 'Cascadia Mono', Consolas, monospace"],
+    ["jetbrains", "'JetBrains Mono', Consolas, monospace"],
+    ["ibm plex", "'IBM Plex Mono', Consolas, monospace"],
+    ["courier", "'Courier New', Courier, monospace"],
+  ];
+  let fontIndex = 0;
+
+  function setTheme(next) {
+    root.dataset.theme = next;
+    if (themeButton) themeButton.textContent = "theme: " + next;
+    try {
+      localStorage.setItem("ezh-theme", next);
+    } catch (_) {}
+  }
+
+  function setFontIndex(next) {
+    const index = ((next % fonts.length) + fonts.length) % fonts.length;
+    fontIndex = index;
+    root.style.setProperty("--mono", fonts[index][1]);
+    if (fontButton) fontButton.textContent = "font: " + fonts[index][0];
+    try {
+      localStorage.setItem("ezh-font-index", String(index));
+    } catch (_) {}
+  }
+
+  try {
+    const savedTheme = localStorage.getItem("ezh-theme");
+    const savedFont = localStorage.getItem("ezh-font-index");
+    if (savedTheme) setTheme(savedTheme);
+    if (savedFont) setFontIndex(parseInt(savedFont, 10) || 0);
+  } catch (_) {}
+  setTheme(root.dataset.theme || "dark");
+  if (!root.style.getPropertyValue("--mono")) setFontIndex(0);
+
+  if (themeButton) {
+    themeButton.addEventListener("click", function () {
+      setTheme(root.dataset.theme === "light" ? "dark" : "light");
+    });
+  }
+
+  if (fontButton) {
+    fontButton.addEventListener("click", function () {
+      setFontIndex(fontIndex + 1);
+    });
+  }
+
+  function openHashTarget() {
+    const id = decodeURIComponent(window.location.hash || "").slice(1);
+    if (!id) return;
+    const target = document.getElementById(id);
+    if (!target) return;
+    let current = target.closest("details");
+    while (current) {
+      current.open = true;
+      current = current.parentElement ? current.parentElement.closest("details") : null;
+    }
+    window.setTimeout(function () {
+      target.scrollIntoView({ block: "start" });
+    }, 0);
+  }
+
+  window.addEventListener("hashchange", openHashTarget);
+  openHashTarget();
+
+  const filter = document.querySelector("[data-opcode-filter]");
+  const panels = Array.from(document.querySelectorAll("[data-opcode-panel]"));
+  const count = document.querySelector("[data-filter-count]");
+  if (filter && panels.length) {
+    const updateFilter = function () {
+      const query = filter.value.trim().toLowerCase();
+      let visible = 0;
+      panels.forEach(function (panel) {
+        const haystack = panel.getAttribute("data-search") || "";
+        const show = !query || haystack.includes(query);
+        panel.hidden = !show;
+        if (show) visible += 1;
+      });
+      if (count) {
+        count.textContent = visible + " / " + panels.length;
+      }
+    };
+    filter.addEventListener("input", updateFilter);
+    updateFilter();
+  }
+
+  const tip = document.createElement("div");
+  tip.className = "tip";
+  tip.hidden = true;
+  document.body.appendChild(tip);
+
+  document.addEventListener("pointerover", function (event) {
+    const target = event.target.closest("[data-tip]");
+    if (!target) return;
+    tip.textContent = target.getAttribute("data-tip") || "";
+    tip.hidden = false;
+  });
+
+  document.addEventListener("pointermove", function (event) {
+    if (tip.hidden) return;
+    const padding = 12;
+    const rect = tip.getBoundingClientRect();
+    let left = event.clientX + padding;
+    let top = event.clientY + padding;
+    if (left + rect.width > window.innerWidth) {
+      left = window.innerWidth - rect.width - padding;
+    }
+    if (top + rect.height > window.innerHeight) {
+      top = event.clientY - rect.height - padding;
+    }
+    tip.style.left = Math.max(padding, left) + "px";
+    tip.style.top = Math.max(padding, top) + "px";
+  });
+
+  document.addEventListener("pointerout", function (event) {
+    if (!event.target.closest("[data-tip]")) return;
+    tip.hidden = true;
+  });
+
+  const input = document.getElementById("site-search");
+  const results = document.getElementById("site-search-results");
+  if (!input || !results || !window.MiniSearch || !window.EZH_SEARCH) return;
+
+  const docs = window.EZH_SEARCH.documents || [];
+  const options = window.EZH_SEARCH.options || {};
+  const miniSearch = new window.MiniSearch({
+    fields: options.fields || ["title", "body", "mnemonics", "lookup", "tags"],
+    storeFields: options.storeFields || ["title", "url", "kind", "summary"],
+  });
+  miniSearch.addAll(docs);
+
+  function expandedQuery(raw) {
+    const aliases = window.EZH_SEARCH.aliases || {};
+    const terms = raw.trim().split(/\s+/).filter(Boolean);
+    const expanded = terms.slice();
+    terms.forEach(function (term) {
+      const key = term.toLowerCase();
+      if (aliases[key]) expanded.push(aliases[key]);
+    });
+    return expanded.join(" ");
+  }
+
+  function closeResults() {
+    results.hidden = true;
+    results.replaceChildren();
+  }
+
+  function renderSearch() {
+    const query = input.value.trim();
+    results.replaceChildren();
+    if (query.length < 2) {
+      closeResults();
+      return;
+    }
+
+    const upperQuery = query.toUpperCase();
+    const direct = docs.filter(function (doc) {
+      const names = ((doc.mnemonics || "") + " " + (doc.lookup || "")).toUpperCase().split(/\s+/);
+      return names.some(function (name) {
+        return name === upperQuery || name.startsWith(upperQuery);
+      });
+    });
+
+    const ranked = miniSearch.search(expandedQuery(query), options.searchOptions || {
+      prefix: true,
+      fuzzy: 0.18,
+      boost: { title: 3, mnemonics: 4, lookup: 5, tags: 2 },
+    });
+
+    const seen = new Set();
+    const found = [];
+    direct.concat(ranked).forEach(function (item) {
+      const key = item.id || item.url;
+      if (seen.has(key)) return;
+      seen.add(key);
+      found.push(item);
+    });
+    found.splice(8);
+
+    if (!found.length) {
+      const empty = document.createElement("div");
+      empty.className = "search-result";
+      empty.textContent = "No matches";
+      results.appendChild(empty);
+      results.hidden = false;
+      return;
+    }
+
+    found.forEach(function (item) {
+      const link = document.createElement("a");
+      link.className = "search-result";
+      link.href = item.url;
+
+      const title = document.createElement("span");
+      title.className = "search-result-title";
+      title.textContent = item.title;
+
+      const meta = document.createElement("span");
+      meta.className = "search-result-meta";
+      meta.textContent = [item.kind, item.summary].filter(Boolean).join(" - ");
+
+      link.append(title, meta);
+      results.appendChild(link);
+    });
+    results.hidden = false;
+  }
+
+  input.addEventListener("input", renderSearch);
+  input.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+      input.value = "";
+      closeResults();
+    }
+  });
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "/" && document.activeElement !== input) {
+      event.preventDefault();
+      input.focus();
+    }
+  });
+  document.addEventListener("click", function (event) {
+    if (!event.target.closest(".search-box")) closeResults();
+  });
+})();
+</script>
+  </body>
+</html>

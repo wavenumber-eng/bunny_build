@@ -14,6 +14,7 @@ import check_docs
 import expand_mnemonics
 import extract_fsl
 import gen_docs
+import lint_chapter
 
 
 class ValidationChecks(unittest.TestCase):
@@ -65,6 +66,25 @@ class ValidationChecks(unittest.TestCase):
                             '#define E_GOSUB(a30) E_DCD((a30+3))\n')
             _, _, _, errors = extract_fsl.extract(path)
             self.assertTrue(any("emit its argument unchanged" in e for e in errors))
+
+    def test_private_records_reject_null_and_malformed_entries(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "records.json"
+            for data in (None, [], {}, {"files": []}, {"files": {"x.md": None}},
+                         {"files": {"x.md": {"provenance": [None]}}},
+                         {"files": {"x.md": {"provenance": [{"section": []}]}}}):
+                path.write_text(json.dumps(data))
+                with self.subTest(data=data), self.assertRaises(ValueError):
+                    lint_chapter.load_private_records(path)
+
+    def test_superseded_or_conditional_directive_wrapper_is_rejected(self):
+        good = '#define E_DCD(loc) __asm(".word "#loc)\n'
+        for text in (good + '#undef E_DCD\n' + good,
+                     good + '#define E_DCD(loc) __asm(".word 0")\n',
+                     '#if 0\n' + good + '#endif\n',
+                     '#ifdef OPTIONAL\n' + good + '#endif\n'):
+            with self.subTest(text=text):
+                self.assertFalse(extract_fsl.direct_word_wrapper(text))
 
 
 if __name__ == "__main__":

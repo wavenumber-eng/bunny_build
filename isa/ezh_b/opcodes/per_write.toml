@@ -1,6 +1,6 @@
-
-
-
+# E_PER_WRITE — opcode 0x05: single-cycle peripheral register write.
+# Showcase for a split address field: the 20-bit address is scattered across
+# two instruction bit ranges.
 
 [opcode]
 name = "PER_WRITE"

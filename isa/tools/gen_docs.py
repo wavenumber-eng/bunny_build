@@ -1209,7 +1209,7 @@ def generate_site(out_dir: Path) -> dict[str, int]:
             {
                 "title": "Simulator",
                 "href": "simulator.html",
-                "description": "Interactive instruction experiments. This page is reserved for the simulator step.",
+                "description": "Instruction simulator (not yet available).",
             },
         ],
     )
@@ -1241,9 +1241,7 @@ def generate_site(out_dir: Path) -> dict[str, int]:
     placeholder_body = env.get_template("placeholder.html.j2").render(
         heading="Instruction Simulator",
         message=(
-            "The simulator page is reserved for the later execution-model step. "
-            "The current static build provides the checked prose chapters, opcode "
-            "reference, and offline search assets."
+            "The instruction simulator is not yet available."
         ),
     )
     write_text(

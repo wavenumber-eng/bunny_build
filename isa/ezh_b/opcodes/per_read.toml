@@ -1,4 +1,4 @@
-
+# E_PER_READ — opcode 0x04: single-cycle peripheral register read.
 
 [opcode]
 name = "PER_READ"
