@@ -1,7 +1,7 @@
-
-
-
-
+# E_MODIFY_GPO_BYTE — opcode 0x1e: read-modify-write the low GPO byte.
+#
+# NOTE: the header encoder carries a pass-1 runtime warning ("DOUBLE CHECK
+# ENCODING OF E_MODIFY_GPO_BYTE") - hardware confirmation is pending.
 
 [opcode]
 name = "MODIFY_GPO_BYTE"

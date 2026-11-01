@@ -1,4 +1,4 @@
-
+# E_GOTO — opcode 0x15: branch, absolute immediate or register target.
 
 [opcode]
 name = "GOTO"
@@ -36,7 +36,7 @@ syntax = "E_[COND_]GOTO[L] ([cond,] label)"
 mnemonic = { pattern = "E_[COND_]GOTO[L]", binds = ["cond", "link"] }
 fixed = [
   { bits = "4:0", value = 0x15 },
-  { bits = "9:9", value = 1 },     
+  { bits = "9:9", value = 1 },     # 1 = immediate (label) target
 ]
 operands = ["goto_addr21"]
 modifiers = ["cond", "link"]
@@ -51,7 +51,7 @@ syntax = "E_[COND_]GOTO_REG[L] ([cond,] raddr)"
 mnemonic = { pattern = "E_[COND_]GOTO_REG[L]", binds = ["cond", "link"] }
 fixed = [
   { bits = "4:0", value = 0x15 },
-  { bits = "9:9", value = 0 },     
+  { bits = "9:9", value = 0 },     # 0 = register target
 ]
 operands = ["src1"]
 modifiers = ["cond", "link"]

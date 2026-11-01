@@ -16,7 +16,6 @@ import argparse
 import filecmp
 import html as html_lib
 import json
-import os
 import re
 import shutil
 import subprocess
@@ -1275,13 +1274,10 @@ def preflight(full: bool) -> int:
             [
                 [sys.executable, "isa/tools/validate.py"],
                 [sys.executable, "isa/tools/verify_encodings.py"],
+                [sys.executable, "isa/tools/expand_mnemonics.py"],
+                [sys.executable, "isa/tools/verify_fsl.py"],
             ]
         )
-    if full and os.environ.get("BUNNY_BUILD_REFERENCE_HEADER"):
-        checks.extend([
-            [sys.executable, "isa/tools/expand_mnemonics.py"],
-            [sys.executable, "isa/tools/verify_fsl.py"],
-        ])
     checks.append(
         [
             sys.executable,

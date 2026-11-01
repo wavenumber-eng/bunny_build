@@ -134,14 +134,19 @@ uv run python isa/tools/verify_encodings.py
 ```
 
 The final command rebuilds the site in a temporary directory, validates encoding
-structure and chapter links, scans the output, and checks for stale generated files.
+structure, mnemonic names and base words against the bundled macro header, and
+chapter links, scans the output, and checks for stale generated files.
 The generated pages and search index contain no attribution or review records.
 
-For optional comparison with a separately supplied reference header, set
+To compare with a different reference header, set `BUNNY_BUILD_REFERENCE_HEADER`
 
 `--header PATH` to `expand_mnemonics.py` and `verify_fsl.py` directly.
 
 To check chapter attribution coverage locally, pass a private JSON record file to
+
+Set `BUNNY_BUILD_PRIVATE_MARKERS` to a private JSON catalog containing a `markers`
+list to supplement the publication scan. An unavailable or malformed configured
+catalog fails the checks.
 
 ## Validation
 

@@ -1,10 +1,6 @@
-
-
-
-
-
-
-
+# E_ANDOR — opcode 0x16: three-register AND + OR (bit set/clear merge).
+#
+# Hardware confirmation of this encoding is pending.
 
 [opcode]
 name = "ANDOR"
@@ -24,7 +20,7 @@ restrictions = [
   "Encoding remains marked for hardware confirmation",
   "No support for SPO/SNE condition flags",
   "S with destination PC does not set flags (schedules branch instead)",
-  "OR-source register limited to R0-R7 in the current model; field width still needs hardware confirmation",
+  "OR-source register limited to R0-R7; field width still needs hardware confirmation",
 ]
 
 [timing]
@@ -38,7 +34,7 @@ mnemonic = { pattern = "E_[COND_]ANDOR[S]", binds = ["cond", "s"] }
 fixed = [{ bits = "4:0", value = 0x16 }]
 operands = ["dest", "src1", "src2", "or_reg3"]
 modifiers = ["cond", "s"]
-notes = "Source register in src1 [17:14], AND operand register in src2 [23:20], OR-source register in or_reg3 [26:24]. Bits [28:27] are reserved-zero; the current database models the OR-source register as R0-R7 pending hardware confirmation."
+notes = "Source register in src1 [17:14], AND operand register in src2 [23:20], OR-source register in or_reg3 [26:24]. Bits [28:27] are reserved-zero; the OR-source register is limited to R0-R7; hardware confirmation is pending."
 
 [forms.encoding_reference]
 bunny_build = "E_ANDOR(dest,rsrc,rand,ror) = 0x16 + (dest<<10) + (rsrc<<14) + (rand<<20) + (ror<<24) + (EU<<5)"
